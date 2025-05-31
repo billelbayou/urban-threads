@@ -1,103 +1,203 @@
+import Header from "@/components/header";
+import heroImage from "../../public/hero.png";
 import Image from "next/image";
+import { AiOutlineDoubleLeft, AiOutlineDoubleRight } from "react-icons/ai";
+import { FaArrowRight, FaAsterisk } from "react-icons/fa";
+import { GoDotFill } from "react-icons/go";
+import Topic from "@/components/topic";
+import { Product } from "@/lib/types";
+import rightImg from "../../public/streetwear-comfort.jpg";
+import topImg from "../../public/chinese-streetwear-1600x900.png";
+import bottomImg from "../../public/449ab5f64580a17a08e8b4f0e313796b.jpg";
 
-export default function Home() {
+const products: Product[] = [
+  {
+    id: "1",
+    name: "Urban Hoodie",
+    description: "A stylish and comfortable hoodie for urban living.",
+    price: 49.99,
+    category: {
+      id: "1",
+      name: "Hoodies",
+      description: "Stylish and comfortable hoodies for everyday wear.",
+      products: [],
+    },
+    images: [
+      "https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?q=80&w=1944&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    ],
+    variants: [
+      { id: "v1", name: "Small", price: 49.99, stock: 10 },
+      { id: "v2", name: "Medium", price: 49.99, stock: 5 },
+      { id: "v3", name: "Large", price: 49.99, stock: 0 },
+    ],
+  },
+  {
+    id: "2",
+    name: "Urban Hoodie",
+    description: "A stylish and comfortable hoodie for urban living.",
+    price: 49.99,
+    category: {
+      id: "2",
+      name: "Hoodies",
+      description: "Stylish and comfortable hoodies for everyday wear.",
+      products: [],
+    },
+    images: [
+      "https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?q=80&w=1944&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    ],
+    variants: [
+      { id: "v1", name: "Small", price: 49.99, stock: 10 },
+      { id: "v2", name: "Medium", price: 49.99, stock: 5 },
+      { id: "v3", name: "Large", price: 49.99, stock: 0 },
+    ],
+  },
+  {
+    id: "3",
+    name: "Urban Hoodie",
+    description: "A stylish and comfortable hoodie for urban living.",
+    price: 49.99,
+    category: {
+      id: "3",
+      name: "Hoodies",
+      description: "Stylish and comfortable hoodies for everyday wear.",
+      products: [],
+    },
+    images: [
+      "https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?q=80&w=1944&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    ],
+    variants: [
+      { id: "v1", name: "Small", price: 49.99, stock: 10 },
+      { id: "v2", name: "Medium", price: 49.99, stock: 5 },
+      { id: "v3", name: "Large", price: 49.99, stock: 0 },
+    ],
+  },
+  {
+    id: "4",
+    name: "Urban Hoodie",
+    description: "A stylish and comfortable hoodie for urban living.",
+    price: 49.99,
+    category: {
+      id: "4",
+      name: "Hoodies",
+      description: "Stylish and comfortable hoodies for everyday wear.",
+      products: [],
+    },
+    images: [
+      
+      "https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?q=80&w=1944&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    ],
+    variants: [
+      { id: "v1", name: "Small", price: 49.99, stock: 10 },
+      { id: "v2", name: "Medium", price: 49.99, stock: 5 },
+      { id: "v3", name: "Large", price: 49.99, stock: 0 },
+    ],
+  },
+];
+
+export default function HomePage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <>
+      <Header />
+      <main className="">
+        <div className="container mx-auto relative w-full h-72 md:h-96 lg:h-[500px] xl:h-[650px] 2xl:h-[800px] rounded-2xl overflow-hidden">
+          <Image src={heroImage} alt="Hero" fill className="object-cover" />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          {/* Main left overlay */}
+          <div className="absolute inset-0">
+            <div className="flex flex-col text-5xl md:text-7xl font-light h-full pt-8 pl-8 bg-gradient-to-b from-transparent to-black/70">
+              <div className="text-white w-auto flex items-center pb-5">
+                <p className="pr-4">Fresh Drops</p>
+                <FaAsterisk size={50} />
+              </div>
+              <div className="text-white flex items-center pb-5">
+                <AiOutlineDoubleLeft />
+                <p className="pl-4">Limited Edition</p>
+              </div>
+              <div className="text-white flex items-center">
+                <p className="pr-4">Act Fast</p>
+                <AiOutlineDoubleRight />
+              </div>
+            </div>
+          </div>
+
+          {/* Vertical right text */}
+          <div className="absolute top-0 right-0 h-full px-4 flex items-center">
+            <p className="vertical-outline-text text-shadow">NEW COLLECTION</p>
+          </div>
+        </div>
+        <div className="overflow-hidden bg-black text-white my-8">
+          <div className="marquee flex whitespace-nowrap">
+            {[...Array(8)].map((_, i) => (
+              <span
+                key={i}
+                className="flex items-center justify-center text-sm md:text-base font-semibold uppercase my-2 mr-8"
+              >
+                <GoDotFill />
+                <p className="ml-2">free shipping on orders above $60</p>
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="container mx-auto">
+          <Topic title="Best Sellers" products={products} />
+          <div className="mb-44">
+            <h2 className="text-3xl font-medium mb-4">Categories</h2>
+            <div className="grid grid-cols-2 gap-x-4 h-[700px]">
+              {/* Tall left image */}
+              <div className="col-span-1 row-span-2 flex flex-col">
+                <div className="flex-1">
+                  <Image
+                    src={rightImg}
+                    alt="Alger"
+                    height={400}
+                    width={300}
+                    className="object-cover w-full h-full rounded-lg"
+                  />
+                </div>
+                <div className="flex items-center justify-between text-xl mt-2">
+                  <p>Shop Men</p>
+                  <FaArrowRight />
+                </div>
+              </div>
+
+              {/* Top right small image */}
+              <div className="flex flex-col h-[calc(700px/2-8px)]">
+                <div className="flex-1">
+                  <Image
+                    src={topImg}
+                    alt="Alger"
+                    height={400}
+                    width={300}
+                    className="object-cover w-full h-full rounded-lg"
+                  />
+                </div>
+                <div className="flex items-center justify-between text-xl mt-2">
+                  <p>Shop Women</p>
+                  <FaArrowRight />
+                </div>
+              </div>
+
+              {/* Bottom right small image */}
+              <div className="flex flex-col h-[calc(700px/2-8px)]">
+                <div className="flex-1">
+                  <Image
+                    src={bottomImg}
+                    alt="Alger"
+                    height={400}
+                    width={300}
+                    className="object-cover w-full h-full rounded-lg"
+                  />
+                </div>
+                <div className="flex items-center justify-between text-xl mt-2">
+                  <p>Shop Accessories</p>
+                  <FaArrowRight />
+                </div>
+              </div>
+            </div>
+          </div>
+          <Topic title="New Arrivals" products={products} />
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    </>
   );
 }
