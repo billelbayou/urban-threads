@@ -5,94 +5,11 @@ import { AiOutlineDoubleLeft, AiOutlineDoubleRight } from "react-icons/ai";
 import { FaArrowRight, FaAsterisk } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
 import Topic from "@/components/topic";
-import { Product } from "@/lib/types";
 import rightImg from "../../public/streetwear-comfort.jpg";
 import topImg from "../../public/chinese-streetwear-1600x900.png";
 import bottomImg from "../../public/449ab5f64580a17a08e8b4f0e313796b.jpg";
-
-const products: Product[] = [
-  {
-    id: "1",
-    name: "Urban Hoodie",
-    description: "A stylish and comfortable hoodie for urban living.",
-    price: 49.99,
-    category: {
-      id: "1",
-      name: "Hoodies",
-      description: "Stylish and comfortable hoodies for everyday wear.",
-      products: [],
-    },
-    images: [
-      "https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?q=80&w=1944&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    ],
-    variants: [
-      { id: "v1", name: "Small", price: 49.99, stock: 10 },
-      { id: "v2", name: "Medium", price: 49.99, stock: 5 },
-      { id: "v3", name: "Large", price: 49.99, stock: 0 },
-    ],
-  },
-  {
-    id: "2",
-    name: "Urban Hoodie",
-    description: "A stylish and comfortable hoodie for urban living.",
-    price: 49.99,
-    category: {
-      id: "2",
-      name: "Hoodies",
-      description: "Stylish and comfortable hoodies for everyday wear.",
-      products: [],
-    },
-    images: [
-      "https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?q=80&w=1944&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    ],
-    variants: [
-      { id: "v1", name: "Small", price: 49.99, stock: 10 },
-      { id: "v2", name: "Medium", price: 49.99, stock: 5 },
-      { id: "v3", name: "Large", price: 49.99, stock: 0 },
-    ],
-  },
-  {
-    id: "3",
-    name: "Urban Hoodie",
-    description: "A stylish and comfortable hoodie for urban living.",
-    price: 49.99,
-    category: {
-      id: "3",
-      name: "Hoodies",
-      description: "Stylish and comfortable hoodies for everyday wear.",
-      products: [],
-    },
-    images: [
-      "https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?q=80&w=1944&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    ],
-    variants: [
-      { id: "v1", name: "Small", price: 49.99, stock: 10 },
-      { id: "v2", name: "Medium", price: 49.99, stock: 5 },
-      { id: "v3", name: "Large", price: 49.99, stock: 0 },
-    ],
-  },
-  {
-    id: "4",
-    name: "Urban Hoodie",
-    description: "A stylish and comfortable hoodie for urban living.",
-    price: 49.99,
-    category: {
-      id: "4",
-      name: "Hoodies",
-      description: "Stylish and comfortable hoodies for everyday wear.",
-      products: [],
-    },
-    images: [
-      
-      "https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?q=80&w=1944&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    ],
-    variants: [
-      { id: "v1", name: "Small", price: 49.99, stock: 10 },
-      { id: "v2", name: "Medium", price: 49.99, stock: 5 },
-      { id: "v3", name: "Large", price: 49.99, stock: 0 },
-    ],
-  },
-];
+import { products1, products2 } from "@/lib/data";
+import Footer from "@/components/footer";
 
 export default function HomePage() {
   return (
@@ -139,7 +56,7 @@ export default function HomePage() {
           </div>
         </div>
         <div className="container mx-auto">
-          <Topic title="Best Sellers" products={products} />
+          <Topic title="Best Sellers" products={products1} />
           <div className="mb-44">
             <h2 className="text-3xl font-medium mb-4">Categories</h2>
             <div className="grid grid-cols-2 gap-x-4 h-[700px]">
@@ -195,9 +112,37 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          <Topic title="New Arrivals" products={products} />
+          <Topic title="New Arrivals" products={products2} />
+          <div className="flex flex-col md:flex-row items-center gap-8 p-6 mx-auto justify-between">
+            <div className="max-w-xl">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">
+                Born in the streets, made for the culture
+              </h2>
+              <p className="text-gray-700 leading-relaxed">
+                More than just clothes, we&apos;re a movement that started in 2019
+                from the raw energy of city streets. Our designs blend urban
+                attitude with sustainable craftsmanship, creating pieces that
+                tell stories. Every drop is a limited canvas of self-expression,
+                crafted for those who dare to stand out. We don&apos;t just follow
+                trends - we create them alongside our community of artists,
+                skaters, and dreamers who inspire each collection. From
+                late-night design sessions to ethical production methods, we&apos;re
+                building a brand that respects both style and substance. Join us
+                in redefining what streetwear can be.
+              </p>
+            </div>
+
+            <Image
+              src="https://images.unsplash.com/photo-1592516195984-44d68247d57e"
+              alt="Streetwear Culture"
+              width={400}
+              height={300}
+              className="object-cover"
+            />
+          </div>
         </div>
       </main>
+      <Footer />
     </>
   );
 }
