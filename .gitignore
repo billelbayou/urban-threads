@@ -1,41 +1,44 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/frontend/node_modules
-/frontend/.pnp
-/frontend/.pnp.*
-/frontend/.yarn/*
-/frontend/!.yarn/patches
-/frontend/!.yarn/plugins
-/frontend/!.yarn/releases
-/frontend/!.yarn/versions
-
-# testing
-/frontend//coverage
-
-# next.js
-/frontend/.next/
-/frontend/out/
-
-# production
-/frontend/build
-
-# misc
+# === General ===
 .DS_Store
 *.pem
-
-# debug
-/frontend/npm-debug.log*
-/frontend/yarn-debug.log*
-/frontend/yarn-error.log*
-/frontend/.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-/frontend/.env*
-
-# vercel
-/frontend/.vercel
-
-# typescript
 *.tsbuildinfo
-next-env.d.ts
+*.log
+
+# === Environment Variables ===
+**/.env*
+!.env.example
+
+# === Node Modules ===
+**/node_modules/
+
+# === Debug Logs ===
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/.pnpm-debug.log*
+
+# === Frontend ===
+/frontend/.next/
+/frontend/out/
+/frontend/build/
+/frontend/.vercel/
+/frontend/.pnp/
+/frontend/.pnp.* 
+/frontend/.yarn/*
+!/frontend/.yarn/patches
+!/frontend/.yarn/plugins
+!/frontend/.yarn/releases
+!/frontend/.yarn/versions
+/frontend/coverage/
+frontend/next-env.d.ts
+
+# === Backend ===
+/backend/dist/
+/backend/build/
+/backend/coverage/
+/backend/prisma/dev.db
+/backend/prisma/dev.db-journal
+
+# === Optional ===
+# Ignore local VS Code settings
+.vscode/

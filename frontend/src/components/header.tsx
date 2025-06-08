@@ -5,14 +5,34 @@ import { CiSearch } from "react-icons/ci";
 import { GoPerson } from "react-icons/go";
 import { PiBasketBold } from "react-icons/pi";
 import { FaBars, FaTimes } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuthStore();
+  const router = useRouter();
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <header className="flex items-center justify-between p-4 relative border-b mb-5">
-      {/* Mobile Menu Icon */}
+      {/* Mobile Menu Button */}
       <button
         className="md:hidden z-20"
         onClick={() => setMenuOpen((prev) => !prev)}
@@ -28,37 +48,80 @@ export default function Header() {
         <h1 className="text-2xl font-bold uppercase">Urban Threads</h1>
       </Link>
 
-      {/* Desktop Navigation */}
+      {/* Navigation */}
       <ul className="hidden md:flex space-x-6 text-lg">
-        <li className="hover:underline">
-          <Link href="/">Home</Link>
+        <li>
+          <Link className="hover:underline" href="/">
+            Home
+          </Link>
         </li>
-        <li className="hover:underline">
-          <Link href="/products">Products</Link>
+        <li>
+          <Link className="hover:underline" href="/products">
+            Products
+          </Link>
         </li>
-        <li className="hover:underline">
-          <Link href="/new">New Arrivals</Link>
+        <li>
+          <Link className="hover:underline" href="/new">
+            New Arrivals
+          </Link>
         </li>
-        <li className="hover:underline">
-          <Link href="/about">About</Link>
+        <li>
+          <Link className="hover:underline" href="/about">
+            About
+          </Link>
         </li>
-        <li className="hover:underline">
-          <Link href="/contact">Contact</Link>
+        <li>
+          <Link className="hover:underline" href="/contact">
+            Contact
+          </Link>
         </li>
       </ul>
 
-      {/* Right Icons */}
-      <ul className="flex space-x-4 items-center ml-auto md:ml-0">
+      {/* Right Side Icons */}
+      <ul className="flex space-x-4 items-center ml-auto md:ml-0 relative">
         <li>
           <button>
             <CiSearch size={26} />
           </button>
         </li>
-        <li>
-          <button>
+
+        {/* Profile Icon */}
+        <li ref={dropdownRef} className="relative">
+          <button
+            onClick={() => {
+              if (user) {
+                router.push("/profile");
+              } else {
+                setProfileOpen((prev) => !prev);
+              }
+            }}
+            className="relative z-10"
+          >
             <GoPerson size={26} />
           </button>
+
+          {/* Dropdown for guest users */}
+          {!user && profileOpen && (
+            <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 shadow-md rounded-md py-2 z-20">
+              <Link
+                href="/login"
+                onClick={() => setProfileOpen(false)}
+                className="block px-4 py-2 hover:bg-gray-100"
+              >
+                Login
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setProfileOpen(false)}
+                className="block px-4 py-2 hover:bg-gray-100"
+              >
+                Register
+              </Link>
+            </div>
+          )}
         </li>
+
+        {/* Basket Icon */}
         <li>
           <button className="relative">
             <PiBasketBold size={26} />
@@ -69,7 +132,7 @@ export default function Header() {
         </li>
       </ul>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Dropdown Menu */}
       {menuOpen && (
         <ul className="absolute top-full left-0 w-full bg-white flex flex-col space-y-4 p-4 text-lg shadow-md md:hidden z-10">
           <li>
