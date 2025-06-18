@@ -12,11 +12,12 @@ import { useRouter } from "next/navigation";
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const { user } = useAuthStore();
+  const dropdownRef = useRef<HTMLLIElement>(null);
+  const { user, logout } = useAuthStore();
   const router = useRouter();
+  console.log(user);
 
-  // Close profile dropdown when clicking outside
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -30,9 +31,15 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleLogout = async () => {
+    await logout();
+    setProfileOpen(false);
+    router.push("/");
+  };
+
   return (
     <header className="flex items-center justify-between p-4 relative border-b mb-5">
-      {/* Mobile Menu Button */}
+      {/* Mobile Menu Icon */}
       <button
         className="md:hidden z-20"
         onClick={() => setMenuOpen((prev) => !prev)}
@@ -48,7 +55,7 @@ export default function Header() {
         <h1 className="text-2xl font-bold uppercase">Urban Threads</h1>
       </Link>
 
-      {/* Navigation */}
+      {/* Desktop Navigation */}
       <ul className="hidden md:flex space-x-6 text-lg">
         <li>
           <Link className="hover:underline" href="/">
@@ -85,38 +92,53 @@ export default function Header() {
           </button>
         </li>
 
-        {/* Profile Icon */}
+        {/* Profile Icon with Dropdown */}
         <li ref={dropdownRef} className="relative">
           <button
-            onClick={() => {
-              if (user) {
-                router.push("/profile");
-              } else {
-                setProfileOpen((prev) => !prev);
-              }
-            }}
+            onClick={() => setProfileOpen((prev) => !prev)}
             className="relative z-10"
           >
             <GoPerson size={26} />
           </button>
 
-          {/* Dropdown for guest users */}
-          {!user && profileOpen && (
+          {profileOpen && (
             <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 shadow-md rounded-md py-2 z-20">
-              <Link
-                href="/login"
-                onClick={() => setProfileOpen(false)}
-                className="block px-4 py-2 hover:bg-gray-100"
-              >
-                Login
-              </Link>
-              <Link
-                href="/register"
-                onClick={() => setProfileOpen(false)}
-                className="block px-4 py-2 hover:bg-gray-100"
-              >
-                Register
-              </Link>
+              {user ? (
+                <>
+                  <button
+                    onClick={() => {
+                      setProfileOpen(false);
+                      router.push("/profile");
+                    }}
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    Profile
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setProfileOpen(false)}
+                    className="block px-4 py-2 hover:bg-gray-100"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setProfileOpen(false)}
+                    className="block px-4 py-2 hover:bg-gray-100"
+                  >
+                    Register
+                  </Link>
+                </>
+              )}
             </div>
           )}
         </li>
@@ -126,13 +148,13 @@ export default function Header() {
           <button className="relative">
             <PiBasketBold size={26} />
             <span className="h-4 w-4 rounded-full bg-black absolute top-[-6px] right-[-6px] text-white text-[10px] font-bold flex items-center justify-center">
-              4
+              {user?.cart?.items.length}
             </span>
           </button>
         </li>
       </ul>
 
-      {/* Mobile Dropdown Menu */}
+      {/* Mobile Menu Dropdown */}
       {menuOpen && (
         <ul className="absolute top-full left-0 w-full bg-white flex flex-col space-y-4 p-4 text-lg shadow-md md:hidden z-10">
           <li>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import AuthHydrator from "@/components/AuthHydrator";
+import { Toaster } from 'sonner';
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -22,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${montserrat.className}`}>
+        <Toaster />
         <AuthHydrator />
         {children}
       </body>

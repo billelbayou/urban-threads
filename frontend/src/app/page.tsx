@@ -8,7 +8,7 @@ import Topic from "@/components/topic";
 import rightImg from "../../public/streetwear-comfort.jpg";
 import topImg from "../../public/chinese-streetwear-1600x900.png";
 import bottomImg from "../../public/449ab5f64580a17a08e8b4f0e313796b.jpg";
-import { products1, products2 } from "@/lib/data";
+import { exampleProducts } from "@/lib/data";
 import Footer from "@/components/footer";
 
 export default function HomePage() {
@@ -56,7 +56,7 @@ export default function HomePage() {
           </div>
         </div>
         <div className="container mx-auto">
-          <Topic title="Best Sellers" products={products1} />
+          <Topic title="Best Sellers" products={exampleProducts} />
           <div className="mb-44">
             <h2 className="text-3xl font-medium mb-4">Categories</h2>
             <div className="grid grid-cols-2 gap-x-4 h-[700px]">
@@ -112,23 +112,24 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          <Topic title="New Arrivals" products={products2} />
+          <Topic title="New Arrivals" products={exampleProducts} />
           <div className="flex flex-col md:flex-row items-center gap-8 p-6 mx-auto justify-between">
             <div className="max-w-xl">
               <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">
                 Born in the streets, made for the culture
               </h2>
               <p className="text-gray-700 leading-relaxed">
-                More than just clothes, we&apos;re a movement that started in 2019
-                from the raw energy of city streets. Our designs blend urban
-                attitude with sustainable craftsmanship, creating pieces that
-                tell stories. Every drop is a limited canvas of self-expression,
-                crafted for those who dare to stand out. We don&apos;t just follow
-                trends - we create them alongside our community of artists,
-                skaters, and dreamers who inspire each collection. From
-                late-night design sessions to ethical production methods, we&apos;re
-                building a brand that respects both style and substance. Join us
-                in redefining what streetwear can be.
+                More than just clothes, we&apos;re a movement that started in
+                2019 from the raw energy of city streets. Our designs blend
+                urban attitude with sustainable craftsmanship, creating pieces
+                that tell stories. Every drop is a limited canvas of
+                self-expression, crafted for those who dare to stand out. We
+                don&apos;t just follow trends - we create them alongside our
+                community of artists, skaters, and dreamers who inspire each
+                collection. From late-night design sessions to ethical
+                production methods, we&apos;re building a brand that respects
+                both style and substance. Join us in redefining what streetwear
+                can be.
               </p>
             </div>
 

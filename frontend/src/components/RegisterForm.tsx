@@ -5,6 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "@/schemas/authSchema";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   const { register: registerUser, loading, error } = useAuthStore();
@@ -16,9 +17,12 @@ export default function RegisterForm() {
   } = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
   });
-
+  const router = useRouter();
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
     await registerUser(data.name, data.email, data.password);
+    if (!errors && !error) {
+      router.push("/");
+    }
   };
 
   return (
