@@ -1,6 +1,6 @@
 import Footer from "@/components/footer";
 import Header from "@/components/header";
-import { products } from "@/lib/data";
+import { exampleProducts } from "@/lib/data";
 import ImageCarousel from "@/components/productImageCarousel";
 import ProductDetails from "@/components/productDetails";
 
@@ -10,7 +10,7 @@ export default async function ProductPage({
   params: Promise<{ id: string }>;
 }) {
   const productId = (await params).id;
-  const product = products.find((product) => product.id === productId);
+  const product = exampleProducts.find((product) => product.id === productId);
   if (!product) {
     return (
       <>

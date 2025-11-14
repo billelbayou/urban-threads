@@ -2,14 +2,13 @@ import Header from "@/components/header";
 import heroImage from "../../public/hero.png";
 import Image from "next/image";
 import { AiOutlineDoubleLeft, AiOutlineDoubleRight } from "react-icons/ai";
-import { FaArrowRight, FaAsterisk } from "react-icons/fa";
+import { FaAsterisk } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
 import Topic from "@/components/topic";
-import rightImg from "../../public/streetwear-comfort.jpg";
-import topImg from "../../public/chinese-streetwear-1600x900.png";
-import bottomImg from "../../public/449ab5f64580a17a08e8b4f0e313796b.jpg";
+
 import { exampleProducts } from "@/lib/data";
 import Footer from "@/components/footer";
+import CategoriesSection from "@/components/CategoriesSection";
 
 export default function HomePage() {
   return (
@@ -57,61 +56,7 @@ export default function HomePage() {
         </div>
         <div className="container mx-auto">
           <Topic title="Best Sellers" products={exampleProducts} />
-          <div className="mb-44">
-            <h2 className="text-3xl font-medium mb-4">Categories</h2>
-            <div className="grid grid-cols-2 gap-x-4 h-[700px]">
-              {/* Tall left image */}
-              <div className="col-span-1 row-span-2 flex flex-col">
-                <div className="flex-1">
-                  <Image
-                    src={rightImg}
-                    alt="Alger"
-                    height={400}
-                    width={300}
-                    className="object-cover w-full h-full rounded-lg"
-                  />
-                </div>
-                <div className="flex items-center justify-between text-xl mt-2">
-                  <p>Shop Men</p>
-                  <FaArrowRight />
-                </div>
-              </div>
-
-              {/* Top right small image */}
-              <div className="flex flex-col h-[calc(700px/2-8px)]">
-                <div className="flex-1">
-                  <Image
-                    src={topImg}
-                    alt="Alger"
-                    height={400}
-                    width={300}
-                    className="object-cover w-full h-full rounded-lg"
-                  />
-                </div>
-                <div className="flex items-center justify-between text-xl mt-2">
-                  <p>Shop Women</p>
-                  <FaArrowRight />
-                </div>
-              </div>
-
-              {/* Bottom right small image */}
-              <div className="flex flex-col h-[calc(700px/2-8px)]">
-                <div className="flex-1">
-                  <Image
-                    src={bottomImg}
-                    alt="Alger"
-                    height={400}
-                    width={300}
-                    className="object-cover w-full h-full rounded-lg"
-                  />
-                </div>
-                <div className="flex items-center justify-between text-xl mt-2">
-                  <p>Shop Accessories</p>
-                  <FaArrowRight />
-                </div>
-              </div>
-            </div>
-          </div>
+          <CategoriesSection />
           <Topic title="New Arrivals" products={exampleProducts} />
           <div className="flex flex-col md:flex-row items-center gap-8 p-6 mx-auto justify-between">
             <div className="max-w-xl">

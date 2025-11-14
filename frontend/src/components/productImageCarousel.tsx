@@ -4,9 +4,9 @@ import Image from "next/image";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { Products } from "@/lib/data";
+import { Product } from "@/lib/types";
 
-export default function ImageCarousel({ product }: { product: Products }) {
+export default function ImageCarousel({ product }: { product: Product }) {
   const [sliderRef, slider] = useKeenSlider<HTMLDivElement>({
     loop: true,
     slides: { perView: 1 },
@@ -18,7 +18,7 @@ export default function ImageCarousel({ product }: { product: Products }) {
         ref={sliderRef}
         className="keen-slider w-full h-full overflow-hidden"
       >
-        {product.images.map((img: string, i: number) => (
+        {product.imageUrl.map((img: string, i: number) => (
           <div key={i} className="keen-slider__slide relative w-full h-full">
             <Image
               src={img}

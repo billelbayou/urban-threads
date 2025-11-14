@@ -1,12 +1,12 @@
 "use client";
 
-import { Products } from "@/lib/data";
+import { Product } from "@/lib/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { FaChevronUp, FaChevronDown, FaRegHeart } from "react-icons/fa";
 
 type Props = {
-  product: Products;
+  product: Product;
 };
 
 export default function ProductDetails({ product }: Props) {
@@ -38,7 +38,7 @@ export default function ProductDetails({ product }: Props) {
   return (
     <div className="px-2 py-4">
       <h1 className="text-xl sm:text-2xl font-medium">{product.name}</h1>
-      <p className="text-sm text-gray-500 mt-1">{product.brand}</p>
+      <p className="text-sm text-gray-500 mt-1">{product.description}</p>
       <p className="text-lg sm:text-xl font-semibold mt-4">${product.price}</p>
       <p className="text-sm text-gray-600 mt-4">{product.description}</p>
 
