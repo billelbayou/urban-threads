@@ -5,7 +5,7 @@ export const setAuthCookie = (res: any, token: string): void => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: config.COOKIE_EXPIRES_IN * 1000,
-    sameSite: "strict",
+    sameSite: "none",
   });
 };
 

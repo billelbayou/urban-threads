@@ -17,7 +17,7 @@ app.use(cookieParser()); // Parses cookies
 // CORS config — allow frontend origin & send credentials
 app.use(
   cors({
-    origin: "http://localhost:3000", // 👈 change if frontend uses a different port or domain
+    origin: ["http://localhost:3000", "https://your-frontend.vercel.app"],
     credentials: true,
   })
 );
@@ -37,6 +37,4 @@ app.use((err: any, req: any, res: any, next: any) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log("Server running"));
