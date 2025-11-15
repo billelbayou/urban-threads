@@ -15,7 +15,6 @@ export default function Header() {
   const dropdownRef = useRef<HTMLLIElement>(null);
   const { user, logout } = useAuthStore();
   const router = useRouter();
-  console.log(user);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -147,9 +146,11 @@ export default function Header() {
         <li>
           <button className="relative">
             <PiBasketBold size={26} />
-            <span className="h-4 w-4 rounded-full bg-black absolute top-[-6px] right-[-6px] text-white text-[10px] font-bold flex items-center justify-center">
-              {user?.cart?.items.length}
-            </span>
+            {user && (
+              <span className="h-4 w-4 rounded-full bg-black absolute top-[-6px] right-[-6px] text-white text-[10px] font-bold flex items-center justify-center">
+                {user.cart?.items?.length ?? 0}
+              </span>
+            )}
           </button>
         </li>
       </ul>

@@ -25,7 +25,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   login: async (email, password) => {
     set({ loading: true, error: null });
     try {
-      await axios.post("/auth/login", { email, password });
+      await axios.post("api/auth/login", { email, password });
       await get().getCurrentUser();
       toast.success("Login successful");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,7 +42,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   register: async (name, email, password) => {
     set({ loading: true, error: null });
     try {
-      await axios.post("/auth/register", { name, email, password });
+      await axios.post("api/auth/register", { name, email, password });
       await get().getCurrentUser();
       toast.success("Registration successful");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -59,7 +59,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   logout: async () => {
     set({ loading: true });
     try {
-      await axios.post("/auth/logout");
+      await axios.post("api/auth/logout");
       set({ user: null });
       toast.success("Logged out successfully");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,7 +75,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   getCurrentUser: async () => {
     set({ loading: true });
     try {
-      const res = await axios.get("/auth/me");
+      const res = await axios.get("api/auth/me");
       console.log("Raw API response:", res.data); // Debug log
 
       // Extract the user object from the response
@@ -93,8 +93,3 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   clearError: () => set({ error: null }),
 }));
-
-// Optional: Initialize the store on first load in the client
-if (typeof window !== "undefined") {
-  useAuthStore.getState().getCurrentUser();
-}
