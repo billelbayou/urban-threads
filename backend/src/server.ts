@@ -3,6 +3,10 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
+import productRoutes from "./routes/products.routes";
+import orderRoutes from "./routes/order.routes";
+import categoryRoutes from "./routes/category.routes";
+import cartRoutes from "./routes/cart.routes";
 import config from "./config/config";
 
 dotenv.config();
@@ -24,17 +28,10 @@ app.use(
 
 // Routes
 app.use("/api/auth", authRoutes);
-
-// 404 handler
-app.use((req, res, next) => {
-  res.status(404).json({ message: "Route not found" });
-});
-
-// Global error handler (optional)
-app.use((err: any, req: any, res: any, next: any) => {
-  console.error("Error:", err);
-  res.status(500).json({ message: err.message || "Internal Server Error" });
-});
+app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/category", categoryRoutes);
+app.use("/api/cart", cartRoutes);
 
 // Start server
-app.listen(PORT, () => console.log("Server running"));
+app.listen(8080, () => console.log("Server running"));

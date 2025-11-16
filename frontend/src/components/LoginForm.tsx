@@ -23,7 +23,8 @@ export default function LoginForm() {
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     await login(data.email, data.password);
     if (useAuthStore.getState().user) {
-      router.push("/");
+      if (useAuthStore.getState().user?.role === "ADMIN") router.push("/admin")
+      else router.push("/")
     }
   };
 

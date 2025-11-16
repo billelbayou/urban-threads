@@ -1,17 +1,12 @@
-import express from "express";
-import {
-  loginHandler,
-  logoutHandler,
-  registerHandler,
-  getCurrentUserHandler,
-} from "../auth/controllers/auth.controller";
-import { authenticateUser } from "../auth/middleware/auth.middleware";
+import { Router } from "express";
+import { register, login, logout, getUserInfos } from "../controllers/auth.controller";
+import { authenticate } from "../middleware/auth.middleware";
 
-const router = express.Router();
+const router = Router();
 
-router.post("/login", loginHandler);
-router.post("/register", registerHandler);
-router.post("/logout", logoutHandler);
-router.get("/me", authenticateUser, getCurrentUserHandler);
+router.post("/register", register);
+router.post("/login", login);
+router.post("/logout", logout);
+router.get("/me", authenticate, getUserInfos)
 
 export default router;

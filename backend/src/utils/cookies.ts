@@ -1,4 +1,4 @@
-import config from "../../config/config";
+import config from "../config/config";
 
 export const setAuthCookie = (res: any, token: string): void => {
   res.cookie("token", token, {

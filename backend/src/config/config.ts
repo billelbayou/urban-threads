@@ -10,7 +10,7 @@ interface Config {
 }
 
 const config: Config = {
-  PORT: parseInt(process.env.PORT || "3000"),
+  PORT: parseInt(process.env.PORT || "5000"),
   NODE_ENV: process.env.NODE_ENV!,
   JWT_SECRET: process.env.JWT_SECRET!,
   COOKIE_EXPIRES_IN: parseInt(process.env.COOKIE_EXPIRES_IN || "86400"), // 1 day in seconds
