@@ -10,9 +10,10 @@ interface Product {
 
 interface ProductTableProps {
   products: Product[];
+  onDelete: (id: string) => void;
 }
 
-const ProductTable = ({ products }: ProductTableProps) => {
+const ProductTable = ({ products, onDelete }: ProductTableProps) => {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
@@ -55,7 +56,10 @@ const ProductTable = ({ products }: ProductTableProps) => {
                   <button className="p-1 text-blue-600 hover:text-blue-800">
                     <FiEdit />
                   </button>
-                  <button className="p-1 text-red-600 hover:text-red-800">
+                  <button
+                    onClick={() => onDelete(product.id)}
+                    className="p-1 text-red-600 hover:text-red-800"
+                  >
                     <FiTrash2 />
                   </button>
                 </div>

@@ -34,4 +34,4 @@ app.use("/api/category", categoryRoutes);
 app.use("/api/cart", cartRoutes);
 
 // Start server
-app.listen(8080, () => console.log("Server running"));
+app.listen(PORT, () => console.log("Server running"));

@@ -5,20 +5,32 @@ import { AiOutlineDoubleLeft, AiOutlineDoubleRight } from "react-icons/ai";
 import { FaAsterisk } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
 import Topic from "@/components/topic";
-
-import { exampleProducts } from "@/lib/data";
 import Footer from "@/components/footer";
 import CategoriesSection from "@/components/CategoriesSection";
+import api from "@/lib/axios";
 
-export default function HomePage() {
+async function getProducts() {
+  try {
+    const res = await api.get("/api/products", {
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    return error
+  }
+}
+
+export default async function HomePage() {
+  const products = await getProducts();
+  
   return (
     <>
       <Header />
-      <main className="">
+      <main>
+        {/* HERO SECTION */}
         <div className="container mx-auto relative w-full h-72 md:h-96 lg:h-[500px] xl:h-[650px] 2xl:h-[800px] rounded-2xl overflow-hidden">
           <Image src={heroImage} alt="Hero" fill className="object-cover" />
 
-          {/* Main left overlay */}
           <div className="absolute inset-0">
             <div className="flex flex-col text-5xl md:text-7xl font-light h-full pt-8 pl-8 bg-gradient-to-b from-transparent to-black/70">
               <div className="text-white w-auto flex items-center pb-5">
@@ -36,17 +48,18 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Vertical right text */}
           <div className="absolute top-0 right-0 h-full px-4 flex items-center">
             <p className="vertical-outline-text text-shadow">NEW COLLECTION</p>
           </div>
         </div>
+
+        {/* MARQUEE */}
         <div className="overflow-hidden bg-black text-white my-8">
           <div className="marquee flex whitespace-nowrap">
             {[...Array(8)].map((_, i) => (
               <span
                 key={i}
-                className="flex items-center justify-center text-sm md:text-base font-semibold uppercase my-2 mr-8"
+                className="flex items-center text-sm md:text-base font-semibold uppercase my-2 mr-8"
               >
                 <GoDotFill />
                 <p className="ml-2">free shipping on orders above $60</p>
@@ -54,10 +67,15 @@ export default function HomePage() {
             ))}
           </div>
         </div>
+
         <div className="container mx-auto">
-          <Topic title="Best Sellers" products={exampleProducts} />
+          <Topic title="Best Sellers" products={products} />
+
           <CategoriesSection />
-          <Topic title="New Arrivals" products={exampleProducts} />
+
+          <Topic title="New Arrivals" products={products} />
+
+          {/* ABOUT SECTION */}
           <div className="flex flex-col md:flex-row items-center gap-8 p-6 mx-auto justify-between">
             <div className="max-w-xl">
               <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">
@@ -65,16 +83,7 @@ export default function HomePage() {
               </h2>
               <p className="text-gray-700 leading-relaxed">
                 More than just clothes, we&apos;re a movement that started in
-                2019 from the raw energy of city streets. Our designs blend
-                urban attitude with sustainable craftsmanship, creating pieces
-                that tell stories. Every drop is a limited canvas of
-                self-expression, crafted for those who dare to stand out. We
-                don&apos;t just follow trends - we create them alongside our
-                community of artists, skaters, and dreamers who inspire each
-                collection. From late-night design sessions to ethical
-                production methods, we&apos;re building a brand that respects
-                both style and substance. Join us in redefining what streetwear
-                can be.
+                2019...
               </p>
             </div>
 
@@ -88,6 +97,7 @@ export default function HomePage() {
           </div>
         </div>
       </main>
+
       <Footer />
     </>
   );

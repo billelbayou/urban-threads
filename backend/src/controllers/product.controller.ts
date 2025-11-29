@@ -48,7 +48,6 @@ export const createProduct = async (req: AuthRequest, res: Response) => {
 /** Update product (admin only) */
 export const updateProduct = async (req: AuthRequest, res: Response) => {
   try {
-
     const validated = productSchema.partial().parse(req.body);
 
     // Separate images from other fields
@@ -78,10 +77,24 @@ export const updateProduct = async (req: AuthRequest, res: Response) => {
 /** Delete product (admin only) */
 export const deleteProduct = async (req: AuthRequest, res: Response) => {
   try {
+    console.log("Deleting product with ID:", req.params.id);
 
-    await prisma.product.delete({ where: { id: req.params.id } });
+    const productId = req.params.id;
+
+    // 1. Delete images
+    await prisma.productImage.deleteMany({
+      where: { productId }
+    });
+
+    // 2. Delete product
+    await prisma.product.delete({
+      where: { id: productId },
+    });
+
     res.json({ message: "Product deleted" });
   } catch (err: any) {
+    console.error("Delete error:", err);
     res.status(400).json({ error: err.message });
   }
 };
+

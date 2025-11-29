@@ -1,10 +1,10 @@
-import { Product } from "@/lib/types";
+
 import Image from "next/image";
 import Link from "next/link";
 
 interface TopicProps {
   title: string;
-  products: Product[];
+  products: any
 }
 
 export default function Topic({ title, products }: TopicProps) {
@@ -34,7 +34,7 @@ export default function Topic({ title, products }: TopicProps) {
             {/* Image */}
             <div className="relative w-full aspect-square bg-neutral-100">
               <Image
-                src={product.imageUrl?.[0] ?? "/placeholder.png"}
+                src={product.images[0].url}
                 alt={product.name}
                 fill
                 sizes="(max-width: 768px) 100vw, 300px"
