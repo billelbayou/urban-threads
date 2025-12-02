@@ -4,47 +4,71 @@ import Image from "next/image";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { Product } from "@/lib/types";
+import { useState } from "react";
 
-export default function ImageCarousel({ product }: { product: Product }) {
+interface ImageCarouselProps {
+  product: {
+    name: string;
+    images: { url: string }[];
+  };
+}
+
+export default function ImageCarousel({ product }: ImageCarouselProps) {
   const [sliderRef, slider] = useKeenSlider<HTMLDivElement>({
     loop: true,
     slides: { perView: 1 },
   });
 
+  const [currentSlide, setCurrentSlide] = useState(0);
+
   return (
-    <div className="keen-slider__slide relative w-full aspect-square md:aspect-auto h-full">
+    <div className="relative w-full max-w-3xl mx-auto">
+      {/* Slider */}
       <div
         ref={sliderRef}
-        className="keen-slider w-full h-full overflow-hidden"
+        className="keen-slider w-full h-80 md:h-[500px] overflow-hidden rounded-xl shadow-sm"
       >
-        {product.imageUrl.map((img: string, i: number) => (
+        {product.images.map((img, i) => (
           <div key={i} className="keen-slider__slide relative w-full h-full">
             <Image
-              src={img}
+              src={img.url}
               alt={product.name}
               fill
-              className="object-cover"
+              className="object-contain"
               sizes="100vw"
               priority={i === 0}
+              onLoadingComplete={() => setCurrentSlide(i)}
             />
           </div>
         ))}
       </div>
 
-      {/* Arrows */}
+      {/* Navigation Arrows */}
       <button
         onClick={() => slider.current?.prev()}
-        className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white p-1 rounded-full shadow hover:bg-gray-100 z-10"
+        className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-100 z-10"
       >
         <FaArrowLeft />
       </button>
       <button
         onClick={() => slider.current?.next()}
-        className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white p-1 rounded-full shadow hover:bg-gray-100 z-10"
+        className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-100 z-10"
       >
         <FaArrowRight />
       </button>
+
+      {/* Dots */}
+      <div className="flex justify-center mt-4 gap-2">
+        {product.images.map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => slider.current?.moveToIdx(idx)}
+            className={`w-3 h-3 rounded-full transition ${
+              currentSlide === idx ? "bg-black" : "bg-gray-300"
+            }`}
+          />
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,8 +1,9 @@
 import Footer from "@/components/footer";
 import Header from "@/components/header";
-import { exampleProducts } from "@/lib/data";
 import ImageCarousel from "@/components/productImageCarousel";
 import ProductDetails from "@/components/productDetails";
+import api from "@/lib/axios";
+import { Product } from "@/lib/types";
 
 export default async function ProductPage({
   params,
@@ -10,7 +11,9 @@ export default async function ProductPage({
   params: Promise<{ id: string }>;
 }) {
   const productId = (await params).id;
-  const product = exampleProducts.find((product) => product.id === productId);
+  const res = await api.get(`/api/products/${productId}`);
+  const product = res.data
+  
   if (!product) {
     return (
       <>

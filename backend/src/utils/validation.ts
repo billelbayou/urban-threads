@@ -17,8 +17,17 @@ export const productSchema = z.object({
   description: z.string(),
   price: z.number().positive(),
   stock: z.number().int().nonnegative(),
+  gender: z.enum(["MEN", "WOMEN", "UNISEX"]),
   categoryId: z.string().uuid(),
   images: z.array(z.string().url()),
+  infoSections: z
+    .array(
+      z.object({
+        title: z.string(),
+        content: z.string(),
+      })
+    )
+    .optional(),
 });
 
 export const orderSchema = z.object({

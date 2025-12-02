@@ -1,8 +1,8 @@
 // @/store/useAuthStore.ts
 import { create } from "zustand";
-import axios from "@/lib/axios";
 import { User } from "@/lib/types";
 import { toast } from "sonner";
+import api from "@/lib/axios";
 
 type AuthState = {
   user: User | null;
@@ -25,15 +25,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   login: async (email, password) => {
     set({ loading: true, error: null });
     try {
-      await axios.post("api/auth/login", { email, password });
+      await api.post("api/auth/login", { email, password });
       await get().getCurrentUser();
       toast.success("Login successful");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      const errorMessage = err.response?.data?.message || "Login failed";
+      const errorMessage = err.response?.data?.error || "Login failed";
       set({ error: errorMessage });
       toast.error(errorMessage);
-      throw err; // Re-throw for form handling
     } finally {
       set({ loading: false });
     }
@@ -42,7 +41,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   register: async (name, email, password) => {
     set({ loading: true, error: null });
     try {
-      await axios.post("api/auth/register", { name, email, password });
+      await api.post("api/auth/register", { name, email, password });
       await get().getCurrentUser();
       toast.success("Registration successful");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -59,7 +58,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   logout: async () => {
     set({ loading: true });
     try {
-      await axios.post("api/auth/logout");
+      await api.post("api/auth/logout");
       set({ user: null });
       toast.success("Logged out successfully");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,13 +74,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   getCurrentUser: async () => {
     set({ loading: true });
     try {
-      const res = await axios.get("api/auth/me");
-      console.log("Raw API response:", res.data); // Debug log
-
+      const res = await api.get("api/auth/me");
       // Extract the user object from the response
       const userData = res.data.user || res.data;
-      console.log("Extracted user data:", userData); // Debug log
-
       set({ user: userData, initialized: true });
     } catch (err) {
       console.log("Error fetching user:", err);

@@ -1,12 +1,5 @@
+import { Product } from "@/lib/types";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  stock: number;
-  category: string;
-}
 
 interface ProductTableProps {
   products: Product[];
@@ -14,6 +7,7 @@ interface ProductTableProps {
 }
 
 const ProductTable = ({ products, onDelete }: ProductTableProps) => {
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">

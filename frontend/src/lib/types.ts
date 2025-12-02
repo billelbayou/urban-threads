@@ -1,115 +1,192 @@
-export type Role = "ADMIN" | "CLIENT";
+// ====================
+// ENUMS
+// ====================
+
+export enum Role {
+  ADMIN = "ADMIN",
+  CLIENT = "CLIENT",
+}
+
+export enum Gender {
+  MEN = "MEN",
+  WOMEN = "WOMEN",
+  UNISEX = "UNISEX",
+}
+
+export enum OrderStatus {
+  PENDING = "PENDING",
+  COMPLETED = "COMPLETED",
+  SHIPPED = "SHIPPED",
+  CANCELED = "CANCELED",
+}
+
+// ====================
+// USER
+// ====================
 
 export interface User {
   id: string;
   name: string;
   email: string;
+  password?: string; // Usually omitted from API responses
   role: Role;
+
+  phone?: string;
+  avatarUrl?: string;
   address?: string;
   city?: string;
   country?: string;
   postalCode?: string;
-  phone?: string;
-  createdAt: string; // ISO date string
-  updatedAt: string;
 
-  wishlist: WishlistItem[];
-  orders: Order[];
-  cart?: Cart;
-}
-
-export interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  stock: number;
-  imageUrl: string[];
-  categoryId: string;
   createdAt: string;
   updatedAt: string;
 
-  category: Category;
-  cartItems: CartItem[];
-  orderItems: OrderItem[];
-  wishlistItems: WishlistItem[];
+  // relations (optional based on API)
+  // cart?: Cart;
+  // wishlist?: Wishlist;
+  // orders?: Order[];
 }
-export interface ProductFormData {
-  name: string;
-  description: string;
-  price: number;
-  stock: number;
-  imageUrl: string;
-  categoryId: string;
-}
+
+// ====================
+// CATEGORY
+// ====================
 
 export interface Category {
   id: string;
   name: string;
+  products?: Product[]; // Optional to avoid nested queries
+}
+
+// ====================
+// PRODUCT IMAGE
+// ====================
+
+export interface ProductImage {
+  id: string;
+  url: string;
+  productId: string;
+}
+
+// ====================
+// PRODUCT INFO SECTION
+// ====================
+
+export interface ProductInfoSection {
+  id: string;
+  title: string;
+  content: string;
+  productId: string;
+}
+
+// ====================
+// PRODUCT STATS
+// ====================
+
+export interface ProductStats {
+  id: string;
+  productId: string;
+  views: number;
+  soldQuantity: number;
+}
+
+// ====================
+// PRODUCT
+// ====================
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  gender: Gender;
+
+  categoryId: string;
+  category: Category;
+
+  images: ProductImage[];
+  productStats?: ProductStats[];
+  infoSections?: ProductInfoSection[];
+
+  wishlistId?: string; // nullable in schema
+
+  createdAt: string;
+  updatedAt: string;
+
+  // orderItems?: OrderItem[];
+  // cartItems?: CartItem[];
+}
+
+// ====================
+// WISHLIST
+// ====================
+
+export interface Wishlist {
+  id: string;
+  userId: string;
   products: Product[];
 }
 
-export interface WishlistItem {
-  id: string;
-  userId: string;
-  productId: string;
-  createdAt: string;
-
-  user: User;
-  product: Product;
-}
-
-export type OrderStatus =
-  | "PENDING"
-  | "PAID"
-  | "SHIPPED"
-  | "DELIVERED"
-  | "CANCELED";
-
-export interface Order {
-  id: string;
-  userId: string;
-  total: number;
-  status: OrderStatus;
-  createdAt: string;
-
-  user: User;
-  items: OrderItem[];
-}
+// ====================
+// ORDER ITEM
+// ====================
 
 export interface OrderItem {
   id: string;
   orderId: string;
   productId: string;
+
   quantity: number;
   price: number;
 
-  order: Order;
-  product: Product;
+  product?: Product;
 }
 
-export interface Cart {
+// ====================
+// ORDER
+// ====================
+
+export interface Order {
   id: string;
   userId: string;
-  items: CartItem[];
 
-  user: User;
+  total: number;
+  status: OrderStatus;
+
+  items: OrderItem[];
+
+  createdAt: string;
+  updatedAt: string;
+
+  // user?: User;
 }
+
+// ====================
+// CART ITEM
+// ====================
 
 export interface CartItem {
   id: string;
   cartId: string;
-  productId: string;
-  quantity: number;
 
-  cart: Cart;
-  product: Product;
+  productId: string;
+  product?: Product;
+
+  quantity: number;
 }
 
-export interface DashboardStats {
-  totalUsers?: number;
-  totalProducts?: number;
-  totalOrders?: number;
-  recentOrders?: Order[];
+// ====================
+// CART
+// ====================
+
+export interface Cart {
+  id: string;
+  userId: string;
+
+  items: CartItem[];
+
+  createdAt: string;
+  updatedAt: string;
+
+  // user?: User;
 }

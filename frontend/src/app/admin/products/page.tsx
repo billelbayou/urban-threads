@@ -7,14 +7,16 @@ import ProductTable from "@/components/admin/ProductTable";
 import ProductModal from "@/components/admin/ProductModal";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
 import Link from "next/link";
+import { Category, Product } from "@/lib/types";
 
 export default function Products() {
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
-
+  
+  
   // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
@@ -34,7 +36,7 @@ export default function Products() {
   // Fetch categories
   const fetchCategories = async () => {
     const res = await api.get("/api/category", { withCredentials: true });
-    setCategories(res.data.map((c: any) => c.name));
+    setCategories(res.data);
   };
 
   const confirmDelete = (id: string) => setProductToDelete(id);
@@ -43,14 +45,16 @@ export default function Products() {
     if (!productToDelete) return;
     try {
       await api.delete(`/api/products/${productToDelete}`, { withCredentials: true });
-      setProducts((prev) => prev.filter((p) => p.id !== productToDelete));
+      setProducts((prev) => prev.filter((p: Product) => p.id !== productToDelete));
     } catch {
       alert("Failed to delete product.");
     } finally {
       setProductToDelete(null);
     }
   };
-
+  console.log(products)
+  console.log(categories);
+  
   return (
     <>
       <div className="flex justify-between items-center mb-6">
@@ -86,7 +90,7 @@ export default function Products() {
           <h2 className="font-semibold mb-2">Categories:</h2>
           <ul className="list-disc list-inside">
             {categories.map((c, idx) => (
-              <li key={idx}>{c}</li>
+              <li key={idx}>{c.name}</li>
             ))}
           </ul>
         </div>
