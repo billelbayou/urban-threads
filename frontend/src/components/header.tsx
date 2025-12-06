@@ -8,12 +8,14 @@ import { FaBars, FaTimes } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
+import { useCartStore } from "@/store/useCartStore";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const dropdownRef = useRef<HTMLLIElement>(null);
   const { user, logout } = useAuthStore();
+  const { toggleCart, items } = useCartStore();
   const router = useRouter();
 
   // Close dropdown when clicking outside
@@ -34,6 +36,14 @@ export default function Header() {
     await logout();
     setProfileOpen(false);
     router.push("/");
+  };
+
+  const hanldeToggleCart = () => {
+    if (!user) {
+      router.push("/login"); // redirect if not logged in
+    } else {
+      toggleCart(); // open cart if logged in
+    }
   };
 
   return (
@@ -144,11 +154,11 @@ export default function Header() {
 
         {/* Basket Icon */}
         <li>
-          <button className="relative">
+          <button className="relative" onClick={hanldeToggleCart}>
             <PiBasketBold size={26} />
             {user && (
               <span className="h-4 w-4 rounded-full bg-black absolute top-[-6px] right-[-6px] text-white text-[10px] font-bold flex items-center justify-center">
-                {user.cart?.items?.length ?? 0}
+                {items.length}
               </span>
             )}
           </button>

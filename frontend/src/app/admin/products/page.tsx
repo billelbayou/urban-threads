@@ -21,14 +21,8 @@ export default function Products() {
   useEffect(() => {
     const fetchProducts = async () => {
       const res = await api.get("/api/products", { withCredentials: true });
-      const mapped = res.data.map((p: any) => ({
-        id: p.id,
-        name: p.name,
-        price: p.price,
-        stock: p.stock,
-        category: p.category?.name || "Uncategorized",
-      }));
-      setProducts(mapped);
+      const products = res.data
+      setProducts(products);
     };
     fetchProducts();
   }, []);
@@ -52,9 +46,7 @@ export default function Products() {
       setProductToDelete(null);
     }
   };
-  console.log(products)
-  console.log(categories);
-  
+
   return (
     <>
       <div className="flex justify-between items-center mb-6">

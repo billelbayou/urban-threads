@@ -8,7 +8,11 @@ async function getOrCreateCart(userId: string) {
     where: { userId },
     include: {
       items: {
-        include: { product: true },
+        include: {
+          product: {
+            include: { images: true },
+          },
+        },
       },
     },
   });
@@ -18,7 +22,11 @@ async function getOrCreateCart(userId: string) {
       data: { userId },
       include: {
         items: {
-          include: { product: true },
+          include: {
+            product: {
+              include: { images: true },
+            },
+          },
         },
       },
     });

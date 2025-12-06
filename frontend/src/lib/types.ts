@@ -42,9 +42,9 @@ export interface User {
   updatedAt: string;
 
   // relations (optional based on API)
-  // cart?: Cart;
-  // wishlist?: Wishlist;
-  // orders?: Order[];
+  cart?: Cart;
+  wishlist?: Wishlist;
+  orders?: Order[];
 }
 
 // ====================

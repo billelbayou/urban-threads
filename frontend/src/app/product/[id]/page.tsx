@@ -3,7 +3,7 @@ import Header from "@/components/header";
 import ImageCarousel from "@/components/productImageCarousel";
 import ProductDetails from "@/components/productDetails";
 import api from "@/lib/axios";
-import { Product } from "@/lib/types";
+import CartDrawer from "@/components/CartDrawer";
 
 export default async function ProductPage({
   params,
@@ -31,6 +31,7 @@ export default async function ProductPage({
   return (
     <>
       <Header />
+      <CartDrawer />
       <main className="flex flex-col md:flex-row gap-4 p-4 md:p-8 min-h-[600px]">
         <div className="w-full md:w-1/2">
           <ImageCarousel product={product} />

@@ -43,7 +43,7 @@ const ProductTable = ({ products, onDelete }: ProductTableProps) => {
                 {product.stock}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {product.category}
+                {product.category.name}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 <div className="flex space-x-2">
