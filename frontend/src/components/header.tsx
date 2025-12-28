@@ -157,7 +157,7 @@ export default function Header() {
           <button className="relative" onClick={hanldeToggleCart}>
             <PiBasketBold size={26} />
             {user && (
-              <span className="h-4 w-4 rounded-full bg-black absolute top-[-6px] right-[-6px] text-white text-[10px] font-bold flex items-center justify-center">
+              <span className="h-4 w-4 rounded-full bg-black absolute -top-1.5 -right-1.5 text-white text-[10px] font-bold flex items-center justify-center">
                 {items.length}
               </span>
             )}

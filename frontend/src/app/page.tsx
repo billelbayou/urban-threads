@@ -23,7 +23,7 @@ async function getProducts() {
 
 export default async function HomePage() {
   const products = await getProducts();
-
+  console.log(products)
   return (
     <>
       <Header />
@@ -34,7 +34,7 @@ export default async function HomePage() {
           <Image src={heroImage} alt="Hero" fill className="object-cover" />
 
           <div className="absolute inset-0">
-            <div className="flex flex-col text-5xl md:text-7xl font-light h-full pt-8 pl-8 bg-gradient-to-b from-transparent to-black/70">
+            <div className="flex flex-col text-5xl md:text-7xl font-light h-full pt-8 pl-8 bg-linear-to-b from-transparent to-black/70">
               <div className="text-white w-auto flex items-center pb-5">
                 <p className="pr-4">Fresh Drops</p>
                 <FaAsterisk size={50} />

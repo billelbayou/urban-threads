@@ -11,7 +11,7 @@ import {
 } from "react-icons/fi";
 
 const Sidebar = () => {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   const navItems = [
     { href: "/admin", icon: <FiHome />, label: "Dashboard" },
@@ -24,8 +24,8 @@ const Sidebar = () => {
 
   return (
     <div className="w-64 bg-white shadow-md">
-      <div className="p-4 border-b">
-        <h1 className="text-xl font-semibold text-gray-800">Admin Dashboard</h1>
+      <div className="p-4">
+        <h1 className="text-xl pl-2 font-semibold text-gray-800">Admin</h1>
       </div>
       <nav className="p-4">
         <ul className="space-y-2">

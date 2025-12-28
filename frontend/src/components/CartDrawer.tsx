@@ -13,7 +13,6 @@ export default function CartDrawer() {
   useEffect(() => {
     if (isOpen) fetchCart();
   }, [isOpen]);
-  console.log(items);
   
   return (
     <div

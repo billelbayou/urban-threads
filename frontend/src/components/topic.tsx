@@ -1,4 +1,5 @@
 
+import { Product } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -25,7 +26,7 @@ export default function Topic({ title, products }: TopicProps) {
 
       {/* Products Grid */}
       <div className="grid gap-8 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {products.map((product) => (
+        {products.map((product: Product) => (
           <Link
             href={`/product/${product.id}`}
             key={product.id}
