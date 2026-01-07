@@ -3,7 +3,7 @@
 *.pem
 *.tsbuildinfo
 *.log
-
+TODO.md
 # === Environment Variables ===
 **/.env*
 !.env.example

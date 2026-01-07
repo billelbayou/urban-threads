@@ -30,6 +30,7 @@ export default function ProductDetails({ product }: Props) {
       quantity
     );
   };
+console.log(product);
 
   useEffect(() => {
     if (product.infoSections && product.infoSections.length > 0) {
@@ -48,7 +49,7 @@ export default function ProductDetails({ product }: Props) {
       <h1 className="text-2xl sm:text-3xl font-semibold">{product.name}</h1>
 
       <p className="text-sm text-gray-500 mt-1 capitalize">
-        {product.gender.toLowerCase()}
+        {product.category.name}
       </p>
 
       <p className="text-gray-600 mt-2 text-sm sm:text-base">
@@ -131,8 +132,8 @@ export default function ProductDetails({ product }: Props) {
 
       {/* Expandable sections */}
       <div className="mt-8 space-y-4">
-        {product.infoSections?.map((section) => (
-          <div key={section.id}>
+        {product.infoSections.map((section, index) => (
+          <div key={index}>
             <div
               className="flex justify-between items-center cursor-pointer"
               onClick={() => toggleSection(section.title)}

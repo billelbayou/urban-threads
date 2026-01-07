@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { v2 as cloudinary } from "cloudinary";
 
 dotenv.config();
 
@@ -15,5 +16,11 @@ const config: Config = {
   JWT_SECRET: process.env.JWT_SECRET!,
   COOKIE_EXPIRES_IN: parseInt(process.env.COOKIE_EXPIRES_IN || "86400"), // 1 day in seconds
 };
+
+export const cloud = cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export default config;

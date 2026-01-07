@@ -33,50 +33,40 @@ model User {
 }
 
 model Product {
-  id           String               @id @default(uuid())
-  name         String
-  description  String
-  price        Float
-  stock        Int
-  gender       Gender
-  category     Category             @relation(fields: [categoryId], references: [id])
-  categoryId   String
-  images       ProductImage[]
-  orderItems   OrderItem[]
-  createdAt    DateTime             @default(now())
-  updatedAt    DateTime             @updatedAt
-  productStats ProductStats[]
-  cartItems    CartItem[]
-  wishlist     Wishlist?            @relation(fields: [wishlistId], references: [id])
-  wishlistId   String?
-  infoSections ProductInfoSection[]
+  id            String               @id @default(uuid())
+  name          String
+  description   String
+  price         Float
+  category      Category             @relation(fields: [categoryId], references: [id])
+  categoryId    String 
+  images        Json[]
+  orderItems    OrderItem[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  productStats  ProductStats[]
+  cartItems     CartItem[]
+  wishlist      Wishlist?            @relation(fields: [wishlistId], references: [id])
+  wishlistId    String?
+  infoSections  Json[]
+  tags          String[] 
 }
 
-model ProductInfoSection {
-  id        String  @id @default(uuid())
-  title     String
-  content   String
-  product   Product @relation(fields: [productId], references: [id])
-  productId String
-}
-
-model ProductImage {
-  id        String  @id @default(uuid())
-  url       String
-  product   Product @relation(fields: [productId], references: [id])
-  productId String
+model Category {
+  id        String     @id @default(uuid())
+  name      String
+  slug      String     @unique
+  parentId  String?
+  parent    Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryToCategory")
+  products  Product[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model Wishlist {
   id       String    @id @default(uuid())
-  user     User      @relation(fields: [userId], references: [id])
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   String    @unique
-  products Product[]
-}
-
-model Category {
-  id       String    @id @default(uuid())
-  name     String    @unique
   products Product[]
 }
 
@@ -93,7 +83,7 @@ model Order {
 
 model OrderItem {
   id        String  @id @default(uuid())
-  order     Order   @relation(fields: [orderId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId   String
   product   Product @relation(fields: [productId], references: [id])
   productId String
@@ -103,15 +93,15 @@ model OrderItem {
 
 model ProductStats {
   id           String  @id @default(uuid())
-  product      Product @relation(fields: [productId], references: [id])
-  productId    String
+  product      Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId    String  @unique // Added unique to ensure one stats record per product
   views        Int     @default(0)
   soldQuantity Int     @default(0)
 }
 
 model Cart {
   id        String     @id @default(uuid())
-  user      User       @relation(fields: [userId], references: [id])
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String     @unique
   items     CartItem[]
   createdAt DateTime   @default(now())
@@ -120,16 +110,19 @@ model Cart {
 
 model CartItem {
   id        String  @id @default(uuid())
-  cart      Cart    @relation(fields: [cartId], references: [id])
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
   cartId    String
   product   Product @relation(fields: [productId], references: [id])
   productId String
   quantity  Int     @default(1)
+
+  @@unique([cartId, productId]) // Prevent duplicate products in same cart
 }
 
-enum Gender {
+enum ProductCategory {
   MEN
   WOMEN
+  KIDS
   UNISEX
 }
 
@@ -140,7 +133,8 @@ enum Role {
 
 enum OrderStatus {
   PENDING
-  COMPLETED
+  PROCESSING
   SHIPPED
+  DELIVERED
   CANCELED
 }

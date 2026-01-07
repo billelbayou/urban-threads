@@ -99,14 +99,13 @@ export interface Product {
   description: string;
   price: number;
   stock: number;
-  gender: Gender;
 
   categoryId: string;
   category: Category;
 
   images: ProductImage[];
   productStats?: ProductStats[];
-  infoSections?: ProductInfoSection[];
+  infoSections: ProductInfoSection[];
 
   wishlistId?: string; // nullable in schema
 
@@ -189,4 +188,17 @@ export interface Cart {
   updatedAt: string;
 
   // user?: User;
+}
+
+// This represents the nested structure used by the UI
+export type CategoryWithChildren = Category & {
+  children: CategoryWithChildren[];
+};
+
+// Props for the individual Node component
+export interface CategoryNodeProps {
+  node: CategoryWithChildren;
+  onAddSub: (parentId: string) => void;
+  onEdit: (category: Category) => void;
+  onDelete: (id: string) => void;
 }

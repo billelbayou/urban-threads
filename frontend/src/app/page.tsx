@@ -15,8 +15,10 @@ async function getProducts() {
     const res = await api.get("/api/products", {
       withCredentials: true,
     });
+    console.log(res)
     return res.data;
   } catch (error) {
+    console.error(error)
     return error;
   }
 }

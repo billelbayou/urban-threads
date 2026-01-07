@@ -1,139 +1,179 @@
 import { Request, Response } from "express";
-import { productSchema } from "../utils/validation";
-import { AuthRequest } from "../middleware/auth.middleware"; // extended Request with user info
+import { ProductSchema } from "../utils/validation";
+import { AuthRequest } from "../middleware/auth.middleware";
 import { prisma } from "../utils/prisma";
+import z from "zod";
 
 /** Get all products (public) */
 export const getAllProducts = async (_req: Request, res: Response) => {
-  const products = await prisma.product.findMany({
-    include: { infoSections: true, images: true, category: true },
-  });
-  res.json(products);
+  try {
+    const products = await prisma.product.findMany({
+      include: {
+        category: {
+          select: { name: true, slug: true },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch products" });
+  }
 };
 
 /** Get single product by ID (public) */
 export const getProductById = async (req: Request, res: Response) => {
-  const product = await prisma.product.findUnique({
-    where: { id: req.params.id },
-    include: { infoSections: true, images: true, category: true },
-  });
-  if (!product) {
-    res.status(404).json({ error: "Product not found" });
-    return;
+  try {
+    const { id } = req.params;
+
+    const product = await prisma.product.findUnique({
+      where: { id },
+      include: {
+        category: {
+          select: { name: true, slug: true },
+        },
+      },
+    });
+
+    if (!product) {
+      res.status(404).json({ error: "Product not found" });
+      return;
+    }
+
+    res.status(200).json(product);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch product" });
   }
-  res.json(product);
 };
 
-/** Create product (admin only) */
 /** Create product (admin only) */
 export const createProduct = async (req: AuthRequest, res: Response) => {
   try {
-    const validated = productSchema.parse(req.body);
+    // Validate request body
+    const data = ProductSchema.parse(req.body);
 
-    const product = await prisma.product.create({
+    // Create the product
+    const newProduct = await prisma.product.create({
       data: {
-        ...validated,
-
-        // IMAGES
-        images: validated.images
-          ? {
-              create: validated.images.map((url) => ({ url })),
-            }
-          : undefined,
-
-        // INFO SECTIONS
-        infoSections: validated.infoSections //error
-          ? {
-              create: validated.infoSections.map((section) => ({
-                title: section.title,
-                content: section.content,
-              })),
-            }
-          : undefined,
+        name: data.name,
+        description: data.description,
+        price: data.price,
+        categoryId: data.categoryId,
+        tags: data.tags,
+        images: data.images,
+        infoSections: data.infoSections,
       },
-
       include: {
-        images: true,
-        infoSections: true, //error
+        category: {
+          select: { name: true, slug: true },
+        },
       },
     });
 
-    res.status(201).json(product);
-  } catch (err: any) {
-    res.status(400).json({ error: err.errors || err.message });
+    res.status(201).json({
+      message: "Product created successfully",
+      product: newProduct,
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      // Return clean validation errors
+      res.status(400).json({
+        error: "Validation failed",
+        details: error.errors.map((e) => ({
+          path: e.path.join("."),
+          message: e.message,
+        })),
+      });
+    }
+
+    if (error instanceof Error && (error as any).code === "P2003") {
+      res.status(400).json({
+        error: "Invalid categoryId: Category does not exist",
+      });
+      return;
+    }
+    res.status(500).json({ error: "Failed to create product" });
   }
 };
 
 /** Update product (admin only) */
-/** Update product (admin only) */
 export const updateProduct = async (req: AuthRequest, res: Response) => {
   try {
-    const validated = productSchema.partial().parse(req.body);
+    const { id } = req.params;
 
-    // Separate images, infoSections and categoryId from other fields
-    const { infoSections, images, categoryId, ...productData } = validated;
+    const data = ProductSchema.parse(req.body);
 
-    // Build the data object using nested writes for relations to avoid mixing scalar categoryId with nested updates
-    const data: any = { ...productData };
-
-    // Handle images update if provided
-    if (images) {
-      data.images = {
-        deleteMany: {}, // Remove existing images
-        create: images.map((url) => ({ url })), // Add new images
-      };
-    }
-
-    // Handle infoSections update if provided
-    if (infoSections) {
-      data.infoSections = {
-        deleteMany: {}, // Remove existing info sections
-        create: infoSections.map((section) => ({
-          title: section.title,
-          content: section.content,
-        })), // Add new info sections
-      };
-    }
-
-    // Handle category change via relation connect when categoryId provided
-    if (categoryId) {
-      data.category = {
-        connect: { id: categoryId },
-      };
-    }
-
-    const product = await prisma.product.update({
-      where: { id: req.params.id },
-      data,
-      include: { images: true, category: true, infoSections: true }, // Include relations in response
+    const updatedProduct = await prisma.product.update({
+      where: { id },
+      data: {
+        name: data.name,
+        description: data.description,
+        price: data.price,
+        categoryId: data.categoryId,
+        tags: data.tags,
+        images: data.images,
+        infoSections: data.infoSections,
+      },
+      include: {
+        category: {
+          select: { name: true, slug: true },
+        },
+      },
     });
 
-    res.json(product);
-  } catch (err: any) {
-    res.status(400).json({ error: err.errors || err.message });
+    res.status(200).json({
+      message: "Product updated successfully",
+      product: updatedProduct,
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({
+        error: "Validation failed",
+        details: error.errors.map((e) => ({
+          path: e.path.join("."),
+          message: e.message,
+        })),
+      });
+      return;
+    }
+
+    if (error instanceof Error && (error as any).code === "P2025") {
+      res.status(404).json({ error: "Product not found" });
+      return;
+    }
+
+    if (error instanceof Error && (error as any).code === "P2003") {
+      res.status(400).json({
+        error: "Invalid categoryId: Category does not exist",
+      });
+      return;
+    }
+
+    res.status(500).json({ error: "Failed to update product" });
   }
 };
 
 /** Delete product (admin only) */
 export const deleteProduct = async (req: AuthRequest, res: Response) => {
   try {
-    console.log("Deleting product with ID:", req.params.id);
+    const { id } = req.params;
 
-    const productId = req.params.id;
-
-    // 1. Delete images
-    await prisma.productImage.deleteMany({
-      where: { productId },
-    });
-
-    // 2. Delete product
     await prisma.product.delete({
-      where: { id: productId },
+      where: { id },
     });
 
-    res.json({ message: "Product deleted" });
-  } catch (err: any) {
-    console.error("Delete error:", err);
-    res.status(400).json({ error: err.message });
+    res.status(200).json({
+      message: "Product deleted successfully",
+    });
+  } catch (error) {
+    if (error instanceof Error && (error as any).code === "P2025") {
+      res.status(404).json({ error: "Product not found" });
+      return;
+    }
+
+    res.status(500).json({ error: "Failed to delete product" });
   }
 };

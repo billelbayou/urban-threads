@@ -13,7 +13,6 @@ export default async function ProductPage({
   const productId = (await params).id;
   const res = await api.get(`/api/products/${productId}`);
   const product = res.data
-  
   if (!product) {
     return (
       <>
