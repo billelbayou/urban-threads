@@ -1,9 +1,9 @@
-import Footer from "@/components/footer";
-import Header from "@/components/header";
-import ImageCarousel from "@/components/productImageCarousel";
-import ProductDetails from "@/components/productDetails";
-import api from "@/lib/axios";
-import CartDrawer from "@/components/CartDrawer";
+import Footer from "@/components/Footer";
+import Header from "@/components/header/Header";
+import ImageCarousel from "@/components/product/productImageCarousel";
+import ProductDetails from "@/components/product/productDetails";
+import CartDrawer from "@/components/cart/CartDrawer";
+import { fetchProductById } from "@/lib/fetchers";
 
 export default async function ProductPage({
   params,
@@ -11,8 +11,8 @@ export default async function ProductPage({
   params: Promise<{ id: string }>;
 }) {
   const productId = (await params).id;
-  const res = await api.get(`/api/products/${productId}`);
-  const product = res.data
+  const product = await fetchProductById(productId);
+
   if (!product) {
     return (
       <>

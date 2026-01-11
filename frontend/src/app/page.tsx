@@ -1,31 +1,17 @@
-import Header from "@/components/header";
+import Header from "@/components/header/Header";
 import heroImage from "../../public/hero.png";
 import Image from "next/image";
 import { AiOutlineDoubleLeft, AiOutlineDoubleRight } from "react-icons/ai";
 import { FaAsterisk } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
 import Topic from "@/components/topic";
-import Footer from "@/components/footer";
+import Footer from "@/components/Footer";
 import CategoriesSection from "@/components/CategoriesSection";
-import api from "@/lib/axios";
-import CartDrawer from "@/components/CartDrawer";
-
-async function getProducts() {
-  try {
-    const res = await api.get("/api/products", {
-      withCredentials: true,
-    });
-    console.log(res)
-    return res.data;
-  } catch (error) {
-    console.error(error)
-    return error;
-  }
-}
+import CartDrawer from "@/components/cart/CartDrawer";
+import { fetchProducts } from "@/lib/fetchers";
 
 export default async function HomePage() {
-  const products = await getProducts();
-  console.log(products)
+  const products = await fetchProducts();
   return (
     <>
       <Header />
@@ -33,7 +19,13 @@ export default async function HomePage() {
       <main>
         {/* HERO SECTION */}
         <div className="container mx-auto relative w-full h-72 md:h-96 lg:h-[500px] xl:h-[650px] 2xl:h-[800px] rounded-2xl overflow-hidden">
-          <Image src={heroImage} alt="Hero" fill className="object-cover" />
+          <Image
+            src={heroImage}
+            alt="Hero"
+            fill
+            className="object-cover"
+            priority
+          />
 
           <div className="absolute inset-0">
             <div className="flex flex-col text-5xl md:text-7xl font-light h-full pt-8 pl-8 bg-linear-to-b from-transparent to-black/70">
@@ -98,12 +90,12 @@ export default async function HomePage() {
                 in redefining what streetwear can be.
               </p>
             </div>
-
             <Image
               src="https://images.unsplash.com/photo-1592516195984-44d68247d57e"
               alt="Streetwear Culture"
               width={400}
               height={300}
+              style={{ height: "auto" }} // This removes the warning
               className="object-cover"
             />
           </div>

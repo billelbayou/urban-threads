@@ -35,7 +35,7 @@ export const login = async (req: Request, res: Response) => {
     // Find user by email
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      res.status(404).json({ error: "User not found" });
+      res.status(404).json({ error: "Invalid credentials" });
       return;
     }
 
@@ -52,7 +52,7 @@ export const login = async (req: Request, res: Response) => {
     // Set cookie
     setAuthCookie(res, token);
 
-    res.json({ message: "Logged in", user });
+    res.json({ message: "You are logged in", user });
   } catch (err: any) {
     res.status(400).json({ error: err.errors || err.message });
   }

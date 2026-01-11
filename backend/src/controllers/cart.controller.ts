@@ -1,111 +1,137 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { prisma } from "../utils/prisma";
 import { AuthRequest } from "../middleware/auth.middleware";
 
-/** Helper: Ensure user has a cart */
+/**
+ * Helper: Always return a full cart with items + products
+ */
 async function getOrCreateCart(userId: string) {
-  let cart = await prisma.cart.findUnique({
+  return prisma.cart.upsert({
     where: { userId },
+    update: {},
+    create: { userId },
     include: {
       items: {
         include: {
-          product: {
-            include: { images: true },
-          },
+          product: true,
         },
       },
     },
   });
-
-  if (!cart) {
-    cart = await prisma.cart.create({
-      data: { userId },
-      include: {
-        items: {
-          include: {
-            product: {
-              include: { images: true },
-            },
-          },
-        },
-      },
-    });
-  }
-
-  return cart;
 }
 
-/** GET /cart */
-export const getCart = async (req: Request, res: Response) => {
-  const userId = req.user?.id as string;
-  const cart = await getOrCreateCart(userId);
-  res.json(cart);
-};
-
-/** POST /cart/add */
-export const addToCart = async (req: Request, res: Response) => {
-  const userId = req.user?.id as string;
-  const { productId, quantity } = req.body;
-
-  const cart = await getOrCreateCart(userId);
-
-  const existingItem = await prisma.cartItem.findFirst({
-    where: { cartId: cart.id, productId },
-  });
-
-  if (existingItem) {
-    const updated = await prisma.cartItem.update({
-      where: { id: existingItem.id },
-      data: { quantity: existingItem.quantity + (quantity || 1) },
-    });
-    res.json(updated);
-    return;
+/**
+ * GET /cart
+ */
+export const getCart = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user.id;
+    const cart = await getOrCreateCart(userId);
+    res.json(cart);
+  } catch {
+    res.status(500).json({ error: "Failed to fetch cart" });
   }
-
-  const newItem = await prisma.cartItem.create({
-    data: {
-      cartId: cart.id,
-      productId,
-      quantity: quantity || 1,
-    },
-  });
-
-  res.status(201).json(newItem);
 };
 
-/** PUT /cart/item/:itemId */
+/**
+ * POST /cart/add
+ * body: { productId, quantity, size }
+ */
+export const addToCart = async (req: AuthRequest, res: Response) => {
+  const userId = req.user.id;
+  const { productId, quantity, size } = req.body;
+
+  try {
+    const cart = await getOrCreateCart(userId);
+
+    await prisma.cartItem.upsert({
+      where: {
+        cartId_productId_size: {
+          cartId: cart.id,
+          productId,
+          size,
+        },
+      },
+      update: {
+        quantity: { increment: quantity },
+      },
+      create: {
+        cartId: cart.id,
+        productId,
+        size,
+        quantity,
+      },
+    });
+
+    const updatedCart = await getOrCreateCart(userId);
+    res.status(201).json(updatedCart);
+  } catch {
+    res.status(500).json({ error: "Failed to add item to cart" });
+  }
+};
+
+/**
+ * PUT /cart/item/:itemId
+ * body: { quantity }
+ */
 export const updateCartItem = async (req: AuthRequest, res: Response) => {
   const { itemId } = req.params;
   const { quantity } = req.body;
+  const userId = req.user.id;
 
   if (!quantity || quantity <= 0) {
     res.status(400).json({ error: "Invalid quantity" });
     return;
   }
 
-  const item = await prisma.cartItem.update({
-    where: { id: itemId },
-    data: { quantity },
-  });
+  try {
+    await prisma.cartItem.update({
+      where: { id: itemId },
+      data: { quantity },
+    });
 
-  res.json(item);
+    const updatedCart = await getOrCreateCart(userId);
+    res.json(updatedCart);
+  } catch {
+    res.status(500).json({ error: "Failed to update cart item" });
+  }
 };
 
-/** DELETE /cart/item/:itemId */
+/**
+ * DELETE /cart/item/:itemId
+ */
 export const removeCartItem = async (req: AuthRequest, res: Response) => {
   const { itemId } = req.params;
+  const userId = req.user.id;
 
-  await prisma.cartItem.delete({ where: { id: itemId } });
+  try {
+    await prisma.cartItem.delete({
+      where: { id: itemId },
+    });
 
-  res.json({ message: "Item removed" });
+    const updatedCart = await getOrCreateCart(userId);
+    res.json(updatedCart);
+  } catch {
+    res.status(500).json({ error: "Failed to remove cart item" });
+  }
 };
 
-/** DELETE /cart/clear */
+/**
+ * DELETE /cart/clear
+ */
 export const clearCart = async (req: AuthRequest, res: Response) => {
   const userId = req.user.id;
-  const cart = await getOrCreateCart(userId);
 
-  await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
+  try {
+    const cart = await getOrCreateCart(userId);
 
-  res.json({ message: "Cart cleared" });
+    await prisma.cartItem.deleteMany({
+      where: { cartId: cart.id },
+    });
+
+    const updatedCart = await getOrCreateCart(userId);
+    res.json(updatedCart);
+  } catch {
+    res.status(500).json({ error: "Failed to clear cart" });
+  }
 };

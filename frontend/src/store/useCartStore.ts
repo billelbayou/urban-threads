@@ -1,54 +1,29 @@
-import api from "@/lib/axios";
+import { Cart } from "@/types/types";
 import { create } from "zustand";
 
-
-interface CartItem {
-  id: string;
-  productId: string;
-  quantity: number;
-  product: {
-    name: string;
-    price: number;
-    images: { url: string }[];
-  };
-}
-
 interface CartState {
-  items: CartItem[];
+  cart: Cart | null;
   isOpen: boolean;
 
+  // UI Actions
   toggleCart: () => void;
-  fetchCart: () => Promise<void>;
-  addToCart: (productId: string, quantity: number) => Promise<void>;
-  removeFromCart: (itemId: string) => Promise<void>;
+  openCart: () => void;
+
+  // State Sync Actions (Called AFTER Server Actions succeed)
+  setCart: (cart: Cart | null) => void;
+  clearCart: () => void;
 }
 
 export const useCartStore = create<CartState>((set) => ({
-  items: [],
+  cart: null,
   isOpen: false,
 
   toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
+  openCart: () => set({ isOpen: true }),
 
-  fetchCart: async () => {
-    const res = await api.get("/api/cart", { withCredentials: true });
-    set({ items: res.data.items });
-  },
+  // FIX: Check if we are receiving the full cart object or just the items array
+  setCart: (cart: Cart | null) =>
+    set({ cart: cart ? { ...cart, items: cart.items ?? [] } : null }),
 
-  addToCart: async (productId, quantity) => {
-    await api.post(
-      "/api/cart/add",
-      { productId, quantity },
-      { withCredentials: true }
-    );
-    const res = await api.get("/api/cart", { withCredentials: true });
-    set({ items: res.data.items });
-  },
-
-  removeFromCart: async (itemId) => {
-    await api.delete(`/api/cart/item/${itemId}`, {
-      withCredentials: true,
-    });
-    const res = await api.get("/api/cart", { withCredentials: true });
-    set({ items: res.data.items });
-  },
+  clearCart: () => set({ cart: null }),
 }));

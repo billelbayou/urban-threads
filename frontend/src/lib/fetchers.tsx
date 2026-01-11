@@ -1,0 +1,192 @@
+import { Product } from "@/types/types";
+
+export const api = process.env.NEXT_PUBLIC_API_URL;
+
+/* -------------------- PRODUCTS -------------------- */
+
+export const fetchProducts = async () => {
+  const res = await fetch(`${api}/products`);
+
+  if (!res.ok) throw new Error("Failed to fetch products");
+  return res.json();
+};
+
+export const fetchProductById = async (productId: string) => {
+  const res = await fetch(`${api}/products/${productId}`);
+  if (!res.ok) throw new Error("Failed to fetch product");
+  return res.json();
+};
+
+export const createProduct = async (productData: Product) => {
+  const res = await fetch(`${api}/api/products`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(productData),
+  });
+
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.error || "Failed to create product");
+  }
+
+  return res.json();
+};
+
+/* -------------------- AUTH -------------------- */
+
+export const login = async (email: string, password: string) => {
+  const res = await fetch(`${api}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ email, password }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || "Login failed");
+  }
+  return data;
+};
+
+export const register = async (
+  name: string,
+  email: string,
+  password: string
+) => {
+  const res = await fetch(`${api}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ name, email, password }),
+  });
+
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.error || "Registration failed");
+  }
+
+  return res.json();
+};
+
+export const logout = async () => {
+  const res = await fetch(`${api}/auth/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.error || "Logout failed");
+  }
+  return res.json();
+};
+
+// lib/fetchers.ts
+export const getCurrentUser = async (cookie?: string) => {
+  const headers: Record<string, string> = {};
+
+  if (cookie) headers["cookie"] = cookie; // lowercase works too in Node/Edge
+
+  const res = await fetch(`${api}/auth/me`, {
+    headers,
+    credentials: cookie ? undefined : "include",
+    cache: "no-store",
+  });
+
+  if (!res.ok) return null;
+
+  const data = await res.json();
+  return data;
+};
+
+/* -------------------- CART -------------------- */
+
+export const fetchCart = async (cookie?: string) => {
+  const headers: Record<string, string> = {};
+  if (cookie) headers["cookie"] = cookie;
+  const res = await fetch(`${api}/cart`, {
+    headers,
+    credentials: cookie ? undefined : "include",
+    cache: "no-store",
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data;
+};
+
+export const addToCart = async (
+  productId: string,
+  quantity: number,
+  size: string,
+  cookie: string
+) => {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json", // CRITICAL: Tell Express to parse the body
+  };
+  if (cookie) headers["cookie"] = cookie;
+  const res = await fetch(`${api}/cart/add`, {
+    method: "POST",
+    headers,
+    credentials: cookie ? undefined : "include",
+    body: JSON.stringify({ productId, quantity, size }),
+  });
+
+  const data = await res.json();
+
+  return data;
+};
+
+export const removeFromCart = async (itemId: string, cookie: string) => {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json", // CRITICAL: Tell Express to parse the body
+  };
+  if (cookie) headers["cookie"] = cookie;
+  const res = await fetch(`${api}/cart/item/${itemId}`, {
+    method: "DELETE",
+    headers,
+    credentials: cookie ? undefined : "include",
+  });
+
+  const data = await res.json();
+
+  return data;
+};
+
+/* -------------------- CATEGORY -------------------- */
+
+export const fetchCategories = async () => {
+  const res = await fetch(`${api}/category`);
+
+  if (!res.ok) throw new Error("Failed to fetch categories");
+  return res.json();
+};
+
+export const createCategory = async ({
+  name,
+  slug,
+  parentId,
+}: {
+  name: string;
+  slug: string;
+  parentId?: string;
+}) => {
+  const res = await fetch(`${api}/category`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ name, slug, parentId }),
+  });
+
+  if (!res.ok) throw new Error("Failed to create category");
+  return res.json();
+};
+
+export const deleteCategory = async (id: string) => {
+  const res = await fetch(`${api}/category/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!res.ok) throw new Error("Failed to delete category");
+};

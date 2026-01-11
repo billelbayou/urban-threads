@@ -1,8 +1,15 @@
-import Footer from "@/components/footer";
-import Header from "@/components/header";
-import LoginForm from "@/components/LoginForm";
+import Footer from "@/components/Footer";
+import Header from "@/components/header/Header";
+import LoginForm from "@/components/auth/LoginForm";
+import getCookies from "@/utils/cookies";
+import { getCurrentUser } from "@/lib/fetchers";
+import { redirect } from "next/navigation";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const user = await getCurrentUser(await getCookies());
+  if (user) {
+    redirect("/");
+  }
   return (
     <>
       <Header />

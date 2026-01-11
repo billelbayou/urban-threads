@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { buildTree } from "@/lib/trees";
+import { buildTree } from "@/utils/trees";
 import CategoryNode from "@/components/admin/CategoryNode";
 import CategoryModal from "@/components/admin/CategoryModal";
 import { ListTree, Plus, RefreshCcw } from "lucide-react";
-import { Category } from "@/lib/types";
+import { Category } from "@/types/types";
 import api from "@/lib/axios";
 
 export default function CategoryAdmin() {

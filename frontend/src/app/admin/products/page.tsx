@@ -5,22 +5,21 @@ import api from "@/lib/axios";
 import { FiPlus, FiList } from "react-icons/fi";
 import ProductTable from "@/components/admin/ProductTable";
 import ProductModal from "@/components/admin/ProductModal";
-import ConfirmDialog from "@/components/common/ConfirmDialog";
+import ConfirmDialog from "@/components/common/ConfirmDialogue";
 import Link from "next/link";
-import { Category, Product } from "@/lib/types";
+import { Category, Product } from "@/types/types";
 
 export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
-  
-  
+
   // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       const res = await api.get("/api/products", { withCredentials: true });
-      const products = res.data
+      const products = res.data;
       setProducts(products);
     };
     fetchProducts();
@@ -37,8 +36,12 @@ export default function Products() {
   const handleDelete = async () => {
     if (!productToDelete) return;
     try {
-      await api.delete(`/api/products/${productToDelete}`, { withCredentials: true });
-      setProducts((prev) => prev.filter((p: Product) => p.id !== productToDelete));
+      await api.delete(`/api/products/${productToDelete}`, {
+        withCredentials: true,
+      });
+      setProducts((prev) =>
+        prev.filter((p: Product) => p.id !== productToDelete)
+      );
     } catch {
       alert("Failed to delete product.");
     } finally {

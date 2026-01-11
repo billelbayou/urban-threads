@@ -35,9 +35,9 @@ export default function ImageCarousel({ product }: ImageCarouselProps) {
               alt={product.name}
               fill
               className="object-contain"
-              sizes="100vw"
+              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
               priority={i === 0}
-              onLoadingComplete={() => setCurrentSlide(i)}
+              onLoad={() => setCurrentSlide(i)}
             />
           </div>
         ))}

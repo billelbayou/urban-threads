@@ -1,4 +1,4 @@
-import { CategoryWithChildren } from "./types";
+import { CategoryWithChildren } from "../types/types";
 
 export const buildTree = (
   nodes: any[],

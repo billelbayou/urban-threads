@@ -13,7 +13,7 @@ import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import api from "@/lib/axios";
 import React from "react";
-import { buildTree } from "@/lib/trees";
+import { buildTree } from "@/utils/trees";
 interface InfoSection {
   title: string;
   content: string;

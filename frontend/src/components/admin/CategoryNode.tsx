@@ -9,7 +9,7 @@ import {
   Trash2,
   Edit3,
 } from "lucide-react";
-import { CategoryNodeProps } from "@/lib/types";
+import { CategoryNodeProps } from "@/types/types";
 
 export default function CategoryNode({
   node,

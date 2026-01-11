@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
-import AuthHydrator from "@/components/AuthHydrator";
-import { Toaster } from 'sonner';
+import { Toaster } from "sonner";
+import AuthHydrator from "@/components/auth/AuthHydrator";
+import { cookies } from "next/headers";
+import { fetchCart, getCurrentUser } from "@/lib/fetchers";
+import getCookies from "@/utils/cookies";
+import CartHydrator from "@/components/cart/CartHydrator";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -15,16 +19,20 @@ export const metadata: Metadata = {
   description: "Your online clothes store",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookies = await getCookies()
+  const user = await getCurrentUser(cookies);
+  const cart = await fetchCart(cookies)
   return (
     <html lang="en">
-      <body className={`${montserrat.className}`}>
-        <Toaster />
-        <AuthHydrator />
+      <body className={`${montserrat.className}`} suppressHydrationWarning>
+        <Toaster richColors/>
+        <AuthHydrator user={user} />
+        <CartHydrator cart={cart} />
         {children}
       </body>
     </html>

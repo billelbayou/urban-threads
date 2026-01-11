@@ -27,6 +27,7 @@ export default function CategoriesSection() {
             src={categories[0].img}
             alt={categories[0].label}
             fill
+            sizes="100%"
             className="object-cover rounded-xl transition-transform duration-300 group-hover:scale-105"
           />
           <div className="absolute bottom-4 left-4 flex items-center gap-2 text-xl text-white font-semibold drop-shadow-lg">
@@ -44,6 +45,7 @@ export default function CategoriesSection() {
             src={categories[1].img}
             alt={categories[1].label}
             fill
+            sizes="100%"
             className="object-cover rounded-xl transition-transform duration-300 group-hover:scale-105"
           />
           <div className="absolute bottom-4 left-4 flex items-center gap-2 text-xl text-white font-semibold drop-shadow-lg">
@@ -61,6 +63,7 @@ export default function CategoriesSection() {
             src={categories[2].img}
             alt={categories[2].label}
             fill
+            sizes="100%"
             className="object-cover rounded-xl transition-transform duration-300 group-hover:scale-105"
           />
           <div className="absolute bottom-4 left-4 flex items-center gap-2 text-xl text-white font-semibold drop-shadow-lg">

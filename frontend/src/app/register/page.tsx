@@ -1,6 +1,6 @@
-import Footer from "@/components/footer";
-import Header from "@/components/header";
-import RegisterForm from "@/components/RegisterForm";
+import Footer from "@/components/Footer";
+import Header from "@/components/header/Header";
+import RegisterForm from "@/components/auth/RegisterForm";
 
 export default function RegisterPage() {
   return (

@@ -1,11 +1,10 @@
-
-import { Product } from "@/lib/types";
+import { Product } from "@/types/types";
 import Image from "next/image";
 import Link from "next/link";
 
 interface TopicProps {
   title: string;
-  products: any
+  products: any;
 }
 
 export default function Topic({ title, products }: TopicProps) {

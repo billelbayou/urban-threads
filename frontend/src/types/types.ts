@@ -58,27 +58,6 @@ export interface Category {
 }
 
 // ====================
-// PRODUCT IMAGE
-// ====================
-
-export interface ProductImage {
-  id: string;
-  url: string;
-  productId: string;
-}
-
-// ====================
-// PRODUCT INFO SECTION
-// ====================
-
-export interface ProductInfoSection {
-  id: string;
-  title: string;
-  content: string;
-  productId: string;
-}
-
-// ====================
 // PRODUCT STATS
 // ====================
 
@@ -103,9 +82,9 @@ export interface Product {
   categoryId: string;
   category: Category;
 
-  images: ProductImage[];
+  images: { url: string; public_id: string }[];
   productStats?: ProductStats[];
-  infoSections: ProductInfoSection[];
+  infoSections: { title: string; content: string }[];
 
   wishlistId?: string; // nullable in schema
 
@@ -169,9 +148,10 @@ export interface CartItem {
   cartId: string;
 
   productId: string;
-  product?: Product;
+  product: Product;
 
   quantity: number;
+  size: string;
 }
 
 // ====================
