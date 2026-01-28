@@ -1,7 +1,7 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
-import ImageCarousel from "@/components/product/productImageCarousel";
-import ProductDetails from "@/components/product/productDetails";
+import ImageCarousel from "@/components/product-client/productImageCarousel";
+import ProductDetails from "@/components/product-client/productDetails";
 import CartDrawer from "@/components/cart/CartDrawer";
 import { fetchProductById } from "@/lib/fetchers";
 
@@ -31,7 +31,7 @@ export default async function ProductPage({
     <>
       <Header />
       <CartDrawer />
-      <main className="flex flex-col md:flex-row gap-4 p-4 md:p-8 min-h-[600px]">
+      <main className="flex flex-col md:flex-row gap-4 p-4 md:p-8 min-h-150">
         <div className="w-full md:w-1/2">
           <ImageCarousel product={product} />
         </div>

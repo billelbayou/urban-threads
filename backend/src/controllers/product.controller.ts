@@ -27,7 +27,7 @@ export const getAllProducts = async (_req: Request, res: Response) => {
 /** Get single product by ID (public) */
 export const getProductById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
 
     const product = await prisma.product.findUnique({
       where: { id },
@@ -61,6 +61,7 @@ export const createProduct = async (req: AuthRequest, res: Response) => {
         name: data.name,
         description: data.description,
         price: data.price,
+        stock: data.stock,
         categoryId: data.categoryId,
         tags: data.tags,
         images: data.images,
@@ -102,7 +103,7 @@ export const createProduct = async (req: AuthRequest, res: Response) => {
 /** Update product (admin only) */
 export const updateProduct = async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
 
     const data = ProductSchema.parse(req.body);
 
@@ -159,7 +160,7 @@ export const updateProduct = async (req: AuthRequest, res: Response) => {
 /** Delete product (admin only) */
 export const deleteProduct = async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
 
     await prisma.product.delete({
       where: { id },

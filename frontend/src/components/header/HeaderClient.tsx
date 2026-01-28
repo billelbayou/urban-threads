@@ -11,7 +11,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { useRouter } from "next/navigation";
 import { logoutAction } from "@/services/authActions";
 import { toast } from "sonner";
-import { Cart } from "@/types/types";
+import { Cart } from "@/types/cart";
 
 interface HeaderClientProps {
   initialCart: Cart | null;

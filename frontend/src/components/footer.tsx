@@ -6,7 +6,7 @@ export default function Footer() {
           <h3 className="font-semibold mb-3">COMPANY</h3>
           <ul className="space-y-2">
             <li>
-              <a href="#">About Urbankick</a>
+              <a href="#">About Urban Threads</a>
             </li>
             <li>
               <a href="#">Careers</a>

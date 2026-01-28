@@ -1,4 +1,4 @@
-import { Product } from "@/types/types";
+import { Product } from "@/types/product";
 import AddToCartForm from "./AddToCartForm";
 import ExpandableSections from "./ExpandableSections";
 

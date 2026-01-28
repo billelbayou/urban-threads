@@ -1,4 +1,4 @@
-import { Cart } from "@/types/types";
+import { Cart } from "@/types/cart";
 import { create } from "zustand";
 
 interface CartState {

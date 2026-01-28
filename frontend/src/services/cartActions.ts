@@ -3,7 +3,8 @@
 import { addToCart, fetchCart, removeFromCart } from "@/lib/fetchers";
 import { AddToCartSchema } from "@/schemas/cartSchema";
 import { Cart } from "@/types/types";
-import getCookies from "@/utils/cookies";
+import { cookies } from "next/headers";
+
 
 type ActionResponse<T> = {
   success: boolean;
@@ -37,7 +38,7 @@ export async function addToCartAction(
   }
 
   const { productId, quantity, size } = validatedFields.data;
-  const cookie = await getCookies();
+  const cookie = (await cookies()).toString()
   try {
     const cart = await addToCart(productId, quantity, size, cookie);
     return { success: true, data: cart, error: null };
@@ -52,7 +53,7 @@ export async function removeFromCartAction(
   _previousState: unknown,
   formData: FormData
 ): Promise<ActionResponse<Cart>> {
-  const cookie = await getCookies();
+  const cookie = (await cookies()).toString()
   const itemId = formData.get("itemId") as string;
   try {
     const cart = await removeFromCart(itemId, cookie);

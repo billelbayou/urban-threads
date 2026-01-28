@@ -5,7 +5,6 @@ import { useCartStore } from "@/store/useCartStore"; // Ensure correct path
 import Image from "next/image";
 import { useActionState, useEffect } from "react";
 import { FaSpinner, FaTimes, FaTrash } from "react-icons/fa";
-// import { removeFromCartAction } from "@/services/cartActions"; // You'll create this next
 import { toast } from "sonner";
 
 export default function CartDrawer() {

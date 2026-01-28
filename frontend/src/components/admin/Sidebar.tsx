@@ -2,13 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  FiHome,
-  FiShoppingBag,
-  FiUsers,
-  FiPieChart,
-  FiSettings,
-} from "react-icons/fi";
+import { FiHome, FiShoppingBag, FiUsers, FiSettings } from "react-icons/fi";
+import { BiCategory } from "react-icons/bi";
 
 const Sidebar = () => {
   const pathname = usePathname();
@@ -16,9 +11,9 @@ const Sidebar = () => {
   const navItems = [
     { href: "/admin", icon: <FiHome />, label: "Dashboard" },
     { href: "/admin/products", icon: <FiShoppingBag />, label: "Products" },
+    { href: "/admin/categories", icon: <BiCategory />, label: "Categories" },
     { href: "/orders", icon: <FiShoppingBag />, label: "Orders" },
     { href: "/customers", icon: <FiUsers />, label: "Customers" },
-    { href: "/analytics", icon: <FiPieChart />, label: "Analytics" },
     { href: "/settings", icon: <FiSettings />, label: "Settings" },
   ];
 

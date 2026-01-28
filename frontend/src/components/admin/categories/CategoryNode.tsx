@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import {
   ChevronRight,
@@ -6,16 +7,15 @@ import {
   Folder,
   Tag,
   Plus,
-  Trash2,
   Edit3,
 } from "lucide-react";
-import { CategoryNodeProps } from "@/types/types";
+import { CategoryNodeProps } from "@/types/category";
+import CategoryDeleteButton from "./CategoryDeleteButton";
 
 export default function CategoryNode({
   node,
   onAddSub,
   onEdit,
-  onDelete,
 }: CategoryNodeProps) {
   const [isOpen, setIsOpen] = useState(true);
   const hasChildren = node.children.length > 0;
@@ -72,19 +72,7 @@ export default function CategoryNode({
           >
             <Edit3 size={14} />
           </button>
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (confirm(`Delete "${node.name}"?`)) {
-                onDelete(node.id);
-              }
-            }}
-            className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded"
-            title="Delete"
-          >
-            <Trash2 size={14} />
-          </button>
+          <CategoryDeleteButton category={node} />
         </div>
       </div>
 
@@ -97,7 +85,6 @@ export default function CategoryNode({
               node={child}
               onAddSub={onAddSub}
               onEdit={onEdit}
-              onDelete={onDelete}
             />
           ))}
         </div>

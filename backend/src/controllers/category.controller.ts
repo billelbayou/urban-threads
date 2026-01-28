@@ -40,7 +40,7 @@ export async function getAllCategories(req: Request, res: Response) {
 // 3. Get a Single Category with its immediate children
 export async function getCategoryById(req: Request, res: Response) {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
     const category = await prisma.category.findUnique({
       where: { id },
       include: { children: true }, // Fetches the next level down
@@ -59,7 +59,7 @@ export async function getCategoryById(req: Request, res: Response) {
 // 4. Delete a Category
 export async function deleteCategory(req: Request, res: Response) {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
 
     // Note: If you have children, you need to decide if you delete them
     // or move them. Prisma will throw an error if you try to delete a

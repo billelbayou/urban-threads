@@ -17,7 +17,7 @@ export default function CategoriesSection() {
     <section className="mb-44">
       <h2 className="text-3xl font-medium mb-6">Categories</h2>
 
-      <div className="grid grid-cols-2 gap-4 h-[700px]">
+      <div className="grid grid-cols-2 gap-4 h-175">
         {/* Left big category */}
         <Link
           href={categories[0].href}

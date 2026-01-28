@@ -26,7 +26,7 @@ export default function ImageCarousel({ product }: ImageCarouselProps) {
       {/* Slider */}
       <div
         ref={sliderRef}
-        className="keen-slider w-full h-80 md:h-[500px] overflow-hidden rounded-xl shadow-sm"
+        className="keen-slider w-full h-80 md:h-125 overflow-hidden rounded-xl shadow-sm"
       >
         {product.images.map((img, i) => (
           <div key={i} className="keen-slider__slide relative w-full h-full">

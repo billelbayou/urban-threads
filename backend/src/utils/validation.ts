@@ -18,6 +18,7 @@ export const orderSchema = z.object({
       productId: z.string().uuid(),
       quantity: z.number().int().positive(),
       price: z.number().positive(),
+      size: z.enum(["XS", "S", "M", "L", "XL", "XXL"]),
     })
   ),
 });
@@ -46,6 +47,7 @@ export const ProductSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().min(1, "Description is required"),
   price: z.number().positive("Price must be greater than 0"),
+  stock: z.number().int().min(0, "Stock cannot be negative"),
   categoryId: z.string().uuid("Invalid category ID"),
   tags: z.array(z.string()).optional().default([]),
   images: z

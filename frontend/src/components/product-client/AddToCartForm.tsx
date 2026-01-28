@@ -2,13 +2,13 @@
 
 import { addToCartAction } from "@/services/cartActions";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Product } from "@/types/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { useActionState, useEffect, useState } from "react";
 import { FaChevronUp, FaChevronDown, FaRegHeart } from "react-icons/fa";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation"; // Added for redirecting
 import { useCartStore } from "@/store/useCartStore";
+import { Product } from "@/types/product";
 
 const sizes = ["XS", "S", "M", "L", "XL"];
 

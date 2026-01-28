@@ -4,21 +4,28 @@ import Image from "next/image";
 import { AiOutlineDoubleLeft, AiOutlineDoubleRight } from "react-icons/ai";
 import { FaAsterisk } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
-import Topic from "@/components/topic";
+import Topic from "@/components/Topic";
 import Footer from "@/components/Footer";
 import CategoriesSection from "@/components/CategoriesSection";
 import CartDrawer from "@/components/cart/CartDrawer";
-import { fetchProducts } from "@/lib/fetchers";
+import { fetchProducts, getCurrentUser } from "@/lib/fetchers";
+import getCookies from "@/utils/cookies";
+import { redirect } from "next/navigation";
 
 export default async function HomePage() {
+  const cookies = await getCookies();
+  const user = await getCurrentUser(cookies);
   const products = await fetchProducts();
+  if (user?.role == "ADMIN") {
+    redirect("/admin");
+  }
   return (
     <>
       <Header />
       <CartDrawer />
       <main>
         {/* HERO SECTION */}
-        <div className="container mx-auto relative w-full h-72 md:h-96 lg:h-[500px] xl:h-[650px] 2xl:h-[800px] rounded-2xl overflow-hidden">
+        <div className="container mx-auto relative w-full h-72 md:h-96 lg:h-125 xl:h-162.5 2xl:h-200 rounded-2xl overflow-hidden">
           <Image
             src={heroImage}
             alt="Hero"

@@ -1,12 +1,12 @@
-import { Product } from "@/types/types";
-import { FiEdit, FiTrash2 } from "react-icons/fi";
+import { Product } from "@/types/product";
+import { FiEdit } from "react-icons/fi";
+import ProductDeleteButton from "./ProductDeleteButton";
 
 interface ProductTableProps {
   products: Product[];
-  onDelete: (id: string) => void;
 }
 
-const ProductTable = ({ products, onDelete }: ProductTableProps) => {
+const ProductTable = ({ products }: ProductTableProps) => {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
@@ -49,12 +49,7 @@ const ProductTable = ({ products, onDelete }: ProductTableProps) => {
                   <button className="p-1 text-blue-600 hover:text-blue-800">
                     <FiEdit />
                   </button>
-                  <button
-                    onClick={() => onDelete(product.id)}
-                    className="p-1 text-red-600 hover:text-red-800"
-                  >
-                    <FiTrash2 />
-                  </button>
+                  <ProductDeleteButton productId={product.id} />
                 </div>
               </td>
             </tr>

@@ -32,6 +32,7 @@ export const createOrder = async (req: Request, res: Response) => {
         productId: item.productId,
         quantity: item.quantity,
         price: product.price,
+        size: item.size,
       };
     });
 
@@ -83,10 +84,12 @@ export const getAllOrders = async (_req: Request, res: Response) => {
 /** Admin: update order status */
 export const updateOrderStatus = async (req: Request, res: Response) => {
   try {
+
+  const {id} = req.params as {id: string};
     const { status } = req.body;
 
     const order = await prisma.order.update({
-      where: { id: req.params.id },
+      where: { id: id },
       data: { status },
     });
 

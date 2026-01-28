@@ -1,6 +1,6 @@
 "use client"
 
-import { Product } from "@/types/types";
+import { Product } from "@/types/product";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa";

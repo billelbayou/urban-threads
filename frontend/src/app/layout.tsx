@@ -3,10 +3,9 @@ import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import AuthHydrator from "@/components/auth/AuthHydrator";
-import { cookies } from "next/headers";
 import { fetchCart, getCurrentUser } from "@/lib/fetchers";
-import getCookies from "@/utils/cookies";
 import CartHydrator from "@/components/cart/CartHydrator";
+import getCookies from "@/utils/cookies";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -24,13 +23,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookies = await getCookies()
+  const cookies = await getCookies();
   const user = await getCurrentUser(cookies);
-  const cart = await fetchCart(cookies)
+  const cart = await fetchCart(cookies);
   return (
     <html lang="en">
       <body className={`${montserrat.className}`} suppressHydrationWarning>
-        <Toaster richColors/>
+        <Toaster richColors />
         <AuthHydrator user={user} />
         <CartHydrator cart={cart} />
         {children}

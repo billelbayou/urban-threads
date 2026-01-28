@@ -13,7 +13,7 @@ export default async function LoginPage() {
   return (
     <>
       <Header />
-      <main className="flex justify-center w-full h-[450px] my-32">
+      <main className="flex justify-center w-full h-112.5 my-32">
         <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-gray-200">
           <h2 className="text-3xl font-semibold text-gray-900 text-center mb-6 tracking-tight">
             Welcome Back

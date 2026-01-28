@@ -75,7 +75,7 @@ export const addToCart = async (req: AuthRequest, res: Response) => {
  * body: { quantity }
  */
 export const updateCartItem = async (req: AuthRequest, res: Response) => {
-  const { itemId } = req.params;
+  const { itemId } = req.params as { itemId: string };
   const { quantity } = req.body;
   const userId = req.user.id;
 
@@ -101,7 +101,7 @@ export const updateCartItem = async (req: AuthRequest, res: Response) => {
  * DELETE /cart/item/:itemId
  */
 export const removeCartItem = async (req: AuthRequest, res: Response) => {
-  const { itemId } = req.params;
+  const { itemId } = req.params as { itemId: string };
   const userId = req.user.id;
 
   try {

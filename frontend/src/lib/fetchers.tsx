@@ -1,7 +1,7 @@
-import { Product } from "@/types/types";
+import { Product } from "@/types/product";
+import { User } from "@/types/user";
 
 export const api = process.env.NEXT_PUBLIC_API_URL;
-
 /* -------------------- PRODUCTS -------------------- */
 
 export const fetchProducts = async () => {
@@ -18,7 +18,7 @@ export const fetchProductById = async (productId: string) => {
 };
 
 export const createProduct = async (productData: Product) => {
-  const res = await fetch(`${api}/api/products`, {
+  const res = await fetch(`${api}/products`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -31,6 +31,23 @@ export const createProduct = async (productData: Product) => {
   }
 
   return res.json();
+};
+
+export const deleteProduct = async (productId: string, cookie?: string) => {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (cookie) headers["cookie"] = cookie;
+  const res = await fetch(`${api}/products/${productId}`, {
+    method: "DELETE",
+    headers,
+    credentials: cookie ? undefined : "include",
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to delete product");
+  }
+  return data;
 };
 
 /* -------------------- AUTH -------------------- */
@@ -52,7 +69,7 @@ export const login = async (email: string, password: string) => {
 export const register = async (
   name: string,
   email: string,
-  password: string
+  password: string,
 ) => {
   const res = await fetch(`${api}/auth/register`, {
     method: "POST",
@@ -96,7 +113,7 @@ export const getCurrentUser = async (cookie?: string) => {
 
   if (!res.ok) return null;
 
-  const data = await res.json();
+  const data: User = await res.json();
   return data;
 };
 
@@ -119,7 +136,7 @@ export const addToCart = async (
   productId: string,
   quantity: number,
   size: string,
-  cookie: string
+  cookie: string,
 ) => {
   const headers: Record<string, string> = {
     "Content-Type": "application/json", // CRITICAL: Tell Express to parse the body
@@ -166,15 +183,21 @@ export const createCategory = async ({
   name,
   slug,
   parentId,
+  cookie,
 }: {
   name: string;
   slug: string;
   parentId?: string;
+  cookie?: string;
 }) => {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (cookie) headers["cookie"] = cookie;
   const res = await fetch(`${api}/category`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
+    headers,
+    credentials: cookie ? undefined : "include",
     body: JSON.stringify({ name, slug, parentId }),
   });
 
@@ -182,10 +205,13 @@ export const createCategory = async ({
   return res.json();
 };
 
-export const deleteCategory = async (id: string) => {
+export const deleteCategory = async (id: string, cookie?: string) => {
+  const headers: Record<string, string> = {};
+  if (cookie) headers["cookie"] = cookie;
   const res = await fetch(`${api}/category/${id}`, {
     method: "DELETE",
-    credentials: "include",
+    headers,
+    credentials: cookie ? undefined : "include",
   });
 
   if (!res.ok) throw new Error("Failed to delete category");
