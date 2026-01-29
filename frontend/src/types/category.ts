@@ -14,5 +14,4 @@ export type CategoryWithChildren = Category & {
 export interface CategoryNodeProps {
   node: CategoryWithChildren;
   onAddSub: (parentId: string) => void;
-  onEdit: (category: Category) => void;
 }

@@ -1,8 +1,8 @@
 "use server";
 
-import { addToCart, fetchCart, removeFromCart } from "@/lib/fetchers";
+import { addToCart, removeFromCart } from "@/lib/fetchers";
 import { AddToCartSchema } from "@/schemas/cartSchema";
-import { Cart } from "@/types/types";
+import { Cart } from "@/types/cart";
 import { cookies } from "next/headers";
 
 

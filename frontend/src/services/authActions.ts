@@ -1,5 +1,6 @@
 import { loginSchema, registerSchema } from "@/schemas/authSchema";
 import { login, logout, register } from "../lib/fetchers";
+import { redirect } from "next/navigation";
 
 export async function loginAction(_previousState: any, formData: FormData) {
   const email = formData.get("email");

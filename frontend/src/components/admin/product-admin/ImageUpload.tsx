@@ -1,10 +1,10 @@
 "use client";
 
+import { UploadedImage } from "@/types/product";
 import { Upload, X, CheckCircle } from "lucide-react";
 import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import React from "react";
-import { UploadedImage } from "./types";
 
 interface ImageUploadProps {
   images: UploadedImage[];

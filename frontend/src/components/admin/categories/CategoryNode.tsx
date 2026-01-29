@@ -12,11 +12,7 @@ import {
 import { CategoryNodeProps } from "@/types/category";
 import CategoryDeleteButton from "./CategoryDeleteButton";
 
-export default function CategoryNode({
-  node,
-  onAddSub,
-  onEdit,
-}: CategoryNodeProps) {
+export default function CategoryNode({ node, onAddSub }: CategoryNodeProps) {
   const [isOpen, setIsOpen] = useState(true);
   const hasChildren = node.children.length > 0;
 
@@ -62,16 +58,6 @@ export default function CategoryNode({
             <Plus size={14} />
           </button>
 
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit(node);
-            }}
-            className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded"
-            title="Edit"
-          >
-            <Edit3 size={14} />
-          </button>
           <CategoryDeleteButton category={node} />
         </div>
       </div>
@@ -84,7 +70,6 @@ export default function CategoryNode({
               key={child.id}
               node={child}
               onAddSub={onAddSub}
-              onEdit={onEdit}
             />
           ))}
         </div>

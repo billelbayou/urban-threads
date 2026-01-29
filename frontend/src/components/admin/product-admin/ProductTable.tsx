@@ -7,6 +7,7 @@ interface ProductTableProps {
 }
 
 const ProductTable = ({ products }: ProductTableProps) => {
+  console.log(products);
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">

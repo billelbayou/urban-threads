@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { AlertCircle, ChevronDown, Plus, X } from "lucide-react";
-import { FormErrors, InfoSection, Tag } from "./types";
+import { InfoSection, Tag } from "@/types/product";
+import { ValidationErrors } from "@/services/productActions";
 
 interface ProductFormProps {
   productName: string;
@@ -11,14 +12,16 @@ interface ProductFormProps {
   setCategoryId: React.Dispatch<React.SetStateAction<string>>;
   price: string;
   setPrice: React.Dispatch<React.SetStateAction<string>>;
+  stock: string;
+  setStock: React.Dispatch<React.SetStateAction<string>>;
   description: string;
   setDescription: React.Dispatch<React.SetStateAction<string>>;
   tags: Tag[];
   setTags: React.Dispatch<React.SetStateAction<Tag[]>>;
-  errors: FormErrors;
   infoSections: InfoSection[];
   setInfoSections: React.Dispatch<React.SetStateAction<InfoSection[]>>;
   categoryTree: any[]; // Array of CategoryWithChildren
+  errors: ValidationErrors | null;
 }
 
 export default function ProductForm({
@@ -28,6 +31,8 @@ export default function ProductForm({
   setCategoryId,
   price,
   setPrice,
+  stock,
+  setStock,
   description,
   setDescription,
   tags,
@@ -41,7 +46,7 @@ export default function ProductForm({
 
   const flattenCategories = (
     nodes: any[],
-    path: string[] = []
+    path: string[] = [],
   ): { id: string; label: string }[] => {
     let results: { id: string; label: string }[] = [];
     nodes.forEach((node) => {
@@ -68,7 +73,7 @@ export default function ProductForm({
   const updateInfoSection = (
     index: number,
     field: keyof InfoSection,
-    value: string
+    value: string,
   ) => {
     const updated = [...infoSections];
     updated[index][field] = value;
@@ -93,7 +98,6 @@ export default function ProductForm({
       <h3 className="text-sm font-medium text-slate-700 mb-4">
         Product Details
       </h3>
-
       {/* Product Name */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -105,17 +109,16 @@ export default function ProductForm({
           onChange={(e) => setProductName(e.target.value)}
           placeholder="Enter product name"
           className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
-            errors.name ? "border-red-500" : "border-slate-300"
+            errors?.name ? "border-red-500" : "border-slate-300"
           }`}
         />
-        {errors.name && (
+        {errors?.name && (
           <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
             <AlertCircle className="w-4 h-4" />
             {errors.name}
           </p>
         )}
       </div>
-
       {/* Unified Category Selection */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -126,7 +129,7 @@ export default function ProductForm({
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
             className={`w-full px-4 py-2.5 border rounded-lg appearance-none bg-white text-sm ${
-              errors.categoryId ? "border-red-500" : "border-slate-300"
+              errors?.categoryId ? "border-red-500" : "border-slate-300"
             }`}
           >
             <option value="">Select a category</option>
@@ -138,14 +141,13 @@ export default function ProductForm({
           </select>
           <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
         </div>
-        {errors.categoryId && (
+        {errors?.categoryId && (
           <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
             <AlertCircle className="w-4 h-4" />
             {errors.categoryId}
           </p>
         )}
       </div>
-
       {/* Price */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -161,18 +163,40 @@ export default function ProductForm({
             onChange={(e) => setPrice(e.target.value.replace(/[^0-9.]/g, ""))}
             placeholder="0.00"
             className={`w-full pl-8 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
-              errors.price ? "border-red-500" : "border-slate-300"
+              errors?.price ? "border-red-500" : "border-slate-300"
             }`}
           />
         </div>
-        {errors.price && (
+        {errors?.price && (
           <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
             <AlertCircle className="w-4 h-4" />
-            {errors.price}
+            {errors?.price}
           </p>
         )}
       </div>
-
+      {/* Stock */}
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-2">
+          Stock <span className="text-red-500">*</span>
+        </label>
+        <div className="relative">
+          <input
+            type="text"
+            value={stock}
+            onChange={(e) => setStock(e.target.value.replace(/[^0-9.]/g, ""))}
+            placeholder="0"
+            className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+              errors?.stock ? "border-red-500" : "border-slate-300"
+            }`}
+          />
+        </div>
+        {errors?.stock && (
+          <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+            <AlertCircle className="w-4 h-4" />
+            {errors?.stock}
+          </p>
+        )}
+      </div>
       {/* Description */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -184,22 +208,32 @@ export default function ProductForm({
           placeholder="Enter product description"
           rows={4}
           className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none ${
-            errors.description ? "border-red-500" : "border-slate-300"
+            errors?.description ? "border-red-500" : "border-slate-300"
           }`}
         />
-        {errors.description && (
+        {errors?.description && (
           <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
             <AlertCircle className="w-4 h-4" />
-            {errors.description}
+            {errors?.description}
           </p>
         )}
       </div>
 
+      {/* Info Sections */}
       <div className="pt-4 border-t border-slate-100">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-medium text-slate-700">
-            Additional Information
-          </h3>
+          <div className="flex flex-col">
+            <h3 className="text-sm font-medium text-slate-700">
+              Additional Information <span className="text-red-500">*</span>
+            </h3>
+            {/* Array-level error */}
+            {errors?.infoSections &&
+              typeof errors.infoSections === "string" && (
+                <p className="text-xs text-red-600 mt-1">
+                  {errors?.infoSections}
+                </p>
+              )}
+          </div>
           <button
             type="button"
             onClick={addInfoSection}
@@ -211,42 +245,58 @@ export default function ProductForm({
 
         <div className="space-y-4">
           {infoSections.map((section, index) => (
-            <div
-              key={index}
-              className="p-4 bg-slate-50 rounded-xl border border-slate-200 relative group"
-            >
-              <button
-                onClick={() => removeInfoSection(index)}
-                className="absolute -top-2 -right-2 bg-white border border-slate-200 text-slate-400 hover:text-red-500 rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+            <div key={index} className="space-y-2">
+              <div
+                className={`p-4 bg-slate-50 rounded-xl border relative group transition-all ${
+                  errors?.infoSections?.[index]
+                    ? "border-red-300"
+                    : "border-slate-200"
+                }`}
               >
-                <X size={14} />
-              </button>
-              <input
-                placeholder="Section Title (e.g., Care Instructions)"
-                className="w-full bg-transparent font-semibold text-sm mb-2 outline-none border-b border-transparent focus:border-blue-300 pb-1"
-                value={section.title}
-                onChange={(e) =>
-                  updateInfoSection(index, "title", e.target.value)
-                }
-              />
-              <textarea
-                placeholder="Content..."
-                rows={2}
-                className="w-full bg-transparent text-sm outline-none resize-none"
-                value={section.content}
-                onChange={(e) =>
-                  updateInfoSection(index, "content", e.target.value)
-                }
-              />
+                {/* Prevent deleting the last section to maintain "at least one" */}
+                {infoSections.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeInfoSection(index)}
+                    className="absolute -top-2 -right-2 bg-white border border-slate-200 text-slate-400 hover:text-red-500 rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+
+                <input
+                  placeholder="Section Title (e.g., Care Instructions)"
+                  className="w-full bg-transparent font-semibold text-sm mb-2 outline-none border-b border-transparent focus:border-blue-300 pb-1"
+                  value={section.title}
+                  onChange={(e) =>
+                    updateInfoSection(index, "title", e.target.value)
+                  }
+                />
+                <textarea
+                  placeholder="Content..."
+                  rows={2}
+                  className="w-full bg-transparent text-sm outline-none resize-none"
+                  value={section.content}
+                  onChange={(e) =>
+                    updateInfoSection(index, "content", e.target.value)
+                  }
+                />
+              </div>
+
+              {/* Individual Section Item Error */}
+              {errors?.infoSections?.[index] && (
+                <p className="text-[10px] text-red-500 font-medium px-2">
+                  Both title and content are required for section {index + 1}
+                </p>
+              )}
             </div>
           ))}
         </div>
       </div>
-
       {/* Tags */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
-          Tags
+          Tags <span className="text-red-500">*</span>
         </label>
         <div className="flex flex-wrap gap-2 mb-3">
           {tags.map((tag) => (
@@ -272,8 +322,16 @@ export default function ProductForm({
             e.key === "Enter" && (e.preventDefault(), addTag(tagInput))
           }
           placeholder="Type a tag and press Enter"
-          className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm"
+          className={`w-full px-4 py-2.5 border rounded-lg text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            errors?.tags ? "border-red-500" : "border-slate-300"
+          }`}
         />
+        {errors?.tags && (
+          <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+            <AlertCircle className="w-4 h-4" />
+            {errors.tags}
+          </p>
+        )}
       </div>
     </div>
   );

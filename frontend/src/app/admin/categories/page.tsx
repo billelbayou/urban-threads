@@ -1,13 +1,12 @@
 import { buildTree } from "@/utils/trees";
-import { api } from "@/lib/fetchers";
+import { fetchCategories } from "@/lib/fetchers";
 import AddRootButton from "@/components/admin/categories/AddRootButton";
 import CategoryTreeBox from "@/components/admin/categories/CategoryTreeBox";
 import { ListTree } from "lucide-react";
 import { Category, CategoryWithChildren } from "@/types/category";
 
 export default async function CategoryAdmin() {
-  const res = await fetch(`${api}/category`, { cache: "no-store" });
-  const categories: Category[] = await res.json();
+  const categories: Category[] = await fetchCategories();
   const tree: CategoryWithChildren[] = buildTree(categories);
 
   return (

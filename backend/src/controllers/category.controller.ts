@@ -60,10 +60,6 @@ export async function getCategoryById(req: Request, res: Response) {
 export async function deleteCategory(req: Request, res: Response) {
   try {
     const { id } = req.params as { id: string };
-
-    // Note: If you have children, you need to decide if you delete them
-    // or move them. Prisma will throw an error if you try to delete a
-    // parent that has children unless you set 'onDelete: Cascade' in schema.
     await prisma.category.delete({
       where: { id },
     });

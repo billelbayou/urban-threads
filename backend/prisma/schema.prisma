@@ -49,13 +49,15 @@ model Product {
 model Category {
   id        String     @id @default(uuid())
   name      String
-  slug      String     @unique
+  slug      String
   parentId  String?
-  parent    Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  parent    Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: Cascade)
   children  Category[] @relation("CategoryToCategory")
   products  Product[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+
+  @@unique([slug, parentId])
 }
 
 model Wishlist {

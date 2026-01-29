@@ -5,7 +5,6 @@ import CategoryNode from "@/components/admin/categories/CategoryNode";
 import CategoryModal from "@/components/admin/categories/CategoryModal";
 import { CategoryWithChildren, Category } from "@/types/category";
 
-
 type Props = {
   initialTree: CategoryWithChildren[];
 };
@@ -16,11 +15,9 @@ export default function CategoryTreeBox({ initialTree }: Props) {
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
     parentId: string | null;
-    editData: Category | null;
   }>({
     isOpen: false,
     parentId: null,
-    editData: null,
   });
 
   return (
@@ -40,14 +37,6 @@ export default function CategoryTreeBox({ initialTree }: Props) {
                   setModalConfig({
                     isOpen: true,
                     parentId: id,
-                    editData: null,
-                  })
-                }
-                onEdit={(cat) =>
-                  setModalConfig({
-                    isOpen: true,
-                    parentId: null,
-                    editData: cat,
                   })
                 }
               />
@@ -59,9 +48,7 @@ export default function CategoryTreeBox({ initialTree }: Props) {
       <CategoryModal
         isOpen={modalConfig.isOpen}
         parentId={modalConfig.parentId}
-        onClose={() =>
-          setModalConfig({ isOpen: false, parentId: null, editData: null })
-        }
+        onClose={() => setModalConfig({ isOpen: false, parentId: null })}
       />
     </main>
   );

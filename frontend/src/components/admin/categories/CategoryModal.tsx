@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, FolderPlus, Subtitles, Layers } from "lucide-react";
 import { CreateCategoryAction } from "@/services/categoriesAction";
 import { toast } from "sonner";
 
@@ -18,6 +18,7 @@ export default function CategoryModal({
     CreateCategoryAction,
     null,
   );
+
   useEffect(() => {
     if (state?.success) {
       toast.success("Category created successfully");
@@ -26,55 +27,108 @@ export default function CategoryModal({
       toast.error(state.error);
     }
   }, [state]);
+
   if (!isOpen) return null;
+
+  const isSubcategory = !!parentId;
+
+  // Root: Blue | Sub: Indigo
+  const themeColor = isSubcategory ? "text-indigo-600" : "text-blue-600";
+  const bgColor = isSubcategory ? "bg-indigo-50" : "bg-blue-50";
+  const btnColor = isSubcategory
+    ? "bg-indigo-600 hover:bg-indigo-700"
+    : "bg-blue-600 hover:bg-blue-700";
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
-        <div className="p-4 border-b flex justify-between items-center bg-slate-50">
-          <h3 className="font-bold text-slate-800">
-            {parentId ? "Add Subcategory" : "Add Root Category"}
-          </h3>
+    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200">
+        {/* Header Section */}
+        <div
+          className={`p-5 border-b flex justify-between items-center ${bgColor}`}
+        >
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-lg bg-white shadow-sm ${themeColor}`}>
+              {isSubcategory ? <Layers size={20} /> : <FolderPlus size={20} />}
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-800 leading-tight">
+                {isSubcategory ? "New Subcategory" : "New Root Category"}
+              </h3>
+              <p className="text-xs text-slate-500 font-medium">
+                {isSubcategory
+                  ? "Nesting under parent"
+                  : "Creating a top-level category"}
+              </p>
+            </div>
+          </div>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-slate-200 rounded-full"
+            className="p-2 hover:bg-white/50 rounded-full transition-colors text-slate-400 hover:text-slate-600"
           >
-            <X size={18} />
+            <X size={20} />
           </button>
         </div>
 
-        <form action={formAction} className="p-6" key={String(isOpen)}>
-          <label
-            htmlFor="categoryName"
-            className="block text-sm font-medium text-slate-700 mb-2"
-          >
-            Category Name
-          </label>
-          <input
-            type="text"
-            autoComplete="off"
-            id="categoryName"
-            autoFocus
-            name="name"
-            className="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-            placeholder="e.g. Summer Jackets"
-            required
-          />
+        {/* Form Section */}
+        <form
+          action={formAction}
+          className="p-6 space-y-6"
+          key={String(isOpen)}
+        >
+          <div>
+            <label
+              htmlFor="categoryName"
+              className="block text-sm font-semibold text-slate-700 mb-1.5"
+            >
+              Category Name
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                autoComplete="off"
+                id="categoryName"
+                autoFocus
+                name="name"
+                className={`w-full border border-slate-200 rounded-xl p-3 pl-10 outline-none transition-all ring-offset-2 focus:ring-2 ${
+                  isSubcategory
+                    ? "focus:border-indigo-500 focus:ring-indigo-500/20"
+                    : "focus:border-blue-500 focus:ring-blue-500/20"
+                }`}
+                placeholder={isSubcategory ? "e.g. Slim Fit" : "e.g. Menswear"}
+                required
+              />
+              <Subtitles
+                className="absolute left-3 top-3.5 text-slate-400"
+                size={18}
+              />
+            </div>
+          </div>
+
           {parentId && <input type="hidden" name="parentId" value={parentId} />}
 
-          <div className="mt-6 flex gap-3 justify-end">
+          <div className="pt-2 flex gap-3 justify-end">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-slate-600 hover:text-slate-800 font-medium"
+              className="px-5 py-2.5 text-slate-500 hover:text-slate-700 font-semibold text-sm"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 disabled:opacity-50"
+              className={`px-6 py-2.5 rounded-xl font-bold text-sm text-white shadow-md transition-all active:scale-95 disabled:opacity-70 ${btnColor}`}
             >
-              {isPending ? "Saving..." : "Create Category"}
+              {isPending ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Saving...
+                </span>
+              ) : isSubcategory ? (
+                "Create Subcategory"
+              ) : (
+                "Create Category"
+              )}
             </button>
           </div>
         </form>

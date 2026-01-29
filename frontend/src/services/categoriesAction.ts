@@ -1,52 +1,51 @@
 "use server";
 
-import {
-  createCategory,
-  deleteCategory,
-  fetchCategories,
-} from "@/lib/fetchers";
-import { Category } from "@/types/category";
+import { createCategory, deleteCategory } from "@/lib/fetchers";
+import { CreateCategorySchema } from "@/schemas/categorySchema";
 import getCookies from "@/utils/cookies";
 import { revalidatePath } from "next/cache";
-
-export async function ReloadAction(initialState: unknown, formData: FormData) {
-  try {
-    const categories: Category[] = await fetchCategories();
-    return { success: true, data: categories, error: null };
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "An unexpected error occurred";
-    return {
-      success: false,
-      data: null,
-      error: errorMessage,
-    };
-  }
-}
 
 export async function CreateCategoryAction(
   _initialState: unknown,
   formData: FormData,
 ) {
-  const name = formData.get("name") as string;
-  const parentId = formData.get("parentId") as string;
-  // Generate simple slug from name
+  // 1. Validate
+  const result = CreateCategorySchema.safeParse({
+    name: formData.get("name"),
+    parentId: formData.get("parentId"),
+  });
+
+
+  if (!result.success) {
+    const errorMessage = result.error.issues.map((i) => i.message).join(", ");
+    return { success: false, data: null, error: errorMessage };
+  }
+
+  const { name, parentId } = result.data;
+
+  // Normalize slug
   const slug = name
     .toLowerCase()
-    .replace(/ /g, "-")
+    .replace(/\s+/g, "-")
     .replace(/[^\w-]+/g, "");
   const cookie = await getCookies();
+
   try {
-    const data = await createCategory({ name, slug, parentId, cookie });
+    // 2. Execute DB Logic
+    const data = await createCategory({
+      name,
+      slug,
+      parentId: parentId,
+      cookie,
+    });
+
     revalidatePath("/admin/categories");
-    return { success: true, data: data, error: null };
+    return { success: true, data, error: null };
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "An unexpected error occurred";
     return {
       success: false,
       data: null,
-      error: errorMessage,
+      error: error instanceof Error ? error.message : "Database failure",
     };
   }
 }

@@ -30,15 +30,6 @@ export interface ProductStats {
   views: number;
   soldQuantity: number;
 }
-
-export interface FormErrors {
-  name?: string;
-  categoryId?: string;
-  price?: string;
-  description?: string;
-  images?: string;
-}
-
 export interface UploadedImage {
   public_id: string;
   secure_url: string;
