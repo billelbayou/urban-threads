@@ -2,18 +2,13 @@ import { z } from "zod";
 
 export const CreateProductSchema = z.object({
   name: z.string().min(1, "Product name is required").trim(),
-
   categoryId: z
     .string()
     .min(1, "Category selection is required")
     .uuid("Invalid category format"),
-
   price: z.coerce.number().positive("Price must be greater than 0"),
-
   stock: z.coerce.number().int().positive("Stock count must be greater than 0"),
-
   description: z.string().min(1, "Description is required").trim(),
-
   images: z
     .array(
       z.object({
@@ -22,7 +17,6 @@ export const CreateProductSchema = z.object({
       }),
     )
     .min(1, "At least one product image is required"),
-
   infoSections: z
     .array(
       z.object({
@@ -32,7 +26,6 @@ export const CreateProductSchema = z.object({
     )
     .min(1, "At least one info section is required")
     .default([]),
-
   tags: z
     .array(
       z.object({
@@ -40,6 +33,6 @@ export const CreateProductSchema = z.object({
         label: z.string(),
       }),
     )
-    .min(1, "At least one tag is required")
+    .transform((tags) => tags.map((t) => t.label))
     .default([]),
 });

@@ -1,22 +1,24 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useMemo, useState } from "react";
 import { CheckCircle, AlertCircle } from "lucide-react";
-import { buildTree } from "@/utils/trees";
-import { fetchCategories } from "@/lib/fetchers";
 import ImageUpload from "@/components/admin/product-admin/ImageUpload";
 import ProductForm from "@/components/admin/product-admin/ProductForm";
 import { UploadedImage, InfoSection, Tag } from "@/types/product";
-import { CreateProductAction } from "@/services/productActions";
+import { createProductAction } from "@/services/productActions";
+import { CategoryWithChildren } from "@/types/category";
 
-export default function AddProductMain({categoryTree}: {categoryTree: any[]}) {
+export default function AddProductMain({
+  categoryTree,
+}: {
+  categoryTree: CategoryWithChildren[];
+}) {
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [productName, setProductName] = useState<string>("");
 
   const [categoryId, setCategoryId] = useState<string>("");
-
-  const [price, setPrice] = useState<string>("");
-  const [stock, setStock] = useState<string>("");
+  const [price, setPrice] = useState<number | "">("");
+  const [stock, setStock] = useState<number | "">("");
   const [description, setDescription] = useState<string>("");
   const [infoSections, setInfoSections] = useState<InfoSection[]>([
     { title: "", content: "" },
@@ -24,27 +26,52 @@ export default function AddProductMain({categoryTree}: {categoryTree: any[]}) {
   const [tags, setTags] = useState<Tag[]>([]);
 
   const [state, formAction, isPending] = useActionState(
-    CreateProductAction,
+    createProductAction,
     null,
   );
 
-  const product = {
-    name: productName,
-    categoryId,
-    price: parseFloat(price),
-    stock: parseInt(stock, 10),
-    description,
-    images,
-    infoSections,
-    tags,
-  };
+  const product = useMemo(
+    () => ({
+      name: productName,
+      categoryId,
+      price: price === "" ? null : price,
+      stock: stock === "" ? null : stock,
+      description,
+      images,
+      infoSections,
+      tags,
+    }),
+    [
+      productName,
+      categoryId,
+      price,
+      stock,
+      description,
+      images,
+      infoSections,
+      tags,
+    ],
+  );
+
+  useEffect(() => {
+    if (state?.success) {
+      setImages([]);
+      setProductName("");
+      setCategoryId("");
+      setPrice("");
+      setStock("");
+      setDescription("");
+      setInfoSections([{ title: "", content: "" }]);
+      setTags([]);
+    }
+  }, [state?.success]);
 
   return (
     <div>
       {state?.success && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 text-green-800">
           <CheckCircle className="w-5 h-5" />
-          <span className="font-medium">{state.data}</span>
+          <span className="font-medium">{state.message}</span>
         </div>
       )}
 
@@ -52,10 +79,10 @@ export default function AddProductMain({categoryTree}: {categoryTree: any[]}) {
         <div className="flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
           <div className="w-full lg:w-1/2 p-6 lg:p-8">
             <ImageUpload images={images} setImages={setImages} />
-            {state?.errors && (
+            {state?.fieldErrors?.images && (
               <p className="mt-3 text-sm text-red-600 flex items-center gap-1">
                 <AlertCircle className="w-4 h-4" />
-                {state?.errors?.images}
+                {state?.fieldErrors?.images}
               </p>
             )}
           </div>
@@ -76,7 +103,7 @@ export default function AddProductMain({categoryTree}: {categoryTree: any[]}) {
               setDescription={setDescription}
               tags={tags}
               setTags={setTags}
-              errors={state?.success ? null : (state?.errors ?? null)}
+              errors={state?.success ? null : (state?.fieldErrors ?? null)}
             />
           </div>
         </div>
@@ -90,7 +117,7 @@ export default function AddProductMain({categoryTree}: {categoryTree: any[]}) {
               <input
                 type="hidden"
                 name="product"
-                value={JSON.stringify(product)}
+                value={btoa(JSON.stringify(product))}
               />
               <button
                 type="submit"

@@ -1,24 +1,24 @@
 import { Category } from "./category";
 
 export interface Product {
-  id: string;
+  id?: string;
   name: string;
   description: string;
   price: number;
   stock: number;
 
   categoryId: string;
-  category: Category;
+  category?: Category;
 
   images: { url: string; public_id: string }[];
   productStats?: ProductStats[];
   infoSections: InfoSection[];
-  tags?: string[];
+  tags: string[];
 
   wishlistId?: string; // nullable in schema
 
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 
   // orderItems?: OrderItem[];
   // cartItems?: CartItem[];

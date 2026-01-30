@@ -2,12 +2,7 @@ import { Product } from "@/types/product";
 import { FiEdit } from "react-icons/fi";
 import ProductDeleteButton from "./ProductDeleteButton";
 
-interface ProductTableProps {
-  products: Product[];
-}
-
-const ProductTable = ({ products }: ProductTableProps) => {
-  console.log(products);
+const ProductTable = ({ products }: { products: Product[] }) => {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
@@ -43,14 +38,14 @@ const ProductTable = ({ products }: ProductTableProps) => {
                 {product.stock}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {product.category.name}
+                {product.category?.name}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 <div className="flex space-x-2">
                   <button className="p-1 text-blue-600 hover:text-blue-800">
                     <FiEdit />
                   </button>
-                  <ProductDeleteButton productId={product.id} />
+                  <ProductDeleteButton productId={product.id!} />
                 </div>
               </td>
             </tr>

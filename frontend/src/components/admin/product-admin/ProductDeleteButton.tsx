@@ -3,7 +3,6 @@
 import { deleteProductAction } from "@/services/productActions";
 import { useActionState, useEffect, useState } from "react";
 import { FiTrash2, FiLoader } from "react-icons/fi";
-import { toast } from "sonner";
 
 export default function ProductDeleteButton({
   productId,

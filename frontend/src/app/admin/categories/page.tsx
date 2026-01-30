@@ -1,4 +1,4 @@
-import { buildTree } from "@/utils/trees";
+import { buildTree } from "@/utils/helpers";
 import { fetchCategories } from "@/lib/fetchers";
 import AddRootButton from "@/components/admin/categories/AddRootButton";
 import CategoryTreeBox from "@/components/admin/categories/CategoryTreeBox";

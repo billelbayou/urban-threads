@@ -73,15 +73,16 @@ export const createProduct = async (req: AuthRequest, res: Response) => {
         },
       },
     });
-
-    res.status(201).json({
+    
+    return res.status(201).json({
       message: "Product created successfully",
       product: newProduct,
     });
   } catch (error) {
+    console.log(error)
     if (error instanceof z.ZodError) {
       // Return clean validation errors
-      res.status(400).json({
+      return res.status(400).json({
         error: "Validation failed",
         details: error.errors.map((e) => ({
           path: e.path.join("."),
@@ -91,12 +92,11 @@ export const createProduct = async (req: AuthRequest, res: Response) => {
     }
 
     if (error instanceof Error && (error as any).code === "P2003") {
-      res.status(400).json({
+      return res.status(400).json({
         error: "Invalid categoryId: Category does not exist",
       });
-      return;
     }
-    res.status(500).json({ error: "Failed to create product" });
+    return res.status(500).json({ error: "Failed to create product" });
   }
 };
 

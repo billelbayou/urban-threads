@@ -1,26 +1,30 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { AlertCircle, ChevronDown, Plus, X } from "lucide-react";
 import { InfoSection, Tag } from "@/types/product";
 import { ValidationErrors } from "@/services/productActions";
+import { CategoryWithChildren } from "@/types/category";
+import { flattenCategories } from "@/utils/helpers";
+
+const MAX_SECTIONS = 8;
 
 interface ProductFormProps {
   productName: string;
   setProductName: React.Dispatch<React.SetStateAction<string>>;
   categoryId: string;
   setCategoryId: React.Dispatch<React.SetStateAction<string>>;
-  price: string;
-  setPrice: React.Dispatch<React.SetStateAction<string>>;
-  stock: string;
-  setStock: React.Dispatch<React.SetStateAction<string>>;
+  price: number | "";
+  setPrice: React.Dispatch<React.SetStateAction<number | "">>;
+  stock: number | "";
+  setStock: React.Dispatch<React.SetStateAction<number | "">>;
   description: string;
   setDescription: React.Dispatch<React.SetStateAction<string>>;
   tags: Tag[];
   setTags: React.Dispatch<React.SetStateAction<Tag[]>>;
   infoSections: InfoSection[];
   setInfoSections: React.Dispatch<React.SetStateAction<InfoSection[]>>;
-  categoryTree: any[]; // Array of CategoryWithChildren
+  categoryTree: CategoryWithChildren[];
   errors: ValidationErrors | null;
 }
 
@@ -43,24 +47,6 @@ export default function ProductForm({
   categoryTree,
 }: ProductFormProps) {
   const [tagInput, setTagInput] = useState<string>("");
-
-  const flattenCategories = (
-    nodes: any[],
-    path: string[] = [],
-  ): { id: string; label: string }[] => {
-    let results: { id: string; label: string }[] = [];
-    nodes.forEach((node) => {
-      const currentPath = [...path, node.name];
-      results.push({ id: node.id, label: currentPath.join(" > ") });
-      if (node.children) {
-        results = [
-          ...results,
-          ...flattenCategories(node.children, currentPath),
-        ];
-      }
-    });
-    return results;
-  };
 
   const addInfoSection = () => {
     setInfoSections([...infoSections, { title: "", content: "" }]);
@@ -85,13 +71,14 @@ export default function ProductForm({
       label.trim() &&
       !tags.find((tag) => tag.label.toLowerCase() === label.toLowerCase())
     ) {
-      setTags([
-        ...tags,
-        { id: Math.random().toString(36).substr(2, 9), label: label.trim() },
-      ]);
+      setTags([...tags, { id: crypto.randomUUID(), label: label.trim() }]);
       setTagInput("");
     }
   };
+
+  const flatCategories = useMemo(() => {
+    return flattenCategories(categoryTree);
+  }, [categoryTree]);
 
   return (
     <div className="space-y-5">
@@ -133,7 +120,7 @@ export default function ProductForm({
             }`}
           >
             <option value="">Select a category</option>
-            {flattenCategories(categoryTree).map((cat) => (
+            {flatCategories.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.label}
               </option>
@@ -158,9 +145,14 @@ export default function ProductForm({
             $
           </span>
           <input
-            type="text"
+            type="number"
+            min={0}
+            step={0.01}
             value={price}
-            onChange={(e) => setPrice(e.target.value.replace(/[^0-9.]/g, ""))}
+            onChange={(e) => {
+              const v = e.target.value;
+              setPrice(v === "" ? "" : Number(v));
+            }}
             placeholder="0.00"
             className={`w-full pl-8 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
               errors?.price ? "border-red-500" : "border-slate-300"
@@ -181,9 +173,14 @@ export default function ProductForm({
         </label>
         <div className="relative">
           <input
-            type="text"
+            type="number"
+            min={0}
+            step={1}
             value={stock}
-            onChange={(e) => setStock(e.target.value.replace(/[^0-9.]/g, ""))}
+            onChange={(e) => {
+              const v = e.target.value;
+              setStock(v === "" ? "" : Number(v));
+            }}
             placeholder="0"
             className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
               errors?.stock ? "border-red-500" : "border-slate-300"
@@ -235,9 +232,14 @@ export default function ProductForm({
               )}
           </div>
           <button
+            disabled={infoSections.length >= MAX_SECTIONS}
             type="button"
             onClick={addInfoSection}
-            className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+            className={`text-xs font-bold flex items-center gap-1${
+              infoSections.length >= MAX_SECTIONS
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-blue-600 hover:text-blue-700"
+            }`}
           >
             <Plus size={14} /> Add Section
           </button>
@@ -284,11 +286,12 @@ export default function ProductForm({
               </div>
 
               {/* Individual Section Item Error */}
-              {errors?.infoSections?.[index] && (
-                <p className="text-[10px] text-red-500 font-medium px-2">
-                  Both title and content are required for section {index + 1}
-                </p>
-              )}
+              {Array.isArray(errors?.infoSections) &&
+                errors.infoSections[index] && (
+                  <p className="text-[10px] text-red-500 font-medium px-2">
+                    Both title and content are required for section {index + 1}
+                  </p>
+                )}
             </div>
           ))}
         </div>
@@ -318,9 +321,12 @@ export default function ProductForm({
           type="text"
           value={tagInput}
           onChange={(e) => setTagInput(e.target.value)}
-          onKeyDown={(e) =>
-            e.key === "Enter" && (e.preventDefault(), addTag(tagInput))
-          }
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              addTag(tagInput);
+            }
+          }}
           placeholder="Type a tag and press Enter"
           className={`w-full px-4 py-2.5 border rounded-lg text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
             errors?.tags ? "border-red-500" : "border-slate-300"

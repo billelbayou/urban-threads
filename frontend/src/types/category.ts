@@ -10,7 +10,6 @@ export type CategoryWithChildren = Category & {
   children: CategoryWithChildren[];
 };
 
-// Props for the individual Node component
 export interface CategoryNodeProps {
   node: CategoryWithChildren;
   onAddSub: (parentId: string) => void;

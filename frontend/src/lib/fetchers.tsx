@@ -17,19 +17,21 @@ export const fetchProductById = async (productId: string) => {
   return res.json();
 };
 
-export const createProduct = async (productData: Product) => {
+export const createProduct = async (productData: Product, cookie?: string) => {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (cookie) headers["cookie"] = cookie;
   const res = await fetch(`${api}/products`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
+    headers,
+    credentials: cookie ? undefined : "include",
     body: JSON.stringify(productData),
   });
-
   if (!res.ok) {
     const data = await res.json();
     throw new Error(data.error || "Failed to create product");
   }
-
   return res.json();
 };
 

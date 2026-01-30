@@ -19,7 +19,7 @@ export const orderSchema = z.object({
       quantity: z.number().int().positive(),
       price: z.number().positive(),
       size: z.enum(["XS", "S", "M", "L", "XL", "XXL"]),
-    })
+    }),
   ),
 });
 
@@ -46,8 +46,8 @@ export const AddToCartSchema = z.object({
 export const ProductSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().min(1, "Description is required"),
-  price: z.number().positive("Price must be greater than 0"),
-  stock: z.number().int().min(0, "Stock cannot be negative"),
+  price: z.coerce.number().positive("Price must be greater than 0"),
+  stock: z.coerce.number().int().positive("Stock count must be greater than 0"),
   categoryId: z.string().uuid("Invalid category ID"),
   tags: z.array(z.string()).optional().default([]),
   images: z
@@ -55,7 +55,7 @@ export const ProductSchema = z.object({
       z.object({
         url: z.string().url("Invalid image URL"),
         public_id: z.string().min(1, "Cloudinary public_id is required"),
-      })
+      }),
     )
     .min(1, "At least one image is required"),
   infoSections: z
@@ -63,7 +63,7 @@ export const ProductSchema = z.object({
       z.object({
         title: z.string().min(1, "Info section title is required"),
         content: z.string().min(1, "Info section content is required"),
-      })
+      }),
     )
     .min(1, "At least one info section is required"),
 });
