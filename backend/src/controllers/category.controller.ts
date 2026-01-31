@@ -5,23 +5,29 @@ import { prisma } from "../utils/prisma";
 
 export async function createCategory(req: Request, res: Response) {
   try {
-    const validatedData = CategorySchema.parse(req.body);
+    const validatedData = CategorySchema.safeParse(req.body);
+
+    if (!validatedData.success) {
+      res.status(400).json({ errors: validatedData.error.errors });
+      return;
+    }
+
+    const data = validatedData.data;
 
     const category = await prisma.category.create({
       data: {
-        name: validatedData.name,
-        slug: validatedData.slug,
-        parentId: validatedData.parentId || null,
+        name: data.name,
+        slug: data.slug,
+        parentId: data.parentId || null,
       },
     });
 
     res.status(201).json(category);
-  } catch (error: any) {
-    if (error.name === "ZodError") {
-      res.status(400).json({ errors: error.errors });
-      return;
-    }
-    res.status(500).json({ message: "Internal server error" });
+    return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
   }
 }
 
@@ -32,8 +38,11 @@ export async function getAllCategories(req: Request, res: Response) {
       orderBy: { name: "asc" },
     });
     res.json(categories);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching categories" });
+    return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
   }
 }
 
@@ -51,8 +60,11 @@ export async function getCategoryById(req: Request, res: Response) {
       return;
     }
     res.json(category);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching category" });
+    return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
   }
 }
 
@@ -65,7 +77,10 @@ export async function deleteCategory(req: Request, res: Response) {
     });
 
     res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ message: "Could not delete category" });
+    return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
   }
 }

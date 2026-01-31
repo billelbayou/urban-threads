@@ -19,9 +19,12 @@ export const getAllProducts = async (_req: Request, res: Response) => {
     });
 
     res.status(200).json(products);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch products" });
-  }
+    return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
+  } 
 };
 
 /** Get single product by ID (public) */
@@ -44,8 +47,10 @@ export const getProductById = async (req: Request, res: Response) => {
     }
 
     res.status(200).json(product);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch product" });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
   }
 };
 
@@ -53,7 +58,18 @@ export const getProductById = async (req: Request, res: Response) => {
 export const createProduct = async (req: AuthRequest, res: Response) => {
   try {
     // Validate request body
-    const data = ProductSchema.parse(req.body);
+    const resp = ProductSchema.safeParse(req.body);
+    if (!resp.success) {
+      res.status(400).json({
+        error: "Validation failed",
+        details: resp.error.errors.map((e) => ({
+          path: e.path.join("."),
+          message: e.message,
+        })),
+      });
+      return;
+    }
+    const data = resp.data;
 
     // Create the product
     const newProduct = await prisma.product.create({
@@ -73,30 +89,16 @@ export const createProduct = async (req: AuthRequest, res: Response) => {
         },
       },
     });
-    
-    return res.status(201).json({
+
+    res.status(201).json({
       message: "Product created successfully",
       product: newProduct,
     });
-  } catch (error) {
-    console.log(error)
-    if (error instanceof z.ZodError) {
-      // Return clean validation errors
-      return res.status(400).json({
-        error: "Validation failed",
-        details: error.errors.map((e) => ({
-          path: e.path.join("."),
-          message: e.message,
-        })),
-      });
-    }
-
-    if (error instanceof Error && (error as any).code === "P2003") {
-      return res.status(400).json({
-        error: "Invalid categoryId: Category does not exist",
-      });
-    }
-    return res.status(500).json({ error: "Failed to create product" });
+    return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
   }
 };
 
@@ -105,8 +107,18 @@ export const updateProduct = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params as { id: string };
 
-    const data = ProductSchema.parse(req.body);
-
+    const resp = ProductSchema.safeParse(req.body);
+    if (!resp.success) {
+      res.status(400).json({
+        error: "Validation failed",
+        details: resp.error.errors.map((e) => ({
+          path: e.path.join("."),
+          message: e.message,
+        })),
+      });
+      return;
+    }
+    const data = resp.data;
     const updatedProduct = await prisma.product.update({
       where: { id },
       data: {
@@ -129,31 +141,11 @@ export const updateProduct = async (req: AuthRequest, res: Response) => {
       message: "Product updated successfully",
       product: updatedProduct,
     });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      res.status(400).json({
-        error: "Validation failed",
-        details: error.errors.map((e) => ({
-          path: e.path.join("."),
-          message: e.message,
-        })),
-      });
-      return;
-    }
-
-    if (error instanceof Error && (error as any).code === "P2025") {
-      res.status(404).json({ error: "Product not found" });
-      return;
-    }
-
-    if (error instanceof Error && (error as any).code === "P2003") {
-      res.status(400).json({
-        error: "Invalid categoryId: Category does not exist",
-      });
-      return;
-    }
-
-    res.status(500).json({ error: "Failed to update product" });
+    return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
   }
 };
 
@@ -169,12 +161,10 @@ export const deleteProduct = async (req: AuthRequest, res: Response) => {
     res.status(200).json({
       message: "Product deleted successfully",
     });
-  } catch (error) {
-    if (error instanceof Error && (error as any).code === "P2025") {
-      res.status(404).json({ error: "Product not found" });
-      return;
-    }
-
-    res.status(500).json({ error: "Failed to delete product" });
+    return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
   }
 };

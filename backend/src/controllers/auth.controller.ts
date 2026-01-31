@@ -16,9 +16,10 @@ export const register = async (req: Request, res: Response) => {
     });
 
     if (existingUser) {
-      return res.status(400).json({
+      res.status(400).json({
         error: "Email is already in use",
       });
+      return;
     }
 
     // 3. Hash password
@@ -29,9 +30,14 @@ export const register = async (req: Request, res: Response) => {
       data: { ...validated, password: hashedPassword },
     });
 
-    res.status(201).json({ message: "User created successfully", userId: user.id });
-  } catch (err: any) {
-    res.status(400).json({ error: err.errors || err.message });
+    res
+      .status(201)
+      .json({ message: "User created successfully", userId: user.id });
+    return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
   }
 };
 
@@ -64,23 +70,38 @@ export const login = async (req: Request, res: Response) => {
     setAuthCookie(res, token);
 
     res.json({ message: "You are logged in", user });
-  } catch (err: any) {
-    res.status(400).json({ error: err.errors || err.message });
+    return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
   }
 };
 
 export const getUserInfos = async (req: Request, res: Response) => {
-  const userId = req.user?.id as string;
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-  });
-  res.json(user);
+  try {
+    const userId = req.user?.id as string;
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+    res.json(user);
+    return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+  }
 };
 
 /**
  * Logout a user (clear auth cookie)
  */
 export const logout = (req: Request, res: Response) => {
-  clearAuthCookie(res);
-  res.json({ message: "Logged out successfully" });
+  try {
+    clearAuthCookie(res);
+    res.json({ message: "Logged out successfully" });
+    return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
+  }
 };

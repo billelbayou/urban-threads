@@ -28,8 +28,10 @@ export const getCart = async (req: AuthRequest, res: Response) => {
     const userId = req.user.id;
     const cart = await getOrCreateCart(userId);
     res.json(cart);
-  } catch {
-    res.status(500).json({ error: "Failed to fetch cart" });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
   }
 };
 
@@ -65,8 +67,11 @@ export const addToCart = async (req: AuthRequest, res: Response) => {
 
     const updatedCart = await getOrCreateCart(userId);
     res.status(201).json(updatedCart);
-  } catch {
-    res.status(500).json({ error: "Failed to add item to cart" });
+    return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
   }
 };
 
@@ -92,8 +97,11 @@ export const updateCartItem = async (req: AuthRequest, res: Response) => {
 
     const updatedCart = await getOrCreateCart(userId);
     res.json(updatedCart);
-  } catch {
-    res.status(500).json({ error: "Failed to update cart item" });
+    return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
   }
 };
 
@@ -111,8 +119,11 @@ export const removeCartItem = async (req: AuthRequest, res: Response) => {
 
     const updatedCart = await getOrCreateCart(userId);
     res.json(updatedCart);
-  } catch {
-    res.status(500).json({ error: "Failed to remove cart item" });
+    return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
   }
 };
 
@@ -131,7 +142,10 @@ export const clearCart = async (req: AuthRequest, res: Response) => {
 
     const updatedCart = await getOrCreateCart(userId);
     res.json(updatedCart);
-  } catch {
-    res.status(500).json({ error: "Failed to clear cart" });
+    return
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
   }
 };

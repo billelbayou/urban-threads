@@ -1,6 +1,7 @@
+import { Response } from "express";
 import config from "../config/config";
 
-export const setAuthCookie = (res: any, token: string): void => {
+export const setAuthCookie = (res: Response, token: string): void => {
   res.cookie("token", token, {
     httpOnly: true,
     secure: true,
@@ -9,7 +10,7 @@ export const setAuthCookie = (res: any, token: string): void => {
   });
 };
 
-export const clearAuthCookie = (res: any): void => {
+export const clearAuthCookie = (res: Response): void => {
   res.clearCookie("token", {
     httpOnly: true,
     secure: true,
