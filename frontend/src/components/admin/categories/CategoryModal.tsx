@@ -26,6 +26,7 @@ export default function CategoryModal({
     } else if (state?.error) {
       toast.error(state.error);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   if (!isOpen) return null;

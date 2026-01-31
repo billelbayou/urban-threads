@@ -8,22 +8,23 @@ import { FaSpinner, FaTimes, FaTrash } from "react-icons/fa";
 import { toast } from "sonner";
 
 export default function CartDrawer() {
-  // 1. Correctly destructure from the store
-  const { cart, isOpen, toggleCart, setCart } = useCartStore();
+  const { cart: rawCart, isOpen, toggleCart, setCart } = useCartStore();
+
+  const cart = rawCart ?? { items: [] };
   const [state, formAction, isPending] = useActionState(
     removeFromCartAction,
-    null
+    null,
   );
   useEffect(() => {
     if (state) {
       if (state.success) {
-        // Sync the store with the new items returned after deletion
         setCart(state.data);
-        toast.success("Item removed", {position: "bottom-left"});
+        toast.success("Item removed", { position: "bottom-left" });
       } else {
         toast.error(state.error);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   return (
@@ -48,7 +49,7 @@ export default function CartDrawer() {
               Your Cart
             </h2>
             <p className="text-xs text-gray-500 uppercase">
-              {cart?.items.length} Items
+              {cart.items.length} Items
             </p>
           </div>
           <button
@@ -61,7 +62,7 @@ export default function CartDrawer() {
 
         {/* Items */}
         <div className="flex-1 overflow-y-auto p-5 space-y-6">
-          {cart?.items.length === 0 ? (
+          {cart.items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <p className="text-gray-400 italic">
                 Your cart is feeling a bit light.
@@ -74,7 +75,7 @@ export default function CartDrawer() {
               </button>
             </div>
           ) : (
-            cart?.items.map((item) => (
+            cart.items.map((item) => (
               <div key={item.id} className="flex gap-4 group">
                 <div className="relative h-24 w-20 shrink-0 bg-gray-100 rounded-sm overflow-hidden">
                   <Image
@@ -129,16 +130,16 @@ export default function CartDrawer() {
         </div>
 
         {/* Footer */}
-        {cart?.items.length! > 0 && (
+        {cart.items.length > 0 && (
           <div className="p-5 border-t bg-gray-50">
             <div className="flex justify-between mb-4 font-bold text-lg">
               <span>Total</span>
               <span>
                 $
-                {cart?.items
+                {cart.items
                   .reduce(
                     (acc, item) => acc + item.product.price * item.quantity,
-                    0
+                    0,
                   )
                   .toFixed(2)}
               </span>

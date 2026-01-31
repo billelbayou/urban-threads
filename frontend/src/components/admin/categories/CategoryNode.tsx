@@ -7,7 +7,6 @@ import {
   Folder,
   Tag,
   Plus,
-  Edit3,
 } from "lucide-react";
 import { CategoryNodeProps } from "@/types/category";
 import CategoryDeleteButton from "./CategoryDeleteButton";

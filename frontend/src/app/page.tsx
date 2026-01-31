@@ -85,14 +85,14 @@ export default async function HomePage() {
                 Born in the streets, made for the culture
               </h2>
               <p className="text-gray-700 leading-relaxed">
-                More than just clothes, we're a movement that started in 2019
+                More than just clothes, we&apos;re a movement that started in 2019
                 from the raw energy of city streets. Our designs blend urban
                 attitude with sustainable craftsmanship, creating pieces that
                 tell stories. Every drop is a limited canvas of self-expression,
-                crafted for those who dare to stand out. We don't just follow
+                crafted for those who dare to stand out. We don&apos;t just follow
                 trends - we create them alongside our community of artists,
                 skaters, and dreamers who inspire each collection. From
-                late-night design sessions to ethical production methods, we're
+                late-night design sessions to ethical production methods, we&apos;re
                 building a brand that respects both style and substance. Join us
                 in redefining what streetwear can be.
               </p>

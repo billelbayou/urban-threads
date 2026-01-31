@@ -12,7 +12,7 @@ export default function CategoryDeleteButton({
   category: Category;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [_state, formAction, isPending] = useActionState(
+  const [, formAction, isPending] = useActionState(
     DeleteCategoryAction,
     null,
   );

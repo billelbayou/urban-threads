@@ -1,8 +1,7 @@
 import { loginSchema, registerSchema } from "@/schemas/authSchema";
 import { login, logout, register } from "../lib/fetchers";
-import { redirect } from "next/navigation";
 
-export async function loginAction(_previousState: any, formData: FormData) {
+export async function loginAction(_previousState: unknown, formData: FormData) {
   const email = formData.get("email");
   const password = formData.get("password");
 
@@ -11,22 +10,34 @@ export async function loginAction(_previousState: any, formData: FormData) {
   if (!validatedFields.success) {
     return {
       success: false,
-      error: validatedFields.error.flatten().fieldErrors,
+      data: null,
+      fieldErrors: validatedFields.error.flatten().fieldErrors,
+      message: null,
     };
   }
 
   try {
     const data = await login(
       validatedFields.data.email,
-      validatedFields.data.password
+      validatedFields.data.password,
     );
     return { success: true, data };
-  } catch (e: any) {
-    return { success: false, error: e.message };
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An unexpected error occurred";
+    return {
+      success: false,
+      data: null,
+      fieldErrors: null,
+      message: errorMessage,
+    };
   }
 }
 
-export async function registerAction(_previousState: any, formData: FormData) {
+export async function registerAction(
+  _previousState: unknown,
+  formData: FormData,
+) {
   const name = formData.get("name");
   const email = formData.get("email");
   const password = formData.get("password");
@@ -36,27 +47,50 @@ export async function registerAction(_previousState: any, formData: FormData) {
   if (!validatedFields.success) {
     return {
       success: false,
-      error: validatedFields.error.flatten().fieldErrors,
+      data: null,
+      fieldErrors: validatedFields.error.flatten().fieldErrors,
+      message: null,
     };
   }
 
   try {
-    const data = await register(
+    const data: {message: string, userId: string} = await register(
       validatedFields.data.name,
       validatedFields.data.email,
-      validatedFields.data.password
+      validatedFields.data.password,
     );
-    return { success: true, data };
-  } catch (e: any) {
-    return { success: false, error: e.message };
+    return {
+      success: true,
+      data: data.userId,
+      fieldErrors: null,
+      message: data.message,
+    };
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An unexpected error occurred";
+    return {
+      success: false,
+      data: null,
+      fieldErrors: null,
+      message: errorMessage,
+    };
   }
 }
-
-export async function logoutAction(_previousState: any, _formData: FormData) {
+//
+export async function logoutAction(
+  _previousState: unknown,
+  _formData: FormData,
+) {
   try {
     const data = await logout();
     return { success: true, data };
-  } catch (e: any) {
-    return { success: false, error: e.message };
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An unexpected error occurred";
+    return {
+      success: false,
+      data: null,
+      error: errorMessage,
+    };
   }
 }

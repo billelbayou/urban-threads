@@ -4,10 +4,10 @@ import Header from "@/components/header/Header";
 import Footer from "@/components/Footer";
 import { getCurrentUser } from "@/lib/fetchers";
 import getCookies from "@/utils/cookies";
-import { User } from "@/types/types";
+import { User } from "@/types/user";
 
 export default async function ProfilePage() {
-  const user: User = await getCurrentUser(await getCookies());
+  const user: User | null = await getCurrentUser(await getCookies());
 
   if (!user) {
     redirect("/login");

@@ -1,82 +1,103 @@
 "use client";
 
-import { loginAction, registerAction } from "@/services/authActions";
-import { useAuthStore } from "@/store/useAuthStore";
+import { registerAction } from "@/services/authActions";
+import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 
-export default function registerForm() {
+export default function RegisterForm() {
   const router = useRouter();
   const [state, formAction, isPending] = useActionState(registerAction, null);
 
   useEffect(() => {
     if (state?.success) {
-      toast.success(state.data.message);
+      toast.success(state.message);
       router.refresh();
       router.push("/login");
     }
   }, [state, router]);
+
+  // Helper for rendering field errors
+  const renderError = (msg?: string) =>
+    msg ? (
+      <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+        <AlertCircle className="w-4 h-4 shrink-0" />
+        <span>{msg}</span>
+      </p>
+    ) : null;
+
   return (
     <form action={formAction} className="space-y-5">
+      {/* Name */}
       <div>
         <label
-          className="block text-sm font-medium text-gray-700 mb-1"
           htmlFor="registerNameInput"
+          className="block text-sm font-medium text-gray-700 mb-1"
         >
           Name
         </label>
         <input
           id="registerNameInput"
-          name="name" // Use 'name' attribute for FormData
+          name="name"
           type="text"
-          autoComplete="text"
+          autoComplete="name"
           placeholder="Your Name"
-          required
-          className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black transition-all"
+          className={`w-full px-4 py-2 border rounded-md shadow-sm focus:ring-black focus:border-black transition-all ${
+            state?.fieldErrors?.name ? "border-red-500" : "border-gray-300"
+          }`}
         />
+        {renderError(state?.fieldErrors?.name as string | undefined)}
       </div>
+
+      {/* Email */}
       <div>
         <label
-          className="block text-sm font-medium text-gray-700 mb-1"
           htmlFor="registerEmailInput"
+          className="block text-sm font-medium text-gray-700 mb-1"
         >
           Email
         </label>
         <input
           id="registerEmailInput"
-          name="email" // Use 'name' attribute for FormData
+          name="email"
           type="email"
           autoComplete="email"
           placeholder="you@example.com"
-          required
-          className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black transition-all"
+          className={`w-full px-4 py-2 border rounded-md shadow-sm focus:ring-black focus:border-black transition-all ${
+            state?.fieldErrors?.email ? "border-red-500" : "border-gray-300"
+          }`}
         />
+        {renderError(state?.fieldErrors?.email as string | undefined)}
       </div>
 
+      {/* Password */}
       <div>
         <label
-          className="block text-sm font-medium text-gray-700 mb-1"
           htmlFor="registerPasswordInput"
+          className="block text-sm font-medium text-gray-700 mb-1"
         >
           Password
         </label>
         <input
           id="registerPasswordInput"
-          name="password" // Use 'name' attribute for FormData
+          name="password"
           type="password"
           autoComplete="current-password"
           placeholder="••••••••"
-          required
-          className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black transition-all"
+          className={`w-full px-4 py-2 border rounded-md shadow-sm focus:ring-black focus:border-black transition-all ${
+            state?.fieldErrors?.password ? "border-red-500" : "border-gray-300"
+          }`}
         />
+        {renderError(state?.fieldErrors?.password as string | undefined)}
       </div>
 
-      {/* Display errors returned from the Server Action */}
-      {state && (
-        <p className="text-sm text-red-500 text-center">{state.error}</p>
+      {/* General server error message */}
+      {state?.message && !state.success && (
+        <p className="text-sm text-red-500 text-center">{state.message}</p>
       )}
 
+      {/* Submit Button */}
       <button
         type="submit"
         disabled={isPending}

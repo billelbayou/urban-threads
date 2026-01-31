@@ -8,6 +8,7 @@ import {
   FiUsers,
   FiSettings,
   FiLogOut,
+  FiLoader,
 } from "react-icons/fi";
 import { BiCategory } from "react-icons/bi";
 import { useActionState, useEffect } from "react";
@@ -36,7 +37,7 @@ const Sidebar = () => {
       logoutStore();
       router.push("/");
     }
-  }, [state, logoutStore]);
+  }, [state, router, logoutStore]);
   return (
     <div className="w-64 bg-white shadow-md flex flex-col h-screen">
       {/* Logo */}
@@ -73,7 +74,7 @@ const Sidebar = () => {
           className="w-full flex items-center p-2 rounded-lg text-red-600 hover:bg-red-50 transition"
         >
           <span className="mr-3">
-            <FiLogOut />
+            {isPending ? <FiLoader className="animate-spin" /> : <FiLogOut />}
           </span>
           Logout
         </button>

@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteProductAction } from "@/services/productActions";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { FiTrash2, FiLoader } from "react-icons/fi";
 
 export default function ProductDeleteButton({
@@ -10,7 +10,7 @@ export default function ProductDeleteButton({
   productId: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [_state, formAction, isPending] = useActionState(
+  const [, formAction, isPending] = useActionState(
     deleteProductAction,
     null,
   );

@@ -12,7 +12,7 @@ export default function ProductDetails({ product }: Props) {
       <h1 className="text-2xl sm:text-3xl font-semibold">{product.name}</h1>
 
       <p className="text-sm text-gray-500 mt-1 capitalize">
-        {product.category.name}
+        {product.category?.name}
       </p>
 
       <p className="text-gray-600 mt-2 text-sm sm:text-base">

@@ -26,11 +26,12 @@ export default function AddToCartForm({ product }: { product: Product }) {
 
   useEffect(() => {
     if (state?.success) {
-      toast.success("Added to cart!", {position: "bottom-left"});
+      toast.success("Added to cart!", { position: "bottom-left" });
       setCart(state.data);
       openCart();
     }
     if (state?.error) toast.error(state.error);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   // Handler for unauthenticated clicks

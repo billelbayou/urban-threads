@@ -1,7 +1,7 @@
-import { CategoryWithChildren } from "@/types/category";
+import { Category, CategoryWithChildren } from "@/types/category";
 
 export const buildTree = (
-  nodes: any[],
+  nodes: Category[],
   parentId: string | null = null, // Changed from number
 ): CategoryWithChildren[] => {
   return nodes

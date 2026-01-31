@@ -1,6 +1,6 @@
 // store/useAuthStore.ts
+import { User } from "@/types/user";
 import { create } from "zustand";
-import { User } from "@/types/types";
 
 type AuthState = {
   user: User | null;

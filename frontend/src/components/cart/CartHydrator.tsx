@@ -2,8 +2,11 @@
 
 import { useEffect } from "react";
 import { useCartStore } from "@/store/useCartStore";
+import { Cart } from "@/types/cart";
 
-export default function CartHydrator({ cart }: { cart: any }) {
+export default function CartHydrator({ cart }: { cart: 
+  Cart
+ }) {
   const setCart = useCartStore((s) => s.setCart);
 
   useEffect(() => {

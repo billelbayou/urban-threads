@@ -4,7 +4,7 @@ import Link from "next/link";
 
 interface TopicProps {
   title: string;
-  products: any;
+  products: Product[];
 }
 
 export default function Topic({ title, products }: TopicProps) {

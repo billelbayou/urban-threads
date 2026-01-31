@@ -2,7 +2,10 @@
 
 import { UploadedImage } from "@/types/product";
 import { Upload, X, CheckCircle } from "lucide-react";
-import { CldUploadWidget } from "next-cloudinary";
+import {
+  CldUploadWidget,
+  CloudinaryUploadWidgetResults,
+} from "next-cloudinary";
 import Image from "next/image";
 import React from "react";
 
@@ -18,7 +21,9 @@ export default function ImageUpload({ images, setImages }: ImageUploadProps) {
 
   return (
     <div>
-      <h3 className="text-sm font-medium text-slate-700 mb-4">Product Images</h3>
+      <h3 className="text-sm font-medium text-slate-700 mb-4">
+        Product Images
+      </h3>
 
       <CldUploadWidget
         uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!}
@@ -49,9 +54,8 @@ export default function ImageUpload({ images, setImages }: ImageUploadProps) {
             },
           },
         }}
-        onSuccess={(result: any) => {
-          // This fires for EACH uploaded image when multiple=true
-          const info = result.info as UploadedImage;
+        onSuccess={(result: CloudinaryUploadWidgetResults) => {
+          const info: UploadedImage = result.info as UploadedImage;
           if (info) {
             setImages((prev) => [...prev, info]);
           }
@@ -76,7 +80,9 @@ export default function ImageUpload({ images, setImages }: ImageUploadProps) {
               </div>
               <div>
                 <p className="text-lg font-semibold text-slate-700">
-                  {isLoading ? "Uploading..." : "Click to upload or drag & drop"}
+                  {isLoading
+                    ? "Uploading..."
+                    : "Click to upload or drag & drop"}
                 </p>
                 <p className="text-sm text-slate-500 mt-1">
                   PNG, JPG, GIF, WebP up to 10MB

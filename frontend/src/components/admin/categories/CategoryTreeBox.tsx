@@ -3,7 +3,7 @@
 import { useState } from "react";
 import CategoryNode from "@/components/admin/categories/CategoryNode";
 import CategoryModal from "@/components/admin/categories/CategoryModal";
-import { CategoryWithChildren, Category } from "@/types/category";
+import { CategoryWithChildren } from "@/types/category";
 
 type Props = {
   initialTree: CategoryWithChildren[];

@@ -2,6 +2,7 @@ import { Product } from "./product";
 
 export interface Category {
   id: string;
+  parentId?: string | null;
   name: string;
   products?: Product[];
 }
