@@ -13,6 +13,7 @@ dotenv.config();
 
 const app = express();
 const PORT = config.PORT;
+const FRONTEND_URL = config.FRONTEND_URL;
 
 // Middlewares
 app.use(express.json()); // Parses JSON request bodies
@@ -21,7 +22,7 @@ app.use(cookieParser()); // Parses cookies
 // CORS config — allow frontend origin & send credentials
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://urban-threads-tau.vercel.app"],
+    origin: [FRONTEND_URL],
     credentials: true,
   })
 );

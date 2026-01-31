@@ -8,9 +8,11 @@ interface Config {
   NODE_ENV: string;
   JWT_SECRET: string;
   COOKIE_EXPIRES_IN: number;
+  FRONTEND_URL: string;
 }
 
 const config: Config = {
+  FRONTEND_URL: process.env.FRONTEND_URL!,
   PORT: parseInt(process.env.PORT!),
   NODE_ENV: process.env.NODE_ENV!,
   JWT_SECRET: process.env.JWT_SECRET!,
