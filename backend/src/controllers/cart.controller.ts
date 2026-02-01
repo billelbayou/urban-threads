@@ -1,6 +1,6 @@
 import { Response } from "express";
-import { prisma } from "../utils/prisma";
-import { AuthRequest } from "../middleware/auth.middleware";
+import { prisma } from "../utils/prisma.js";
+import { AuthRequest } from "../middleware/auth.middleware.js";
 
 /**
  * Helper: Always return a full cart with items + products

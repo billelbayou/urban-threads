@@ -1,7 +1,7 @@
 // controllers/category.controller.ts
 import { Request, Response } from "express";
-import { CategorySchema } from "../utils/validation";
-import { prisma } from "../utils/prisma";
+import { CategorySchema } from "../utils/validation.js";
+import { prisma } from "../utils/prisma.js";
 
 export async function createCategory(req: Request, res: Response) {
   try {

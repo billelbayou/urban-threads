@@ -1,5 +1,5 @@
 import { Response } from "express";
-import config from "../config/config";
+import config from "../config/config.js";
 
 export const setAuthCookie = (res: Response, token: string): void => {
   res.cookie("token", token, {

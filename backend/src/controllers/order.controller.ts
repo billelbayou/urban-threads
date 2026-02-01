@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { orderSchema } from "../utils/validation";
-import { prisma } from "../utils/prisma";
-import { Product } from "../generated/prisma/client";
+import { orderSchema } from "../utils/validation.js";
+import { prisma } from "../utils/prisma.js";
+import { Product } from "../generated/prisma/client.js";
 
 /** Create order */
 export const createOrder = async (req: Request, res: Response) => {

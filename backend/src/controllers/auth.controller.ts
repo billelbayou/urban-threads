@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import { registerSchema, loginSchema } from "../utils/validation";
-import { generateToken } from "../utils/jwt";
-import { setAuthCookie, clearAuthCookie } from "../utils/cookies";
-import { prisma } from "../utils/prisma";
+import { registerSchema, loginSchema } from "../utils/validation.js";
+import { generateToken } from "../utils/jwt.js";
+import { setAuthCookie, clearAuthCookie } from "../utils/cookies.js";
+import { prisma } from "../utils/prisma.js";
 
 export const register = async (req: Request, res: Response) => {
   try {
