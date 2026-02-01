@@ -1,4 +1,4 @@
-import {cloud as cloudinary} from '../config/config';
+import {cloud as cloudinary} from '../config/config.js';
 
 /**
  * Upload base64 image to Cloudinary

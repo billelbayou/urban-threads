@@ -4,9 +4,9 @@ import {
   getMyOrders,
   getAllOrders,
   updateOrderStatus,
-} from "../controllers/order.controller";
+} from "../controllers/order.controller.js";
 
-import { authenticate, authorize } from "../middleware/auth.middleware";
+import { authenticate, authorize } from "../middleware/auth.middleware.js";
 
 const router = Router();
 

@@ -1,5 +1,66 @@
+# Dependencies
 node_modules
-dist
-src/generated
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Environment files
 .env
+.env.*
+!.env.example
+
+# Build output
+dist
+build
+*.tsbuildinfo
+
+# Git
 .git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+coverage
+.nyc_output
+**/*.test.ts
+**/*.spec.ts
+__tests__
+
+# Docs
+*.md
+!README.md
+docs
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# Logs
+*.log
+logs
+
+# Other
+.eslintcache
+.next
+.cache
+tmp
+temp
+
+# Don't ignore these - needed for build
+!prisma/
+!prisma.config.ts
+!src/
+!tsconfig.json
+!package*.json
+
+# But DO ignore generated Prisma client (will be built in Docker)
+src/generated/

@@ -4,9 +4,9 @@ import {
   createCategory,
   getCategoryById,
   deleteCategory,
-} from "../controllers/category.controller";
+} from "../controllers/category.controller.js";
 
-import { authenticate, authorize } from "../middleware/auth.middleware";
+import { authenticate, authorize } from "../middleware/auth.middleware.js";
 
 const router = Router();
 

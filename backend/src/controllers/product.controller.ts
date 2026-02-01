@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { ProductSchema } from "../utils/validation.js";
 import { AuthRequest } from "../middleware/auth.middleware.js";
 import { prisma } from "../utils/prisma.js";
-import z from "zod";
 
 /** Get all products (public) */
 export const getAllProducts = async (_req: Request, res: Response) => {
