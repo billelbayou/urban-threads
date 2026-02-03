@@ -1,5 +1,5 @@
 import Header from "@/components/header/Header";
-import heroImage from "../../public/hero.png";
+import heroImage from "../../../public/hero.png";
 import Image from "next/image";
 import { AiOutlineDoubleLeft, AiOutlineDoubleRight } from "react-icons/ai";
 import { FaAsterisk } from "react-icons/fa";
@@ -21,8 +21,6 @@ export default async function HomePage() {
   }
   return (
     <>
-      <Header />
-      <CartDrawer />
       <main>
         {/* HERO SECTION */}
         <div className="container mx-auto relative w-full h-72 md:h-96 lg:h-125 xl:h-162.5 2xl:h-200 rounded-2xl overflow-hidden">
@@ -85,16 +83,17 @@ export default async function HomePage() {
                 Born in the streets, made for the culture
               </h2>
               <p className="text-gray-700 leading-relaxed">
-                More than just clothes, we&apos;re a movement that started in 2019
-                from the raw energy of city streets. Our designs blend urban
-                attitude with sustainable craftsmanship, creating pieces that
-                tell stories. Every drop is a limited canvas of self-expression,
-                crafted for those who dare to stand out. We don&apos;t just follow
-                trends - we create them alongside our community of artists,
-                skaters, and dreamers who inspire each collection. From
-                late-night design sessions to ethical production methods, we&apos;re
-                building a brand that respects both style and substance. Join us
-                in redefining what streetwear can be.
+                More than just clothes, we&apos;re a movement that started in
+                2019 from the raw energy of city streets. Our designs blend
+                urban attitude with sustainable craftsmanship, creating pieces
+                that tell stories. Every drop is a limited canvas of
+                self-expression, crafted for those who dare to stand out. We
+                don&apos;t just follow trends - we create them alongside our
+                community of artists, skaters, and dreamers who inspire each
+                collection. From late-night design sessions to ethical
+                production methods, we&apos;re building a brand that respects
+                both style and substance. Join us in redefining what streetwear
+                can be.
               </p>
             </div>
             <Image
@@ -108,8 +107,6 @@ export default async function HomePage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </>
   );
 }
