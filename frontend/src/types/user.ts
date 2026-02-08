@@ -4,22 +4,29 @@ import { Wishlist } from "./wishlist";
 
 export interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password?: string; // Usually omitted from API responses
   role: "ADMIN" | "CLIENT";
 
-  phone?: string;
-  avatarUrl?: string;
-  address?: string;
-  city?: string;
-  country?: string;
-  postalCode?: string;
+  // Personal info (optional, filled after registration)
+  phone?: string | null;
+  dateOfBirth?: string | null;
+  gender?: string | null;
+
+  // Shipping address (optional, filled after registration)
+  country?: string | null;
+  city?: string | null;
+  state?: string | null;
+  postalCode?: string | null;
+  streetAddress?: string | null;
+  apartment?: string | null;
 
   createdAt: string;
   updatedAt: string;
 
-  // relations (optional based on API)
+  // Relations (optional based on API)
   cart?: Cart;
   wishlist?: Wishlist;
   orders?: Order[];

@@ -69,7 +69,8 @@ export const login = async (email: string, password: string) => {
 };
 
 export const register = async (
-  name: string,
+  firstName: string,
+  lastName: string,
   email: string,
   password: string,
 ) => {
@@ -77,7 +78,7 @@ export const register = async (
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
-    body: JSON.stringify({ name, email, password }),
+    body: JSON.stringify({ firstName, lastName, email, password }),
   });
 
   if (!res.ok) {
@@ -86,6 +87,55 @@ export const register = async (
   }
 
   return res.json();
+};
+
+export const updatePersonalInfo = async (
+  data: { phone?: string; dateOfBirth?: string; gender?: string },
+  cookie?: string,
+) => {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (cookie) headers["cookie"] = cookie;
+  const res = await fetch(`${api}/auth/me/personal-info`, {
+    method: "PUT",
+    headers,
+    credentials: cookie ? undefined : "include",
+    body: JSON.stringify(data),
+  });
+  const result = await res.json();
+  if (!res.ok) {
+    throw new Error(result.error || "Failed to update personal info");
+  }
+  return result;
+};
+
+export const updateShippingAddress = async (
+  data: {
+    country?: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+    streetAddress?: string;
+    apartment?: string;
+  },
+  cookie?: string,
+) => {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (cookie) headers["cookie"] = cookie;
+  const res = await fetch(`${api}/auth/me/shipping-address`, {
+    method: "PUT",
+    headers,
+    credentials: cookie ? undefined : "include",
+    body: JSON.stringify(data),
+  });
+  const result = await res.json();
+  if (!res.ok) {
+    throw new Error(result.error || "Failed to update shipping address");
+  }
+  return result;
 };
 
 export const logout = async () => {

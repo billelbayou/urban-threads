@@ -38,11 +38,17 @@ export async function registerAction(
   _previousState: unknown,
   formData: FormData,
 ) {
-  const name = formData.get("name");
+  const firstName = formData.get("firstName");
+  const lastName = formData.get("lastName");
   const email = formData.get("email");
   const password = formData.get("password");
 
-  const validatedFields = registerSchema.safeParse({ email, password, name });
+  const validatedFields = registerSchema.safeParse({
+    firstName,
+    lastName,
+    email,
+    password,
+  });
 
   if (!validatedFields.success) {
     return {
@@ -54,8 +60,9 @@ export async function registerAction(
   }
 
   try {
-    const data: {message: string, userId: string} = await register(
-      validatedFields.data.name,
+    const data: { message: string; userId: string } = await register(
+      validatedFields.data.firstName,
+      validatedFields.data.lastName,
       validatedFields.data.email,
       validatedFields.data.password,
     );

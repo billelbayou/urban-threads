@@ -29,25 +29,44 @@ export default function RegisterForm() {
 
   return (
     <form action={formAction} className="space-y-5">
+      <div>
+        <label
+          htmlFor="registerfNameInput"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          First Name
+        </label>
+        <input
+          id="registerfNameInput"
+          name="firstName"
+          type="text"
+          autoComplete="given-name"
+          placeholder="Your First Name"
+          className={`w-full px-4 py-2 border rounded-md shadow-sm focus:ring-black focus:border-black transition-all ${
+            state?.fieldErrors?.firstName ? "border-red-500" : "border-gray-300"
+          }`}
+        />
+        {renderError(state?.fieldErrors?.firstName as string | undefined)}
+      </div>
       {/* Name */}
       <div>
         <label
-          htmlFor="registerNameInput"
+          htmlFor="registerlNameInput"
           className="block text-sm font-medium text-gray-700 mb-1"
         >
-          Name
+          Last Name
         </label>
         <input
-          id="registerNameInput"
-          name="name"
+          id="registerlNameInput"
+          name="lastName"
           type="text"
           autoComplete="name"
-          placeholder="Your Name"
+          placeholder="Your Last Name"
           className={`w-full px-4 py-2 border rounded-md shadow-sm focus:ring-black focus:border-black transition-all ${
-            state?.fieldErrors?.name ? "border-red-500" : "border-gray-300"
+            state?.fieldErrors?.lastName ? "border-red-500" : "border-gray-300"
           }`}
         />
-        {renderError(state?.fieldErrors?.name as string | undefined)}
+        {renderError(state?.fieldErrors?.lastName as string | undefined)}
       </div>
 
       {/* Email */}

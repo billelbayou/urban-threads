@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import { registerSchema, loginSchema } from "../utils/validation.js";
+import {
+  registerSchema,
+  loginSchema,
+  updatePersonalInfoSchema,
+  updateShippingAddressSchema,
+} from "../utils/validation.js";
 import { generateToken } from "../utils/jwt.js";
 import { setAuthCookie, clearAuthCookie } from "../utils/cookies.js";
 import { prisma } from "../utils/prisma.js";
@@ -85,6 +90,53 @@ export const getUserInfos = async (req: Request, res: Response) => {
     });
     res.json(user);
     return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+  }
+};
+
+/**
+ * Update personal info (phone, dateOfBirth, gender)
+ */
+export const updatePersonalInfo = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id as string;
+    const validated = updatePersonalInfoSchema.parse(req.body);
+
+    const data: Record<string, unknown> = {};
+    if (validated.phone !== undefined) data.phone = validated.phone;
+    if (validated.gender !== undefined) data.gender = validated.gender;
+    if (validated.dateOfBirth !== undefined) {
+      data.dateOfBirth = new Date(validated.dateOfBirth);
+    }
+
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data,
+    });
+
+    res.json({ message: "Personal info updated", user });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+  }
+};
+
+/**
+ * Update shipping address
+ */
+export const updateShippingAddress = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id as string;
+    const validated = updateShippingAddressSchema.parse(req.body);
+
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: validated,
+    });
+
+    res.json({ message: "Shipping address updated", user });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     res.status(500).json({ error: message });
