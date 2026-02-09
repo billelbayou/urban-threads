@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { orderSchema } from "../utils/validation.js";
 import { prisma } from "../utils/prisma.js";
 import { Product } from "../generated/prisma/client.js";
 
@@ -8,50 +7,66 @@ export const createOrder = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id as string;
 
-    const validated = orderSchema.parse(req.body);
-
-    // Fetch products to calculate total
-    const productIds = validated.items.map((i) => i.productId);
-
-    const products = await prisma.product.findMany({
-      where: { id: { in: productIds } },
+    // 1. Fetch user's cart
+    const cart = await prisma.cart.findUnique({
+      where: { userId },
+      include: {
+        items: {
+          include: { product: true },
+        },
+      },
     });
 
-    if (products.length !== validated.items.length) {
-      res.status(400).json({ error: "One or more products do not exist" });
+    if (!cart || cart.items.length === 0) {
+      res.status(400).json({ error: "Cart is empty" });
       return;
     }
 
     let total = 0;
 
-    const orderItems = validated.items.map((item) => {
-      const product = products.find((p: Product) => p.id === item.productId)!;
-      total += product.price * item.quantity;
+    // 2. Map items correctly for Prisma (Remove the full product object)
+    const orderItems = cart.items.map((item) => {
+      total += item.product.price * item.quantity;
 
       return {
         productId: item.productId,
         quantity: item.quantity,
-        price: product.price,
+        price: item.product.price,
         size: item.size,
       };
     });
 
-    const order = await prisma.order.create({
-      data: {
-        userId,
-        total,
-        items: {
-          create: orderItems,
+    // 3. Create Order and Clear Cart in a transaction
+    const order = await prisma.$transaction(async (tx) => {
+      const newOrder = await tx.order.create({
+        data: {
+          userId,
+          total,
+          items: {
+            create: orderItems,
+          },
         },
-      },
-      include: { items: true },
+        include: {
+          items: {
+            include: { product: true }, // This ensures the frontend gets product details
+          },
+        },
+      });
+
+      // Clear the cart
+      await tx.cartItem.deleteMany({
+        where: { cartId: cart.id },
+      });
+
+      return newOrder;
     });
 
+    // 4. Return the order (which now includes the product object)
     res.status(201).json(order);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Order Creation Error:", error);
     res.status(500).json({ error: message });
-    return;
   }
 };
 
@@ -62,7 +77,7 @@ export const getMyOrders = async (req: Request, res: Response) => {
 
     const orders = await prisma.order.findMany({
       where: { userId },
-      include: { items: true },
+      include: { items: { include: { product: true } } },
     });
 
     res.json(orders);

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useActionState, useEffect } from "react";
 import { FaSpinner, FaTimes, FaTrash } from "react-icons/fa";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export default function CartDrawer() {
   const { cart: rawCart, isOpen, toggleCart, setCart } = useCartStore();
@@ -144,9 +145,13 @@ export default function CartDrawer() {
                   .toFixed(2)}
               </span>
             </div>
-            <button className="w-full bg-black text-white py-4 rounded-sm font-bold uppercase tracking-widest hover:bg-zinc-800 transition-colors">
+            <Link
+              onClick={toggleCart}
+              href="/checkout"
+              className="block w-full bg-black text-white text-center py-4 rounded-sm font-bold uppercase tracking-widest hover:bg-zinc-800 transition-colors"
+            >
               Checkout
-            </button>
+            </Link>
           </div>
         )}
       </div>

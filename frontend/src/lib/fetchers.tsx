@@ -268,3 +268,32 @@ export const deleteCategory = async (id: string, cookie?: string) => {
 
   if (!res.ok) throw new Error("Failed to delete category");
 };
+
+/* -------------------- ORDERS -------------------- */
+
+export const createOrder = async (cookie?: string) => {
+  const headers: Record<string, string> = {};
+  if (cookie) headers["cookie"] = cookie;
+  const res = await fetch(`${api}/orders`, {
+    method: "POST",
+    headers,
+    credentials: cookie ? undefined : "include",
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to create order");
+  }
+  return data;
+};
+
+export const fetchMyOrders = async (cookie?: string) => {
+  const headers: Record<string, string> = {};
+  if (cookie) headers["cookie"] = cookie;
+  const res = await fetch(`${api}/orders/mine`, {
+    headers,
+    credentials: cookie ? undefined : "include",
+    cache: "no-store",
+  });
+  if (!res.ok) return [];
+  return res.json();
+};

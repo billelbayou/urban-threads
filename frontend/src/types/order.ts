@@ -8,8 +8,9 @@ export interface OrderItem {
 
   quantity: number;
   price: number;
+  size: string;
 
-  product?: Product;
+  product: Product;
 }
 
 export interface Order {
@@ -17,7 +18,7 @@ export interface Order {
   userId: string;
 
   total: number;
-  status: "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+  status: "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELED";
 
   items: OrderItem[];
 
