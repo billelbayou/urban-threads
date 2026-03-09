@@ -1,54 +1,47 @@
-const RecentOrders = () => {
-  const orders = [
-    {
-      id: "#12345",
-      customer: "John Doe",
-      date: "2023-05-15",
-      amount: "$120",
-      status: "Shipped",
-    },
-    {
-      id: "#12346",
-      customer: "Jane Smith",
-      date: "2023-05-14",
-      amount: "$85",
-      status: "Delivered",
-    },
-    {
-      id: "#12347",
-      customer: "Robert Johnson",
-      date: "2023-05-13",
-      amount: "$230",
-      status: "Processing",
-    },
-    {
-      id: "#12348",
-      customer: "Emily Davis",
-      date: "2023-05-12",
-      amount: "$65",
-      status: "Shipped",
-    },
-    {
-      id: "#12349",
-      customer: "Michael Wilson",
-      date: "2023-05-11",
-      amount: "$175",
-      status: "Delivered",
-    },
-  ];
+"use client";
 
+import { Order } from "@/types/order";
+
+const RecentOrders = ({ orders }: { orders: Order[] }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Shipped":
+      case "SHIPPED":
         return "bg-blue-100 text-blue-800";
-      case "Delivered":
+      case "DELIVERED":
         return "bg-green-100 text-green-800";
-      case "Processing":
+      case "PROCESSING":
+      case "PENDING":
         return "bg-yellow-100 text-yellow-800";
+      case "CANCELED":
+        return "bg-red-100 text-red-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const formatAmount = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
+  };
+
+  if (orders.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-48">
+        <div className="text-gray-500">No recent orders found</div>
+      </div>
+    );
+  }
 
   return (
     <div className="overflow-x-auto">
@@ -76,21 +69,23 @@ const RecentOrders = () => {
           {orders.map((order) => (
             <tr key={order.id} className="hover:bg-gray-50">
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {order.id}
+                #{order.id.slice(-8).toUpperCase()}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {order.customer}
+                {order.user
+                  ? `${order.user.firstName} ${order.user.lastName}`
+                  : "Guest"}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {order.date}
+                {formatDate(order.createdAt)}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {order.amount}
+                {formatAmount(order.total)}
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <span
                   className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
-                    order.status
+                    order.status,
                   )}`}
                 >
                   {order.status}

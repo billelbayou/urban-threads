@@ -5,7 +5,6 @@ export const registerSchema = z.object({
   lastName: z.string().min(2, "Last Name must have at least 2 characters"),
   email: z.string().email("Invalid email"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  role: z.enum(["ADMIN", "CLIENT"]).optional(),
 });
 
 export const loginSchema = z.object({
@@ -74,7 +73,7 @@ export const ProductSchema = z.object({
     .array(
       z.object({
         url: z.string().url("Invalid image URL"),
-        public_id: z.string().min(1, "Cloudinary public_id is required"),
+        path: z.string().min(1, "S3 path is required"),
       }),
     )
     .min(1, "At least one image is required"),

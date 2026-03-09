@@ -24,12 +24,17 @@ export default async function ProductPage({
 
   return (
     <>
-      <div className="flex flex-col md:flex-row gap-4 p-4 md:p-8 min-h-150">
-        <div className="w-full md:w-1/2">
-          <ImageCarousel product={product} />
-        </div>
-        <div className="w-full md:w-1/2">
-          <ProductDetails product={product} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="lg:grid lg:grid-cols-2 lg:gap-x-12 lg:items-start">
+          {/* Image Section */}
+          <div className="flex flex-col">
+            <ImageCarousel product={product} />
+          </div>
+
+          {/* Product Details Section */}
+          <div className="mt-10 px-2 sm:px-0 lg:mt-0">
+            <ProductDetails product={product} />
+          </div>
         </div>
       </div>
     </>

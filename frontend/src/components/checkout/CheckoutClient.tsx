@@ -18,7 +18,7 @@ interface CheckoutClientProps {
 export default function CheckoutClient({ cart, user }: CheckoutClientProps) {
   const router = useRouter();
   const clearCart = useCartStore((s) => s.clearCart);
-  
+
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -106,7 +106,7 @@ export default function CheckoutClient({ cart, user }: CheckoutClientProps) {
                         ${(item.product.price * item.quantity).toFixed(2)}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        ${item.product.price.toFixed(2)} each
+                        ${Number(item.product.price).toFixed(2)} each
                       </p>
                     </div>
                   </div>

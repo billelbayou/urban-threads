@@ -1,5 +1,6 @@
 import { loginSchema, registerSchema } from "@/schemas/authSchema";
-import { login, logout, register } from "../lib/fetchers";
+import { login, logout, register, deleteAccount } from "../lib/fetchers";
+import getCookies from "@/utils/cookies";
 
 export async function loginAction(_previousState: unknown, formData: FormData) {
   const email = formData.get("email");
@@ -90,6 +91,25 @@ export async function logoutAction(
 ) {
   try {
     const data = await logout();
+    return { success: true, data };
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An unexpected error occurred";
+    return {
+      success: false,
+      data: null,
+      error: errorMessage,
+    };
+  }
+}
+
+export async function deleteAccountAction(
+  _previousState: unknown,
+  _formData: FormData,
+) {
+  try {
+    const cookie = await getCookies();
+    const data = await deleteAccount(cookie);
     return { success: true, data };
   } catch (error: unknown) {
     const errorMessage =

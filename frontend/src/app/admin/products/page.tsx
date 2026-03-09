@@ -3,9 +3,19 @@ import ProductTable from "@/components/admin/product-admin/ProductTable";
 import Link from "next/link";
 import { fetchProducts } from "@/lib/fetchers";
 import { Product } from "@/types/product";
+import getCookies from "@/utils/cookies";
 
 export default async function Products() {
-  const products: Product[] = await fetchProducts();
+  let products: Product[] = [];
+  let error: string | null = null;
+
+  try {
+    const cookies = await getCookies();
+    products = await fetchProducts(cookies);
+  } catch (err) {
+    console.error("Failed to fetch products:", err);
+    error = "Failed to load products. Please check if you are logged in.";
+  }
 
   return (
     <>
@@ -23,7 +33,11 @@ export default async function Products() {
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow">
-        <ProductTable products={products} />
+        {error ? (
+          <div className="text-red-500 py-10 text-center">{error}</div>
+        ) : (
+          <ProductTable products={products} />
+        )}
       </div>
     </>
   );

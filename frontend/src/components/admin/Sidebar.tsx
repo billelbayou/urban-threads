@@ -9,6 +9,7 @@ import {
   FiSettings,
   FiLogOut,
   FiLoader,
+  FiShoppingCart,
 } from "react-icons/fi";
 import { BiCategory } from "react-icons/bi";
 import { useActionState, useEffect } from "react";
@@ -23,7 +24,7 @@ const Sidebar = () => {
     { href: "/admin", icon: <FiHome />, label: "Dashboard" },
     { href: "/admin/products", icon: <FiShoppingBag />, label: "Products" },
     { href: "/admin/categories", icon: <BiCategory />, label: "Categories" },
-    { href: "/orders", icon: <FiShoppingBag />, label: "Orders" },
+    { href: "/admin/orders", icon: <FiShoppingCart />, label: "Orders" },
     { href: "/customers", icon: <FiUsers />, label: "Customers" },
     { href: "/settings", icon: <FiSettings />, label: "Settings" },
   ];

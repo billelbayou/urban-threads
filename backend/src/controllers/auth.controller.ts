@@ -157,3 +157,59 @@ export const logout = (req: Request, res: Response) => {
     return;
   }
 };
+
+/**
+ * Get all users (admin only)
+ */
+export const getAllUsers = async (_req: Request, res: Response) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+    res.json(users);
+    return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
+  }
+};
+
+/**
+ * Delete own account (cascade delete cart, wishlist, orders)
+ */
+export const deleteAccount = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id as string;
+
+    // First delete all orders (which will cascade to orderItems)
+    await prisma.order.deleteMany({
+      where: { userId },
+    });
+
+    // Cart and wishlist will be cascade deleted when user is deleted
+    // due to onDelete: Cascade in the schema
+
+    // Delete the user (this will cascade delete cart, wishlist)
+    await prisma.user.delete({
+      where: { id: userId },
+    });
+
+    // Clear the auth cookie
+    clearAuthCookie(res);
+
+    res.json({ message: "Account deleted successfully" });
+    return;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+    return;
+  }
+};

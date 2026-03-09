@@ -53,7 +53,7 @@ export default function Topic({ title, products }: TopicProps) {
 
               {/* Price */}
               <p className="text-lg font-semibold text-neutral-800 mt-2">
-                ${product.price.toFixed(2)}
+                ${Number(product.price).toFixed(2)}
               </p>
             </div>
           </Link>

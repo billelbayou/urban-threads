@@ -25,7 +25,7 @@ async function getOrCreateCart(userId: string) {
  */
 export const getCart = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user!.id;
     const cart = await getOrCreateCart(userId);
     res.json(cart);
   } catch (error: unknown) {
@@ -40,7 +40,7 @@ export const getCart = async (req: AuthRequest, res: Response) => {
  * body: { productId, quantity, size }
  */
 export const addToCart = async (req: AuthRequest, res: Response) => {
-  const userId = req.user.id;
+  const userId = req.user!.id;
   const { productId, quantity, size } = req.body;
 
   try {
@@ -82,7 +82,7 @@ export const addToCart = async (req: AuthRequest, res: Response) => {
 export const updateCartItem = async (req: AuthRequest, res: Response) => {
   const { itemId } = req.params as { itemId: string };
   const { quantity } = req.body;
-  const userId = req.user.id;
+  const userId = req.user!.id;
 
   if (!quantity || quantity <= 0) {
     res.status(400).json({ error: "Invalid quantity" });
@@ -90,6 +90,22 @@ export const updateCartItem = async (req: AuthRequest, res: Response) => {
   }
 
   try {
+    // Verify cart item belongs to user's cart
+    const cartItem = await prisma.cartItem.findUnique({
+      where: { id: itemId },
+      include: { cart: true },
+    });
+
+    if (!cartItem) {
+      res.status(404).json({ error: "Cart item not found" });
+      return;
+    }
+
+    if (cartItem.cart.userId !== userId) {
+      res.status(403).json({ error: "Forbidden" });
+      return;
+    }
+
     await prisma.cartItem.update({
       where: { id: itemId },
       data: { quantity },
@@ -110,9 +126,25 @@ export const updateCartItem = async (req: AuthRequest, res: Response) => {
  */
 export const removeCartItem = async (req: AuthRequest, res: Response) => {
   const { itemId } = req.params as { itemId: string };
-  const userId = req.user.id;
+  const userId = req.user!.id;
 
   try {
+    // Verify cart item belongs to user's cart
+    const cartItem = await prisma.cartItem.findUnique({
+      where: { id: itemId },
+      include: { cart: true },
+    });
+
+    if (!cartItem) {
+      res.status(404).json({ error: "Cart item not found" });
+      return;
+    }
+
+    if (cartItem.cart.userId !== userId) {
+      res.status(403).json({ error: "Forbidden" });
+      return;
+    }
+
     await prisma.cartItem.delete({
       where: { id: itemId },
     });
@@ -131,7 +163,7 @@ export const removeCartItem = async (req: AuthRequest, res: Response) => {
  * DELETE /cart/clear
  */
 export const clearCart = async (req: AuthRequest, res: Response) => {
-  const userId = req.user.id;
+  const userId = req.user!.id;
 
   try {
     const cart = await getOrCreateCart(userId);
@@ -142,7 +174,7 @@ export const clearCart = async (req: AuthRequest, res: Response) => {
 
     const updatedCart = await getOrCreateCart(userId);
     res.json(updatedCart);
-    return
+    return;
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     res.status(500).json({ error: message });

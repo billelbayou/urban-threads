@@ -13,7 +13,7 @@ export const CreateProductSchema = z.object({
     .array(
       z.object({
         url: z.string().url("Invalid image URL"),
-        public_id: z.string().min(1, "Public ID is required"),
+        path: z.string().min(1, "Path is required"),
       }),
     )
     .min(1, "At least one product image is required"),

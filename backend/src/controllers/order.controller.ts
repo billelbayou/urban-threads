@@ -24,10 +24,19 @@ export const createOrder = async (req: Request, res: Response) => {
 
     let total = 0;
 
-    // 2. Map items correctly for Prisma (Remove the full product object)
-    const orderItems = cart.items.map((item) => {
-      total += item.product.price * item.quantity;
+    // 2. Validate stock availability before creating order
+    for (const item of cart.items) {
+      if (item.product.stock < item.quantity) {
+        res.status(400).json({
+          error: `Insufficient stock for product "${item.product.name}". Available: ${item.product.stock}, Requested: ${item.quantity}`,
+        });
+        return;
+      }
+      total += item.product.price.toNumber() * item.quantity;
+    }
 
+    // 3. Map items correctly for Prisma (Remove the full product object)
+    const orderItems = cart.items.map((item) => {
       return {
         productId: item.productId,
         quantity: item.quantity,
@@ -36,8 +45,20 @@ export const createOrder = async (req: Request, res: Response) => {
       };
     });
 
-    // 3. Create Order and Clear Cart in a transaction
+    // 4. Create Order, Decrement Stock, and Clear Cart in a transaction
     const order = await prisma.$transaction(async (tx) => {
+      // Decrement stock for each item
+      for (const item of cart.items) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: {
+            stock: {
+              decrement: item.quantity,
+            },
+          },
+        });
+      }
+
       const newOrder = await tx.order.create({
         data: {
           userId,
@@ -61,7 +82,7 @@ export const createOrder = async (req: Request, res: Response) => {
       return newOrder;
     });
 
-    // 4. Return the order (which now includes the product object)
+    // 5. Return the order (which now includes the product object)
     res.status(201).json(order);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";

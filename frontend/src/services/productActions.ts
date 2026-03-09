@@ -1,6 +1,6 @@
 "use server";
 
-import { createProduct, deleteProduct } from "@/lib/fetchers";
+import { createProduct, deleteProduct, updateProduct } from "@/lib/fetchers";
 import { CreateProductSchema } from "@/schemas/productShema";
 import { Product } from "@/types/product";
 import getCookies from "@/utils/cookies";
@@ -108,6 +108,82 @@ export async function deleteProductAction(
       success: false,
       data: null,
       error: errorMessage,
+    };
+  }
+}
+
+export async function updateProductAction(
+  _initialState: unknown,
+  formData: FormData,
+) {
+  // Decode payload safely
+  let product: unknown;
+
+  try {
+    const raw = formData.get("product");
+    if (!raw || typeof raw !== "string") {
+      return {
+        success: false,
+        data: null,
+        fieldErrors: null,
+        message: "Invalid form payload",
+      };
+    }
+
+    product = JSON.parse(atob(raw));
+  } catch {
+    return {
+      success: false,
+      data: null,
+      fieldErrors: null,
+      message: "Malformed product data",
+    };
+  }
+
+  const productId = formData.get("productId") as string;
+  if (!productId) {
+    return {
+      success: false,
+      data: null,
+      fieldErrors: null,
+      message: "Product ID is required",
+    };
+  }
+
+  const validated = CreateProductSchema.safeParse(product);
+
+  if (!validated.success) {
+    const fieldErrors: ValidationErrors = validated.error.flatten().fieldErrors;
+
+    return {
+      success: false,
+      data: null,
+      fieldErrors,
+      message: null,
+    };
+  }
+
+  try {
+    const cookie = await getCookies();
+    const res = await updateProduct(productId, validated.data, cookie);
+
+    revalidatePath("/admin/products");
+
+    return {
+      success: true,
+      data: res.product,
+      fieldErrors: null,
+      message: res.message,
+    };
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "An unexpected error occurred";
+
+    return {
+      success: false,
+      data: null,
+      fieldErrors: null,
+      message,
     };
   }
 }

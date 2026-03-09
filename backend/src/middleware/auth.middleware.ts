@@ -2,14 +2,19 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
+export interface JwtPayload {
+  id: string;
+  role: string;
+}
+
 export interface AuthRequest extends Request {
-  user?: any;
+  user?: JwtPayload;
 }
 
 export const authenticate = (
   req: AuthRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const token = req.cookies.token;
   if (!token) {
@@ -18,7 +23,7 @@ export const authenticate = (
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
     req.user = decoded;
     next();
   } catch {

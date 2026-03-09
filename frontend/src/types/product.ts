@@ -10,7 +10,7 @@ export interface Product {
   categoryId: string;
   category?: Category;
 
-  images: { url: string; public_id: string }[];
+  images: { url: string; path: string }[];
   productStats?: ProductStats[];
   infoSections: InfoSection[];
   tags: string[];
@@ -31,14 +31,8 @@ export interface ProductStats {
   soldQuantity: number;
 }
 export interface UploadedImage {
-  public_id: string;
-  secure_url: string;
-  width: number;
-  height: number;
-  format: string;
-  bytes: number;
   url: string;
-  thumbnail_url: string;
+  path: string;
 }
 
 export interface Tag {

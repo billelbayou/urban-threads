@@ -4,10 +4,20 @@ import AddRootButton from "@/components/admin/categories/AddRootButton";
 import CategoryTreeBox from "@/components/admin/categories/CategoryTreeBox";
 import { ListTree } from "lucide-react";
 import { Category, CategoryWithChildren } from "@/types/category";
+import getCookies from "@/utils/cookies";
 
 export default async function CategoryAdmin() {
-  const categories: Category[] = await fetchCategories();
-  const tree: CategoryWithChildren[] = buildTree(categories);
+  let tree: CategoryWithChildren[] = [];
+  let error: string | null = null;
+
+  try {
+    const cookies = await getCookies();
+    const categories: Category[] = await fetchCategories(cookies);
+    tree = buildTree(categories);
+  } catch (err) {
+    console.error("Failed to fetch categories for admin page:", err);
+    error = "Failed to load categories. Please check if you are logged in.";
+  }
 
   return (
     <div className="max-w-3xl mx-auto p-10 min-h-screen">
@@ -28,8 +38,14 @@ export default async function CategoryAdmin() {
         </div>
       </div>
 
-      {/* Tree Box */}
-      <CategoryTreeBox initialTree={tree} />
+      {/* Tree Box or Error */}
+      {error ? (
+        <div className="bg-white p-10 rounded-xl shadow-sm border border-red-100 text-center">
+          <p className="text-red-500">{error}</p>
+        </div>
+      ) : (
+        <CategoryTreeBox initialTree={tree} />
+      )}
     </div>
   );
 }

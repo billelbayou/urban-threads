@@ -4,9 +4,7 @@ import { useEffect } from "react";
 import { useCartStore } from "@/store/useCartStore";
 import { Cart } from "@/types/cart";
 
-export default function CartHydrator({ cart }: { cart: 
-  Cart
- }) {
+export default function CartHydrator({ cart }: { cart: Cart | null }) {
   const setCart = useCartStore((s) => s.setCart);
 
   useEffect(() => {
@@ -15,4 +13,3 @@ export default function CartHydrator({ cart }: { cart:
 
   return null;
 }
- 

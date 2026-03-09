@@ -5,6 +5,7 @@ import ProfileSidebar from "@/components/profile/ProfileSidebar";
 import PersonalInfoForm from "@/components/profile/PersonalInfoForm";
 import ShippingAddressForm from "@/components/profile/ShippingAddressForm";
 import PasswordSection from "@/components/profile/PasswordSection";
+import DeleteAccountSection from "@/components/profile/DeleteAccountSection";
 
 export default async function AccountOverview() {
   const cookie = await getCookies();
@@ -29,16 +30,7 @@ export default async function AccountOverview() {
               <PersonalInfoForm user={user} />
               <ShippingAddressForm user={user} />
               <PasswordSection />
-
-              {/* Manage Account Section */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Manage Account
-                </h3>
-                <button className="px-8 py-3 border-2 border-gray-900 text-gray-900 font-semibold hover:bg-gray-900 hover:text-white transition-colors rounded">
-                  Delete Account
-                </button>
-              </div>
+              <DeleteAccountSection />
             </div>
           </div>
         </div>

@@ -1,9 +1,9 @@
-import { User } from "@prisma/client";
+import { JwtPayload } from "../middleware/auth.middleware.js";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: Omit<User, "password">; // Exclude password field from the user type
+      user?: JwtPayload;
     }
   }
 }

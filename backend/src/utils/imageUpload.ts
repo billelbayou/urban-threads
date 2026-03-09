@@ -1,55 +1,130 @@
-import {cloud as cloudinary} from '../config/config.js';
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+  DeleteObjectsCommand,
+} from "@aws-sdk/client-s3";
+import { supabaseConfig } from "../config/config.js";
 
 /**
- * Upload base64 image to Cloudinary
- * @param {string} base64String - Base64 encoded image
- * @param {string} folder - Cloudinary folder name
- * @returns {Promise<{url: string, publicId: string}>}
+ * Initialize S3 client for Supabase Storage (S3-compatible)
  */
-export const uploadBase64Image = async (base64String: string, folder: string = 'products'): Promise<{ url: string; publicId: string; }> => {
+const getS3Client = () => {
+  return new S3Client({
+    region: supabaseConfig.region || "us-east-1",
+    credentials: {
+      accessKeyId: supabaseConfig.accessKeyId,
+      secretAccessKey: supabaseConfig.secretAccessKey,
+    },
+    endpoint: supabaseConfig.endpoint,
+    forcePathStyle: true, // Required for S3-compatible services
+  });
+};
+
+/**
+ * Upload base64 image to Supabase Storage (S3-compatible)
+ * @param {string} base64String - Base64 encoded image
+ * @param {string} folder - Folder name in the bucket
+ * @returns {Promise<{url: string, path: string}>}
+ */
+export const uploadBase64Image = async (
+  base64String: string,
+  folder: string = "products",
+): Promise<{ url: string; path: string }> => {
   try {
-    const result = await cloudinary.uploader.upload(base64String, {
-      folder: folder,
-      resource_type: 'auto',
-      transformation: [
-        { width: 1000, height: 1000, crop: 'limit' }, // Limit max size
-        { quality: 'auto' }, // Auto quality optimization
-        { fetch_format: 'auto' } // Auto format (WebP when supported)
-      ]
+    // Extract the base64 data (remove data URL prefix if present)
+    const base64Data = base64String.replace(/^data:image\/\w+;base64,/, "");
+    const buffer = Buffer.from(base64Data, "base64");
+
+    // Determine content type from base64 string
+    const mimeMatch = base64String.match(/^data:image\/(\w+);base64,/);
+    const mimeType = mimeMatch ? `image/${mimeMatch[1]}` : "image/jpeg";
+    const extension = mimeMatch ? mimeMatch[1] : "jpg";
+
+    // Generate a unique filename
+    const timestamp = Date.now();
+    const randomSuffix = Math.random().toString(36).substring(2, 15);
+    const fileName = `${folder}/${timestamp}-${randomSuffix}.${extension}`;
+
+    const s3Client = getS3Client();
+
+    // Upload the file to S3
+    const command = new PutObjectCommand({
+      Bucket: supabaseConfig.bucketName,
+      Key: fileName,
+      Body: buffer,
+      ContentType: mimeType,
     });
 
+    await s3Client.send(command);
+
+    // Construct the public URL
+    const url = `${supabaseConfig.endpoint}/${supabaseConfig.bucketName}/${fileName}`;
+
     return {
-      url: result.secure_url,
-      publicId: result.public_id
+      url,
+      path: fileName,
     };
   } catch (error) {
-    console.error('Cloudinary upload error:', error);
-    throw new Error('Failed to upload image');
+    console.error("S3 upload error:", error);
+    throw new Error("Failed to upload image");
   }
 };
 
 /**
- * Delete image from Cloudinary
- * @param {string} publicId - Cloudinary public_id
+ * Upload multiple base64 images to Supabase Storage
+ * @param {string[]} base64Strings - Array of base64 encoded images
+ * @param {string} folder - Folder name in the bucket
+ * @returns {Promise<{url: string, path: string}[]>}
  */
-export const deleteImage = async (publicId: string) => {
+export const uploadMultipleImages = async (
+  base64Strings: string[],
+  folder: string = "products",
+): Promise<{ url: string; path: string }[]> => {
+  const uploadPromises = base64Strings.map((base64) =>
+    uploadBase64Image(base64, folder),
+  );
+  return Promise.all(uploadPromises);
+};
+
+/**
+ * Delete image from Supabase Storage
+ * @param {string} path - The path/key of the image in the bucket
+ */
+export const deleteImage = async (path: string) => {
   try {
-    await cloudinary.uploader.destroy(publicId);
+    const s3Client = getS3Client();
+
+    const command = new DeleteObjectCommand({
+      Bucket: supabaseConfig.bucketName,
+      Key: path,
+    });
+
+    await s3Client.send(command);
   } catch (error) {
-    console.error('Cloudinary delete error:', error);
-    throw new Error('Failed to delete image');
+    console.error("S3 delete error:", error);
+    throw new Error("Failed to delete image");
   }
 };
 
 /**
- * Delete multiple images from Cloudinary
- * @param {string[]} publicIds - Array of Cloudinary public_ids
+ * Delete multiple images from Supabase Storage
+ * @param {string[]} paths - Array of paths to delete
  */
-export const deleteMultipleImages = async (publicIds: string[]) => {
+export const deleteMultipleImages = async (paths: string[]) => {
   try {
-    await cloudinary.api.delete_resources(publicIds);
+    const s3Client = getS3Client();
+
+    const command = new DeleteObjectsCommand({
+      Bucket: supabaseConfig.bucketName,
+      Delete: {
+        Objects: paths.map((Key) => ({ Key })),
+      },
+    });
+
+    await s3Client.send(command);
   } catch (error) {
-    console.error('Cloudinary bulk delete error:', error);
-    throw new Error('Failed to delete images');
+    console.error("S3 bulk delete error:", error);
+    throw new Error("Failed to delete images");
   }
 };
