@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { Role } from "../generated/prisma/enums.js";
 import {
   createOrder,
   getMyOrders,
@@ -15,7 +16,7 @@ router.post("/", authenticate, createOrder);
 router.get("/mine", authenticate, getMyOrders);
 
 // Admin
-router.get("/", authenticate, authorize(["ADMIN"]), getAllOrders);
-router.patch("/:id", authenticate, authorize(["ADMIN"]), updateOrderStatus);
+router.get("/", authenticate, authorize([Role.ADMIN]), getAllOrders);
+router.patch("/:id", authenticate, authorize([Role.ADMIN]), updateOrderStatus);
 
 export default router;

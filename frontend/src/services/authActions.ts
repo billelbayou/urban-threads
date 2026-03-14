@@ -1,5 +1,5 @@
 import { loginSchema, registerSchema } from "@/schemas/authSchema";
-import { login, logout, register, deleteAccount } from "../lib/fetchers";
+import { login, logout, register, deleteAccount } from "./api/auth";
 import getCookies from "@/utils/cookies";
 
 export async function loginAction(_previousState: unknown, formData: FormData) {

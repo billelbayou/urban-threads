@@ -40,6 +40,8 @@ export interface UploadResult {
   path: string;
   size: number;
   etag: string;
+  width?: number;
+  height?: number;
 }
 
 // ============================================================================
@@ -107,21 +109,40 @@ class StorageService {
     folderPath: string,
   ): Promise<UploadResult> {
     const fileName = generateUniqueFileName(file.originalname);
+    return this.uploadBuffer(
+      file.buffer,
+      fileName,
+      folderPath,
+      file.mimetype,
+      file.size,
+    );
+  }
+
+  /**
+   * Upload a raw buffer
+   */
+  async uploadBuffer(
+    buffer: Buffer,
+    fileName: string,
+    folderPath: string,
+    contentType: string,
+    size: number,
+  ): Promise<UploadResult> {
     const objectPath = buildObjectPath(folderPath, fileName);
 
     const command = new PutObjectCommand({
       Bucket: BUCKET_NAME,
       Key: objectPath,
-      Body: file.buffer,
-      ContentType: file.mimetype,
-      ContentLength: file.size,
+      Body: buffer,
+      ContentType: contentType,
+      ContentLength: size,
     });
 
     const response = await s3Client.send(command);
 
     return {
       path: objectPath,
-      size: file.size,
+      size: size,
       etag: response.ETag || "",
     };
   }

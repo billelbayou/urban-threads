@@ -6,10 +6,12 @@ import "keen-slider/keen-slider.min.css";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { useState } from "react";
 
+import { ProductImage } from "@/types/product";
+
 interface ImageCarouselProps {
   product: {
     name: string;
-    images: { url: string }[];
+    images: ProductImage[];
   };
 }
 
@@ -40,7 +42,7 @@ export default function ImageCarousel({ product }: ImageCarouselProps) {
         {product.images.map((img, i) => (
           <div key={i} className="keen-slider__slide relative w-full h-full">
             <Image
-              src={img.url}
+              src={img.desktop?.url || img.url || ""}
               alt={`${product.name} - Image ${i + 1}`}
               fill
               className="object-contain md:object-cover"

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser, fetchCart } from "@/lib/fetchers";
+import { getCurrentUser } from "@/services/api/auth";
+import { fetchCart } from "@/services/api/cart";
 import getCookies from "@/utils/cookies";
 import CheckoutClient from "@/components/checkout/CheckoutClient";
 

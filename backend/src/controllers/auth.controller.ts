@@ -1,215 +1,71 @@
 import { Request, Response } from "express";
-import bcrypt from "bcrypt";
 import {
   registerSchema,
   loginSchema,
   updatePersonalInfoSchema,
   updateShippingAddressSchema,
 } from "../utils/validation.js";
-import { generateToken } from "../utils/jwt.js";
-import { setAuthCookie, clearAuthCookie } from "../utils/cookies.js";
-import { prisma } from "../utils/prisma.js";
+import { authService } from "../services/auth.service.js";
+import { asyncHandler } from "../middleware/error.middleware.js";
 
-export const register = async (req: Request, res: Response) => {
-  try {
-    // 1. Validate request body
-    const validated = registerSchema.parse(req.body);
+export const register = asyncHandler(async (req: Request, res: Response) => {
+  const validated = registerSchema.parse(req.body);
+  const result = await authService.register(validated);
+  res.status(201).json(result);
+});
 
-    // 2. Check if email already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email: validated.email },
-    });
+export const login = asyncHandler(async (req: Request, res: Response) => {
+  const validated = loginSchema.parse(req.body);
+  const result = await authService.login(validated, res);
+  res.json(result);
+});
 
-    if (existingUser) {
-      res.status(400).json({
-        error: "Email is already in use",
-      });
-      return;
-    }
-
-    // 3. Hash password
-    const hashedPassword = await bcrypt.hash(validated.password, 10);
-
-    // 4. Create user in database
-    const user = await prisma.user.create({
-      data: { ...validated, password: hashedPassword },
-    });
-
-    res
-      .status(201)
-      .json({ message: "User created successfully", userId: user.id });
-    return;
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({ error: message });
-    return;
-  }
-};
-
-/**
- * Login a user and set auth cookie
- */
-export const login = async (req: Request, res: Response) => {
-  try {
-    // Validate request body
-    const { email, password } = loginSchema.parse(req.body);
-
-    // Find user by email
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      res.status(404).json({ error: "Invalid credentials" });
-      return;
-    }
-
-    // Check password
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) {
-      res.status(401).json({ error: "Invalid credentials" });
-      return;
-    }
-
-    // Generate JWT
-    const token = generateToken(user.id, user.role);
-
-    // Set cookie
-    setAuthCookie(res, token);
-
-    res.json({ message: "You are logged in", user });
-    return;
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({ error: message });
-  }
-};
-
-export const getUserInfos = async (req: Request, res: Response) => {
-  try {
+export const getUserInfos = asyncHandler(
+  async (req: Request, res: Response) => {
     const userId = req.user?.id as string;
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
+    const user = await authService.getUserById(userId);
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
     res.json(user);
-    return;
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({ error: message });
-  }
-};
+  },
+);
 
-/**
- * Update personal info (phone, dateOfBirth, gender)
- */
-export const updatePersonalInfo = async (req: Request, res: Response) => {
-  try {
+export const updatePersonalInfo = asyncHandler(
+  async (req: Request, res: Response) => {
     const userId = req.user?.id as string;
     const validated = updatePersonalInfoSchema.parse(req.body);
-
-    const data: Record<string, unknown> = {};
-    if (validated.phone !== undefined) data.phone = validated.phone;
-    if (validated.gender !== undefined) data.gender = validated.gender;
-    if (validated.dateOfBirth !== undefined) {
-      data.dateOfBirth = new Date(validated.dateOfBirth);
-    }
-
-    const user = await prisma.user.update({
-      where: { id: userId },
-      data,
-    });
-
+    const user = await authService.updatePersonalInfo(userId, validated);
     res.json({ message: "Personal info updated", user });
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({ error: message });
-  }
-};
+  },
+);
 
-/**
- * Update shipping address
- */
-export const updateShippingAddress = async (req: Request, res: Response) => {
-  try {
+export const updateShippingAddress = asyncHandler(
+  async (req: Request, res: Response) => {
     const userId = req.user?.id as string;
     const validated = updateShippingAddressSchema.parse(req.body);
-
-    const user = await prisma.user.update({
-      where: { id: userId },
-      data: validated,
-    });
-
+    const user = await authService.updateShippingAddress(userId, validated);
     res.json({ message: "Shipping address updated", user });
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({ error: message });
-  }
-};
+  },
+);
 
-/**
- * Logout a user (clear auth cookie)
- */
-export const logout = (req: Request, res: Response) => {
-  try {
-    clearAuthCookie(res);
-    res.json({ message: "Logged out successfully" });
-    return;
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({ error: message });
-    return;
-  }
-};
+export const logout = asyncHandler(async (req: Request, res: Response) => {
+  const result = await authService.logout(res);
+  res.json(result);
+});
 
-/**
- * Get all users (admin only)
- */
-export const getAllUsers = async (_req: Request, res: Response) => {
-  try {
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-        createdAt: true,
-      },
-    });
+export const getAllUsers = asyncHandler(
+  async (_req: Request, res: Response) => {
+    const users = await authService.getAllUsers();
     res.json(users);
-    return;
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({ error: message });
-    return;
-  }
-};
+  },
+);
 
-/**
- * Delete own account (cascade delete cart, wishlist, orders)
- */
-export const deleteAccount = async (req: Request, res: Response) => {
-  try {
+export const deleteAccount = asyncHandler(
+  async (req: Request, res: Response) => {
     const userId = req.user?.id as string;
-
-    // First delete all orders (which will cascade to orderItems)
-    await prisma.order.deleteMany({
-      where: { userId },
-    });
-
-    // Cart and wishlist will be cascade deleted when user is deleted
-    // due to onDelete: Cascade in the schema
-
-    // Delete the user (this will cascade delete cart, wishlist)
-    await prisma.user.delete({
-      where: { id: userId },
-    });
-
-    // Clear the auth cookie
-    clearAuthCookie(res);
-
-    res.json({ message: "Account deleted successfully" });
-    return;
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({ error: message });
-    return;
-  }
-};
+    const result = await authService.deleteAccount(userId, res);
+    res.json(result);
+  },
+);

@@ -1,5 +1,20 @@
 import { Category } from "./category";
 
+export interface ImageVariant {
+  url: string;
+  path: string;
+}
+
+export interface ProductImage {
+  thumbnail?: ImageVariant;
+  mobile?: ImageVariant;
+  desktop?: ImageVariant;
+  original?: ImageVariant;
+  // Fallback for old data
+  url?: string;
+  path?: string;
+}
+
 export interface Product {
   id?: string;
   name: string;
@@ -10,7 +25,7 @@ export interface Product {
   categoryId: string;
   category?: Category;
 
-  images: { url: string; path: string }[];
+  images: ProductImage[];
   productStats?: ProductStats[];
   infoSections: InfoSection[];
   tags: string[];
@@ -30,10 +45,7 @@ export interface ProductStats {
   views: number;
   soldQuantity: number;
 }
-export interface UploadedImage {
-  url: string;
-  path: string;
-}
+export interface UploadedImage extends ProductImage {}
 
 export interface Tag {
   id: string;

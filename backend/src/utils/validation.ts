@@ -72,11 +72,35 @@ export const ProductSchema = z.object({
   images: z
     .array(
       z.object({
-        url: z.string().url("Invalid image URL"),
-        path: z.string().min(1, "S3 path is required"),
+        url: z.string().url().optional(), // Fallback for old data
+        path: z.string().optional(), // Fallback for old data
+        thumbnail: z
+          .object({
+            url: z.string().url(),
+            path: z.string(),
+          })
+          .optional(),
+        mobile: z
+          .object({
+            url: z.string().url(),
+            path: z.string(),
+          })
+          .optional(),
+        desktop: z
+          .object({
+            url: z.string().url(),
+            path: z.string(),
+          })
+          .optional(),
+        original: z
+          .object({
+            url: z.string().url(),
+            path: z.string(),
+          })
+          .optional(),
       }),
     )
-    .min(1, "At least one image is required"),
+    .default([]),
   infoSections: z
     .array(
       z.object({
@@ -86,3 +110,14 @@ export const ProductSchema = z.object({
     )
     .min(1, "At least one info section is required"),
 });
+
+export type RegisterInput = z.infer<typeof registerSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;
+export type OrderInput = z.infer<typeof orderSchema>;
+export type CategoryInput = z.infer<typeof CategorySchema>;
+export type AddToCartInput = z.infer<typeof AddToCartSchema>;
+export type UpdatePersonalInfoInput = z.infer<typeof updatePersonalInfoSchema>;
+export type UpdateShippingAddressInput = z.infer<
+  typeof updateShippingAddressSchema
+>;
+export type ProductInput = z.infer<typeof ProductSchema>;

@@ -12,6 +12,8 @@ import uploadRoutes from "./routes/upload.routes.js";
 import config from "./config/config.js";
 import morgan from "morgan";
 
+import { errorHandler } from "./middleware/error.middleware.js";
+
 dotenv.config();
 
 const app = express();
@@ -43,18 +45,9 @@ app.use("/api/upload", uploadRoutes);
 app.get("/health", (req, res) => {
   res.status(200).send("OK");
 });
+
 // Global error handler
-app.use(
-  (
-    err: Error,
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ) => {
-    console.error("Error:", err.message);
-    res.status(500).json({ error: err.message || "Internal Server Error" });
-  },
-);
+app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => console.log("Server running"));

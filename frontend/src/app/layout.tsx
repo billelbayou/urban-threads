@@ -3,7 +3,8 @@ import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import AuthHydrator from "@/components/auth/AuthHydrator";
-import { fetchCart, getCurrentUser } from "@/lib/fetchers";
+import { getCurrentUser } from "@/services/api/auth";
+import { fetchCart } from "@/services/api/cart";
 import CartHydrator from "@/components/cart/CartHydrator";
 import getCookies from "@/utils/cookies";
 

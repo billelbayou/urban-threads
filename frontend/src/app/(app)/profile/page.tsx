@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/fetchers";
+import { getCurrentUser } from "@/services/api/auth";
 import getCookies from "@/utils/cookies";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
 import PersonalInfoForm from "@/components/profile/PersonalInfoForm";

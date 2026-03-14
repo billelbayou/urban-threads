@@ -1,7 +1,11 @@
 "use server";
 
-import { createProduct, deleteProduct, updateProduct } from "@/lib/fetchers";
-import { CreateProductSchema } from "@/schemas/productShema";
+import {
+  createProduct,
+  deleteProduct,
+  updateProduct,
+} from "@/services/api/product";
+import { CreateProductSchema } from "@/schemas/productSchema";
 import { Product } from "@/types/product";
 import getCookies from "@/utils/cookies";
 import { revalidatePath } from "next/cache";
@@ -43,7 +47,7 @@ export async function createProductAction(
       };
     }
 
-    product = JSON.parse(atob(raw));
+    product = JSON.parse(raw);
   } catch {
     return {
       success: false,
@@ -68,7 +72,9 @@ export async function createProductAction(
 
   try {
     const cookie = await getCookies();
-    const res = await createProduct(validated.data, cookie);
+    // Update formData with validated/transformed data
+    formData.set("product", JSON.stringify(validated.data));
+    const res = await createProduct(formData, cookie);
 
     revalidatePath("/admin/products");
 
@@ -130,7 +136,7 @@ export async function updateProductAction(
       };
     }
 
-    product = JSON.parse(atob(raw));
+    product = JSON.parse(raw);
   } catch {
     return {
       success: false,
@@ -165,7 +171,9 @@ export async function updateProductAction(
 
   try {
     const cookie = await getCookies();
-    const res = await updateProduct(productId, validated.data, cookie);
+    // Update formData with validated/transformed data
+    formData.set("product", JSON.stringify(validated.data));
+    const res = await updateProduct(productId, formData, cookie);
 
     revalidatePath("/admin/products");
 

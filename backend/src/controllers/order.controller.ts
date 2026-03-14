@@ -1,149 +1,31 @@
 import { Request, Response } from "express";
-import { prisma } from "../utils/prisma.js";
-import { Product } from "../generated/prisma/client.js";
+import { orderService } from "../services/order.service.js";
+import { asyncHandler } from "../middleware/error.middleware.js";
 
-/** Create order */
-export const createOrder = async (req: Request, res: Response) => {
-  try {
-    const userId = req.user?.id as string;
+export const createOrder = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?.id as string;
+  const order = await orderService.createOrder(userId);
+  res.status(201).json(order);
+});
 
-    // 1. Fetch user's cart
-    const cart = await prisma.cart.findUnique({
-      where: { userId },
-      include: {
-        items: {
-          include: { product: true },
-        },
-      },
-    });
+export const getMyOrders = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?.id as string;
+  const orders = await orderService.getMyOrders(userId);
+  res.json(orders);
+});
 
-    if (!cart || cart.items.length === 0) {
-      res.status(400).json({ error: "Cart is empty" });
-      return;
-    }
-
-    let total = 0;
-
-    // 2. Validate stock availability before creating order
-    for (const item of cart.items) {
-      if (item.product.stock < item.quantity) {
-        res.status(400).json({
-          error: `Insufficient stock for product "${item.product.name}". Available: ${item.product.stock}, Requested: ${item.quantity}`,
-        });
-        return;
-      }
-      total += item.product.price.toNumber() * item.quantity;
-    }
-
-    // 3. Map items correctly for Prisma (Remove the full product object)
-    const orderItems = cart.items.map((item) => {
-      return {
-        productId: item.productId,
-        quantity: item.quantity,
-        price: item.product.price,
-        size: item.size,
-      };
-    });
-
-    // 4. Create Order, Decrement Stock, and Clear Cart in a transaction
-    const order = await prisma.$transaction(async (tx) => {
-      // Decrement stock for each item
-      for (const item of cart.items) {
-        await tx.product.update({
-          where: { id: item.productId },
-          data: {
-            stock: {
-              decrement: item.quantity,
-            },
-          },
-        });
-      }
-
-      const newOrder = await tx.order.create({
-        data: {
-          userId,
-          total,
-          items: {
-            create: orderItems,
-          },
-        },
-        include: {
-          items: {
-            include: { product: true }, // This ensures the frontend gets product details
-          },
-        },
-      });
-
-      // Clear the cart
-      await tx.cartItem.deleteMany({
-        where: { cartId: cart.id },
-      });
-
-      return newOrder;
-    });
-
-    // 5. Return the order (which now includes the product object)
-    res.status(201).json(order);
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("Order Creation Error:", error);
-    res.status(500).json({ error: message });
-  }
-};
-
-/** Get my orders */
-export const getMyOrders = async (req: Request, res: Response) => {
-  try {
-    const userId = req.user?.id as string;
-
-    const orders = await prisma.order.findMany({
-      where: { userId },
-      include: { items: { include: { product: true } } },
-    });
-
+export const getAllOrders = asyncHandler(
+  async (_req: Request, res: Response) => {
+    const orders = await orderService.getAllOrders();
     res.json(orders);
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({ error: message });
-    return;
-  }
-};
+  },
+);
 
-/** Admin: get all orders */
-export const getAllOrders = async (_req: Request, res: Response) => {
-  try {
-    const orders = await prisma.order.findMany({
-      include: {
-        user: true,
-        items: true,
-      },
-    });
-
-    res.json(orders);
-    return;
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({ error: message });
-    return;
-  }
-};
-
-/** Admin: update order status */
-export const updateOrderStatus = async (req: Request, res: Response) => {
-  try {
+export const updateOrderStatus = asyncHandler(
+  async (req: Request, res: Response) => {
     const { id } = req.params as { id: string };
     const { status } = req.body;
-
-    const order = await prisma.order.update({
-      where: { id: id },
-      data: { status },
-    });
-
+    const order = await orderService.updateOrderStatus(id, status);
     res.json(order);
-    return;
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({ error: message });
-    return;
-  }
-};
+  },
+);

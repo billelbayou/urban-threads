@@ -2,8 +2,15 @@ import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
 import LoginForm from "@/components/auth/LoginForm";
 import getCookies from "@/utils/cookies";
-import { getCurrentUser } from "@/lib/fetchers";
+import { getCurrentUser } from "@/services/api/auth";
 import { redirect } from "next/navigation";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Login | Urban Threads",
+  description:
+    "Log in to your account for quick checkout and wishlist management.",
+};
 
 export default async function LoginPage() {
   const user = await getCurrentUser(await getCookies());

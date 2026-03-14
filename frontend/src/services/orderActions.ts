@@ -1,10 +1,6 @@
 "use server";
 
-import {
-  createOrder,
-  fetchAdminOrders,
-  updateOrderStatus,
-} from "@/lib/fetchers";
+import { createOrder, fetchAdminOrders, updateOrderStatus } from "./api/order";
 import { Order } from "@/types/order";
 import { cookies } from "next/headers";
 

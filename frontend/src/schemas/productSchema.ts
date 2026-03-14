@@ -12,11 +12,15 @@ export const CreateProductSchema = z.object({
   images: z
     .array(
       z.object({
-        url: z.string().url("Invalid image URL"),
-        path: z.string().min(1, "Path is required"),
+        url: z.string().url().optional(),
+        path: z.string().optional(),
+        thumbnail: z.any().optional(),
+        mobile: z.any().optional(),
+        desktop: z.any().optional(),
+        original: z.any().optional(),
       }),
     )
-    .min(1, "At least one product image is required"),
+    .default([]),
   infoSections: z
     .array(
       z.object({

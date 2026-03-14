@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser, fetchMyOrders } from "@/lib/fetchers";
+import { getCurrentUser } from "@/services/api/auth";
+import { fetchMyOrders } from "@/services/api/order";
 import getCookies from "@/utils/cookies";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
 import Image from "next/image";

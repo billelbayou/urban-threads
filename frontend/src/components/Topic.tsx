@@ -34,7 +34,9 @@ export default function Topic({ title, products }: TopicProps) {
             {/* Image */}
             <div className="relative w-full aspect-square bg-neutral-100">
               <Image
-                src={product.images[0].url}
+                src={
+                  product.images[0].mobile?.url || product.images[0].url || ""
+                }
                 alt={product.name}
                 fill
                 sizes="(max-width: 768px) 100vw, 300px"

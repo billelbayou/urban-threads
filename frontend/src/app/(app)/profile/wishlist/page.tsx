@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser, fetchWishlist } from "@/lib/fetchers";
+import { getCurrentUser } from "@/services/api/auth";
+import { fetchWishlist } from "@/services/api/wishlist";
 import getCookies from "@/utils/cookies";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
 import WishlistClient from "./WishlistClient";

@@ -8,9 +8,17 @@ import Topic from "@/components/Topic";
 import Footer from "@/components/Footer";
 import CategoriesSection from "@/components/CategoriesSection";
 import CartDrawer from "@/components/cart/CartDrawer";
-import { fetchProducts, getCurrentUser } from "@/lib/fetchers";
+import { fetchProducts } from "@/services/api/product";
+import { getCurrentUser } from "@/services/api/auth";
 import getCookies from "@/utils/cookies";
 import { redirect } from "next/navigation";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Urban Threads | Premium Streetwear Collection",
+  description:
+    "Explore the latest in urban fashion. Limited edition drops, sustainable craftsmanship, and street culture inspired designs.",
+};
 
 export default async function HomePage() {
   const cookies = await getCookies();

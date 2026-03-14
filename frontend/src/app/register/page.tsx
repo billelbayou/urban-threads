@@ -1,6 +1,13 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
 import RegisterForm from "@/components/auth/RegisterForm";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Join Urban Threads | Create Your Account",
+  description:
+    "Join the community. Register now for exclusive drops and a personalized shopping experience.",
+};
 
 export default function RegisterPage() {
   return (

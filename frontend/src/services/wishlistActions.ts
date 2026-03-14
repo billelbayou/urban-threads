@@ -5,7 +5,7 @@ import {
   addToWishlistFetcher,
   removeFromWishlistFetcher,
   fetchWishlist,
-} from "@/lib/fetchers";
+} from "./api/wishlist";
 import { Wishlist } from "@/types/wishlist";
 
 type ActionResponse<T> = {

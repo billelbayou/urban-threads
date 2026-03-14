@@ -60,7 +60,11 @@ export default function WishlistClient({
             <div className="relative aspect-square bg-gray-100">
               {product.images && product.images.length > 0 ? (
                 <Image
-                  src={product.images[0].url}
+                  src={
+                    product.images[0].mobile?.url ||
+                    product.images[0].url ||
+                    ""
+                  }
                   alt={product.name}
                   fill
                   className="object-cover"

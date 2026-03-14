@@ -1,12 +1,40 @@
 import ImageCarousel from "@/components/product-client/productImageCarousel";
 import ProductDetails from "@/components/product-client/productDetails";
-import { fetchProductById } from "@/lib/fetchers";
+import { fetchProductById } from "@/services/api/product";
+import { Metadata } from "next";
 
-export default async function ProductPage({
-  params,
-}: {
+interface PageProps {
   params: Promise<{ id: string }>;
-}) {
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const product = await fetchProductById(id);
+
+  if (!product) {
+    return {
+      title: "Product Not Found | Urban Threads",
+    };
+  }
+
+  return {
+    title: `${product.name} | Urban Threads`,
+    description: product.description,
+    openGraph: {
+      title: product.name,
+      description: product.description,
+      images: [
+        {
+          url: product.images?.[0]?.original?.url || product.images?.[0]?.url || "",
+        },
+      ],
+    },
+  };
+}
+
+export default async function ProductPage({ params }: PageProps) {
   const productId = (await params).id;
   const product = await fetchProductById(productId);
 

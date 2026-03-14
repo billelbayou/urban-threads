@@ -1,24 +1,51 @@
 import { buildTree } from "@/utils/helpers";
-import { fetchCategories } from "@/lib/fetchers";
+import { fetchCategories } from "@/services/api/category";
 import AddRootButton from "@/components/admin/categories/AddRootButton";
 import CategoryTreeBox from "@/components/admin/categories/CategoryTreeBox";
 import { ListTree } from "lucide-react";
-import { Category, CategoryWithChildren } from "@/types/category";
+import { CategoryWithChildren } from "@/types/category";
 import getCookies from "@/utils/cookies";
+import { Suspense } from "react";
+import { Metadata } from "next";
 
-export default async function CategoryAdmin() {
+export const metadata: Metadata = {
+  title: "Category Management | Urban Threads Admin",
+};
+
+async function CategoryList() {
   let tree: CategoryWithChildren[] = [];
-  let error: string | null = null;
-
   try {
     const cookies = await getCookies();
-    const categories: Category[] = await fetchCategories(cookies);
+    const categories = await fetchCategories(cookies);
     tree = buildTree(categories);
   } catch (err) {
     console.error("Failed to fetch categories for admin page:", err);
-    error = "Failed to load categories. Please check if you are logged in.";
+    return (
+      <div className="bg-white p-10 rounded-xl shadow-sm border border-red-100 text-center">
+        <p className="text-red-500">
+          Failed to load categories. Please try again later.
+        </p>
+      </div>
+    );
   }
 
+  return <CategoryTreeBox initialTree={tree} />;
+}
+
+function CategorySkeleton() {
+  return (
+    <div className="animate-pulse">
+      {[...Array(5)].map((_, i) => (
+        <div
+          key={i}
+          className="h-12 bg-gray-50 border border-gray-100 rounded-lg mb-2"
+        ></div>
+      ))}
+    </div>
+  );
+}
+
+export default function CategoryAdmin() {
   return (
     <div className="max-w-3xl mx-auto p-10 min-h-screen">
       {/* Header */}
@@ -38,14 +65,9 @@ export default async function CategoryAdmin() {
         </div>
       </div>
 
-      {/* Tree Box or Error */}
-      {error ? (
-        <div className="bg-white p-10 rounded-xl shadow-sm border border-red-100 text-center">
-          <p className="text-red-500">{error}</p>
-        </div>
-      ) : (
-        <CategoryTreeBox initialTree={tree} />
-      )}
+      <Suspense fallback={<CategorySkeleton />}>
+        <CategoryList />
+      </Suspense>
     </div>
   );
 }

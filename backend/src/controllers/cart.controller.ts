@@ -1,183 +1,61 @@
 import { Response } from "express";
-import { prisma } from "../utils/prisma.js";
 import { AuthRequest } from "../middleware/auth.middleware.js";
+import { cartService } from "../services/cart.service.js";
+import { asyncHandler } from "../middleware/error.middleware.js";
 
-/**
- * Helper: Always return a full cart with items + products
- */
-async function getOrCreateCart(userId: string) {
-  return prisma.cart.upsert({
-    where: { userId },
-    update: {},
-    create: { userId },
-    include: {
-      items: {
-        include: {
-          product: true,
-        },
-      },
-    },
-  });
-}
+export const getCart = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+  const cart = await cartService.getOrCreateCart(userId);
+  res.json(cart);
+});
 
-/**
- * GET /cart
- */
-export const getCart = async (req: AuthRequest, res: Response) => {
-  try {
+export const addToCart = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
     const userId = req.user!.id;
-    const cart = await getOrCreateCart(userId);
-    res.json(cart);
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({ error: message });
-    return;
-  }
-};
-
-/**
- * POST /cart/add
- * body: { productId, quantity, size }
- */
-export const addToCart = async (req: AuthRequest, res: Response) => {
-  const userId = req.user!.id;
-  const { productId, quantity, size } = req.body;
-
-  try {
-    const cart = await getOrCreateCart(userId);
-
-    await prisma.cartItem.upsert({
-      where: {
-        cartId_productId_size: {
-          cartId: cart.id,
-          productId,
-          size,
-        },
-      },
-      update: {
-        quantity: { increment: quantity },
-      },
-      create: {
-        cartId: cart.id,
-        productId,
-        size,
-        quantity,
-      },
-    });
-
-    const updatedCart = await getOrCreateCart(userId);
+    const { productId, quantity, size } = req.body;
+    const updatedCart = await cartService.addToCart(
+      userId,
+      productId,
+      quantity,
+      size,
+    );
     res.status(201).json(updatedCart);
-    return;
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({ error: message });
-    return;
-  }
-};
+  },
+);
 
-/**
- * PUT /cart/item/:itemId
- * body: { quantity }
- */
-export const updateCartItem = async (req: AuthRequest, res: Response) => {
-  const { itemId } = req.params as { itemId: string };
-  const { quantity } = req.body;
-  const userId = req.user!.id;
+export const updateCartItem = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const { itemId } = req.params as { itemId: string };
+    const { quantity } = req.body;
+    const userId = req.user!.id;
 
-  if (!quantity || quantity <= 0) {
-    res.status(400).json({ error: "Invalid quantity" });
-    return;
-  }
-
-  try {
-    // Verify cart item belongs to user's cart
-    const cartItem = await prisma.cartItem.findUnique({
-      where: { id: itemId },
-      include: { cart: true },
-    });
-
-    if (!cartItem) {
-      res.status(404).json({ error: "Cart item not found" });
+    if (!quantity || quantity <= 0) {
+      res.status(400).json({ error: "Invalid quantity" });
       return;
     }
 
-    if (cartItem.cart.userId !== userId) {
-      res.status(403).json({ error: "Forbidden" });
-      return;
-    }
-
-    await prisma.cartItem.update({
-      where: { id: itemId },
-      data: { quantity },
-    });
-
-    const updatedCart = await getOrCreateCart(userId);
+    const updatedCart = await cartService.updateCartItem(
+      userId,
+      itemId,
+      quantity,
+    );
     res.json(updatedCart);
-    return;
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({ error: message });
-    return;
-  }
-};
+  },
+);
 
-/**
- * DELETE /cart/item/:itemId
- */
-export const removeCartItem = async (req: AuthRequest, res: Response) => {
-  const { itemId } = req.params as { itemId: string };
-  const userId = req.user!.id;
-
-  try {
-    // Verify cart item belongs to user's cart
-    const cartItem = await prisma.cartItem.findUnique({
-      where: { id: itemId },
-      include: { cart: true },
-    });
-
-    if (!cartItem) {
-      res.status(404).json({ error: "Cart item not found" });
-      return;
-    }
-
-    if (cartItem.cart.userId !== userId) {
-      res.status(403).json({ error: "Forbidden" });
-      return;
-    }
-
-    await prisma.cartItem.delete({
-      where: { id: itemId },
-    });
-
-    const updatedCart = await getOrCreateCart(userId);
+export const removeCartItem = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const { itemId } = req.params as { itemId: string };
+    const userId = req.user!.id;
+    const updatedCart = await cartService.removeCartItem(userId, itemId);
     res.json(updatedCart);
-    return;
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({ error: message });
-    return;
-  }
-};
+  },
+);
 
-/**
- * DELETE /cart/clear
- */
-export const clearCart = async (req: AuthRequest, res: Response) => {
-  const userId = req.user!.id;
-
-  try {
-    const cart = await getOrCreateCart(userId);
-
-    await prisma.cartItem.deleteMany({
-      where: { cartId: cart.id },
-    });
-
-    const updatedCart = await getOrCreateCart(userId);
+export const clearCart = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const userId = req.user!.id;
+    const updatedCart = await cartService.clearCart(userId);
     res.json(updatedCart);
-    return;
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    res.status(500).json({ error: message });
-    return;
-  }
-};
+  },
+);

@@ -1,6 +1,6 @@
 "use server";
 
-import { createCategory, deleteCategory } from "@/lib/fetchers";
+import { createCategory, deleteCategory } from "./api/category";
 import { CreateCategorySchema } from "@/schemas/categorySchema";
 import getCookies from "@/utils/cookies";
 import { revalidatePath } from "next/cache";
@@ -14,7 +14,6 @@ export async function CreateCategoryAction(
     name: formData.get("name"),
     parentId: formData.get("parentId"),
   });
-
 
   if (!result.success) {
     const errorMessage = result.error.issues.map((i) => i.message).join(", ");

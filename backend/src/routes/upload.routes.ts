@@ -1,5 +1,5 @@
 import { Router } from "express";
-import multer from "multer";
+import { Role } from "../generated/prisma/enums.js";
 import { authenticate, authorize } from "../middleware/auth.middleware.js";
 import {
   uploadProductImage,
@@ -7,22 +7,9 @@ import {
   getProductImageUrl,
 } from "../services/storage.service.js";
 
-const router = Router();
+import { upload } from "../middleware/upload.middleware.js";
 
-// Configure multer for memory storage
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB limit
-  },
-  fileFilter: (_req, file, cb) => {
-    if (file.mimetype.startsWith("image/")) {
-      cb(null, true);
-    } else {
-      cb(new Error("Only image files are allowed"));
-    }
-  },
-});
+const router = Router();
 
 /**
  * POST /api/upload
@@ -32,7 +19,7 @@ const upload = multer({
 router.post(
   "/",
   authenticate,
-  authorize(["ADMIN"]),
+  authorize([Role.ADMIN]),
   upload.single("image"),
   async (req, res) => {
     if (!req.file) {
@@ -57,7 +44,7 @@ router.post(
  * Delete a single image from Supabase Storage
  * Body: { path: string }
  */
-router.delete("/", authenticate, authorize(["ADMIN"]), async (req, res) => {
+router.delete("/", authenticate, authorize([Role.ADMIN]), async (req, res) => {
   const { path } = req.body;
 
   if (!path || typeof path !== "string") {

@@ -1,13 +1,13 @@
-// middleware/auth.ts
-import { Request, Response, NextFunction } from "express";
+import { Request as ExpressRequest, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { Role } from "../generated/prisma/enums.js";
 
 export interface JwtPayload {
   id: string;
-  role: string;
+  role: Role;
 }
 
-export interface AuthRequest extends Request {
+export interface AuthRequest extends ExpressRequest {
   user?: JwtPayload;
 }
 
@@ -32,12 +32,13 @@ export const authenticate = (
 };
 
 export const authorize =
-  (roles: string[]) =>
-  (req: AuthRequest, res: Response, next: NextFunction) => {
+  (roles: Role[]) => (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user) {
       res.status(401).json({ error: "Not authenticated" });
       return;
     }
+
+    // Strict role check
     if (!roles.includes(req.user.role)) {
       res.status(403).json({ error: "Forbidden" });
       return;

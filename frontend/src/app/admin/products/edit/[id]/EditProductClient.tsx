@@ -37,6 +37,7 @@ export default function EditProductClient({
       path: img.path,
     })) || [],
   );
+  const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
   const [productName, setProductName] = useState<string>(product.name);
   const [categoryId, setCategoryId] = useState<string>(product.categoryId);
   const [price, setPrice] = useState<number | "">(product.price);
@@ -61,7 +62,7 @@ export default function EditProductClient({
       price: price === "" ? null : price,
       stock: stock === "" ? null : stock,
       description,
-      images,
+      images, // Existing images to keep
       infoSections,
       tags,
     }),
@@ -76,6 +77,15 @@ export default function EditProductClient({
       tags,
     ],
   );
+
+  const handleSubmit = (formData: FormData) => {
+    formData.set("productId", product.id);
+    formData.set("product", JSON.stringify(productData));
+    newImageFiles.forEach((file) => {
+      formData.append("images", file);
+    });
+    formAction(formData);
+  };
 
   useEffect(() => {
     if (state?.success) {
@@ -112,7 +122,12 @@ export default function EditProductClient({
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
         <div className="flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
           <div className="w-full lg:w-1/2 p-6 lg:p-8">
-            <ImageUpload images={images} setImages={setImages} />
+            <ImageUpload
+              images={images}
+              setImages={setImages}
+              newImageFiles={newImageFiles}
+              setNewImageFiles={setNewImageFiles}
+            />
             {state?.fieldErrors?.images && (
               <p className="mt-3 text-sm text-red-600 flex items-center gap-1">
                 <AlertCircle className="w-4 h-4" />
@@ -147,13 +162,7 @@ export default function EditProductClient({
             <p className="text-sm text-slate-600">
               <span className="text-red-500">*</span> Required fields
             </p>
-            <form action={formAction}>
-              <input type="hidden" name="productId" value={product.id} />
-              <input
-                type="hidden"
-                name="product"
-                value={btoa(JSON.stringify(productData))}
-              />
+            <form action={handleSubmit}>
               <button
                 type="submit"
                 disabled={isPending}

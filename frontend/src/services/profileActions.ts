@@ -1,6 +1,6 @@
 "use server";
 
-import { updatePersonalInfo, updateShippingAddress } from "@/lib/fetchers";
+import { updatePersonalInfo, updateShippingAddress } from "./api/auth";
 import {
   personalInfoSchema,
   shippingAddressSchema,

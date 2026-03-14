@@ -1,5 +1,5 @@
 import AddProductMain from "@/components/admin/product-admin/AddProductMain";
-import { fetchCategories } from "@/lib/fetchers";
+import { fetchCategories } from "@/services/api/category";
 import { Category, CategoryWithChildren } from "@/types/category";
 import { buildTree } from "@/utils/helpers";
 import getCookies from "@/utils/cookies";

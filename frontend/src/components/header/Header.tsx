@@ -1,6 +1,6 @@
 import Link from "next/link";
 import HeaderClient from "./HeaderClient";
-import { fetchCart } from "@/lib/fetchers";
+import { fetchCart } from "@/services/api/cart";
 import getCookies from "@/utils/cookies";
 
 export default async function Header() {

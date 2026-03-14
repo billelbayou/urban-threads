@@ -1,5 +1,6 @@
 import EditProductClient from "./EditProductClient";
-import { fetchProductById, fetchCategories } from "@/lib/fetchers";
+import { fetchProductById } from "@/services/api/product";
+import { fetchCategories } from "@/services/api/category";
 import { buildTree } from "@/utils/helpers";
 import { Category, CategoryWithChildren } from "@/types/category";
 import getCookies from "@/utils/cookies";
