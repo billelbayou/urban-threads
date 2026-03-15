@@ -6,8 +6,8 @@ import {
   addToWishlist,
   removeFromWishlist,
 } from "../controllers/wishlist.controller.js";
-import { validate } from "../middleware/validate.js";
-import { AddToWishlistSchema } from "../utils/validation.js";
+import { validate } from "../middleware/validate.middleware.js";
+import { addToWishlistSchema } from "../schemas/index.js";
 
 const router = Router();
 
@@ -19,16 +19,17 @@ const wishlistRateLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// All routes require authentication
 router.use(authenticate);
 
-// GET /api/wishlist - Get user's wishlist
 router.get("/", getWishlist);
 
-// POST /api/wishlist/add - Add product to wishlist
-router.post("/add", wishlistRateLimiter, validate(AddToWishlistSchema), addToWishlist);
+router.post(
+  "/add",
+  wishlistRateLimiter,
+  validate(addToWishlistSchema),
+  addToWishlist,
+);
 
-// DELETE /api/wishlist/:productId - Remove product from wishlist
 router.delete("/:productId", wishlistRateLimiter, removeFromWishlist);
 
 export default router;

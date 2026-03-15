@@ -1,12 +1,10 @@
 import { Request, Response } from "express";
-import { CategorySchema } from "../utils/validation.js";
 import { categoryService } from "../services/category.service.js";
 import { asyncHandler } from "../middleware/error.middleware.js";
 
 export const createCategory = asyncHandler(
   async (req: Request, res: Response) => {
-    const validated = CategorySchema.parse(req.body);
-    const category = await categoryService.createCategory(validated);
+    const category = await categoryService.createCategory(req.body);
     res.status(201).json(category);
   },
 );

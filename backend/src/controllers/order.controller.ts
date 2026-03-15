@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { orderService } from "../services/order.service.js";
 import { asyncHandler } from "../middleware/error.middleware.js";
-import { orderStatusSchema } from "../utils/validation.js";
 
 export const createOrder = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.id as string;
@@ -29,10 +28,8 @@ export const updateOrderStatus = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params as { id: string };
     const { status } = req.body;
-
-    const validated = orderStatusSchema.parse(status);
     
-    const order = await orderService.updateOrderStatus(id, validated);
+    const order = await orderService.updateOrderStatus(id, status);
     res.json(order);
   },
 );

@@ -1,5 +1,5 @@
 import { prisma } from "../utils/prisma.js";
-import { CategoryInput } from "../utils/validation.js";
+import { CategoryInput } from "../schemas/index.js";
 
 export class CategoryService {
   async getAllCategories() {

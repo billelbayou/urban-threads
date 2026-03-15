@@ -1,7 +1,7 @@
 import { prisma } from "../utils/prisma.js";
 import { getProductImageUrl, storageService } from "./storage.service.js";
 import { Prisma } from "../generated/prisma/client.js";
-import { ProductInput } from "../utils/validation.js";
+import { ProductInput } from "../schemas/index.js";
 import { imageProcessorService } from "./image_processor.service.js";
 
 export interface RawImage {

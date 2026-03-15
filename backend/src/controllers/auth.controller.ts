@@ -1,22 +1,14 @@
 import { Request, Response } from "express";
-import {
-  registerSchema,
-  loginSchema,
-  updatePersonalInfoSchema,
-  updateShippingAddressSchema,
-} from "../utils/validation.js";
 import { authService } from "../services/auth.service.js";
 import { asyncHandler } from "../middleware/error.middleware.js";
 
 export const register = asyncHandler(async (req: Request, res: Response) => {
-  const validated = registerSchema.parse(req.body);
-  const result = await authService.register(validated);
+  const result = await authService.register(req.body);
   res.status(201).json(result);
 });
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
-  const validated = loginSchema.parse(req.body);
-  const result = await authService.login(validated, res);
+  const result = await authService.login(req.body, res);
   res.json(result);
 });
 
@@ -35,8 +27,7 @@ export const getUserInfos = asyncHandler(
 export const updatePersonalInfo = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?.id as string;
-    const validated = updatePersonalInfoSchema.parse(req.body);
-    const user = await authService.updatePersonalInfo(userId, validated);
+    const user = await authService.updatePersonalInfo(userId, req.body);
     res.json({ message: "Personal info updated", user });
   },
 );
@@ -44,8 +35,7 @@ export const updatePersonalInfo = asyncHandler(
 export const updateShippingAddress = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?.id as string;
-    const validated = updateShippingAddressSchema.parse(req.body);
-    const user = await authService.updateShippingAddress(userId, validated);
+    const user = await authService.updateShippingAddress(userId, req.body);
     res.json({ message: "Shipping address updated", user });
   },
 );

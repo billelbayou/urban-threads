@@ -6,17 +6,16 @@ import {
   getCategoryById,
   deleteCategory,
 } from "../controllers/category.controller.js";
-
 import { authenticate, authorize } from "../middleware/auth.middleware.js";
+import { validate } from "../middleware/validate.middleware.js";
+import { categorySchema } from "../schemas/index.js";
 
 const router = Router();
 
-// Public
 router.get("/", getAllCategories);
 router.get("/:id", getCategoryById);
 
-// Admin-only actions
-router.post("/", authenticate, authorize([Role.ADMIN]), createCategory);
+router.post("/", authenticate, authorize([Role.ADMIN]), validate(categorySchema), createCategory);
 router.delete("/:id", authenticate, authorize([Role.ADMIN]), deleteCategory);
 
 export default router;

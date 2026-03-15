@@ -10,7 +10,7 @@ import {
   LoginInput,
   UpdatePersonalInfoInput,
   UpdateShippingAddressInput,
-} from "../utils/validation.js";
+} from "../schemas/index.js";
 
 export class AuthService {
   async register(data: RegisterInput) {

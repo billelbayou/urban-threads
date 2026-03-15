@@ -8,16 +8,13 @@ import {
   deleteProduct,
 } from "../controllers/product.controller.js";
 import { authenticate, authorize } from "../middleware/auth.middleware.js";
-
 import { upload } from "../middleware/upload.middleware.js";
 
 const router = Router();
 
-// Public routes
 router.get("/", getAllProducts);
 router.get("/:id", getProductById);
 
-// Admin routes
 router.post(
   "/",
   authenticate,

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ProductSchema } from "../utils/validation.js";
+import { productSchema } from "../schemas/index.js";
 import { AuthRequest } from "../middleware/auth.middleware.js";
 import { productService } from "../services/product.service.js";
 import { asyncHandler } from "../middleware/error.middleware.js";
@@ -43,7 +43,7 @@ export const createProduct = asyncHandler(
     }
 
     // 2. Validate everything EXCEPT images first (as images might be in files)
-    const resp = ProductSchema.safeParse(productData);
+    const resp = productSchema.safeParse(productData);
     if (!resp.success) {
       res.status(400).json({
         error: "Validation failed",
@@ -86,7 +86,7 @@ export const updateProduct = asyncHandler(
     }
 
     // 2. Validate
-    const resp = ProductSchema.safeParse(productData);
+    const resp = productSchema.safeParse(productData);
     if (!resp.success) {
       res.status(400).json({
         error: "Validation failed",
