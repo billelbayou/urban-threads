@@ -4,6 +4,7 @@ import { generateToken } from "../utils/jwt.js";
 import { setAuthCookie, clearAuthCookie } from "../utils/cookies.js";
 import { Response } from "express";
 import { Role } from "../generated/prisma/enums.js";
+import config from "../config/config.js";
 import {
   RegisterInput,
   LoginInput,
@@ -21,7 +22,7 @@ export class AuthService {
       throw new Error("Email is already in use");
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+    const hashedPassword = await bcrypt.hash(data.password, config.BCRYPT_ROUNDS);
 
     const user = await prisma.user.create({
       data: { ...data, password: hashedPassword },
@@ -31,7 +32,28 @@ export class AuthService {
   }
 
   async login(data: LoginInput, res: Response) {
-    const user = await prisma.user.findUnique({ where: { email: data.email } });
+    const user = await prisma.user.findUnique({ 
+      where: { email: data.email },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        phone: true,
+        dateOfBirth: true,
+        gender: true,
+        country: true,
+        city: true,
+        state: true,
+        postalCode: true,
+        streetAddress: true,
+        apartment: true,
+        createdAt: true,
+        updatedAt: true,
+        password: true,
+      }
+    });
     if (!user) {
       throw new Error("Invalid credentials");
     }
@@ -44,13 +66,33 @@ export class AuthService {
     const token = generateToken(user.id, user.role as Role);
     setAuthCookie(res, token);
 
-    return { message: "You are logged in", user };
+    const { password: _, ...userWithoutPassword } = user;
+    return { message: "You are logged in", user: userWithoutPassword };
   }
 
   async getUserById(userId: string) {
-    return await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        phone: true,
+        dateOfBirth: true,
+        gender: true,
+        country: true,
+        city: true,
+        state: true,
+        postalCode: true,
+        streetAddress: true,
+        apartment: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
+    return user;
   }
 
   async updatePersonalInfo(userId: string, data: UpdatePersonalInfoInput) {
@@ -82,17 +124,37 @@ export class AuthService {
     return { message: "Logged out successfully" };
   }
 
-  async getAllUsers() {
-    return await prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-        createdAt: true,
+  async getAllUsers(params: { page?: number; limit?: number } = {}) {
+    const page = Math.max(1, params.page || 1);
+    const limit = Math.min(100, Math.max(1, params.limit || 20));
+    const skip = (page - 1) * limit;
+
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          role: true,
+          createdAt: true,
+        },
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.user.count(),
+    ]);
+
+    return {
+      data: users,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
       },
-    });
+    };
   }
 
   async deleteAccount(userId: string, res: Response) {

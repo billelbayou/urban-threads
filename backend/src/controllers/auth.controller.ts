@@ -56,9 +56,12 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const getAllUsers = asyncHandler(
-  async (_req: Request, res: Response) => {
-    const users = await authService.getAllUsers();
-    res.json(users);
+  async (req: Request, res: Response) => {
+    const page = req.query.page ? parseInt(req.query.page as string, 10) : undefined;
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
+    
+    const result = await authService.getAllUsers({ page, limit });
+    res.json(result);
   },
 );
 

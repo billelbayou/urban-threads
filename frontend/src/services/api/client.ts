@@ -1,4 +1,4 @@
-export const api = process.env.NEXT_PUBLIC_API_URL;
+export const api = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
 
 // Default timeout for fetch requests (in milliseconds)
 const DEFAULT_TIMEOUT = 10000;

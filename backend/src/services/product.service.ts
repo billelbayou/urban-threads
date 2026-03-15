@@ -9,6 +9,20 @@ export interface RawImage {
   path: string;
 }
 
+export interface ImageVariant {
+  url: string;
+  path: string;
+}
+
+export interface ProductImage {
+  original?: ImageVariant;
+  thumbnail?: ImageVariant;
+  mobile?: ImageVariant;
+  desktop?: ImageVariant;
+  url?: string;
+  path?: string;
+}
+
 export interface InfoSection {
   title: string;
   content: string;
@@ -21,8 +35,8 @@ export interface ProductWithDetails {
   price: Prisma.Decimal;
   stock: number;
   categoryId: string;
-  images: any; // Type as any for now to handle Prisma Json transformation
-  infoSections: any;
+  images: ProductImage[];
+  infoSections: InfoSection[];
   tags: string[];
   createdAt: Date;
   updatedAt: Date;
@@ -32,13 +46,27 @@ export interface ProductWithDetails {
   };
 }
 
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+}
+
+export interface PaginatedResult<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
 export class ProductService {
   private static async resolveImageUrls(product: any): Promise<void> {
     if (!product || !product.images) return;
 
     product.images = await Promise.all(
       product.images.map(async (img: any) => {
-        // New structure with variants
         if (img.original) {
           const variants = ["original", "thumbnail", "mobile", "desktop"];
           const resolved: any = {};
@@ -56,7 +84,6 @@ export class ProductService {
           return resolved;
         }
 
-        // Old structure fallback
         if (img.path) {
           return {
             url: await getProductImageUrl(img.path),
@@ -68,23 +95,38 @@ export class ProductService {
     );
   }
 
-  /**
-   * Get all products with resolved image URLs
-   */
-  async getAllProducts() {
-    const products = await prisma.product.findMany({
-      include: {
-        category: {
-          select: { name: true, slug: true },
+  async getAllProducts(params: PaginationParams = {}) {
+    const page = Math.max(1, params.page || 1);
+    const limit = Math.min(100, Math.max(1, params.limit || 20));
+    const skip = (page - 1) * limit;
+
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        include: {
+          category: {
+            select: { name: true, slug: true },
+          },
         },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip,
+        take: limit,
+      }),
+      prisma.product.count(),
+    ]);
 
     await Promise.all(products.map((p) => ProductService.resolveImageUrls(p)));
-    return products;
+
+    return {
+      data: products,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   /**

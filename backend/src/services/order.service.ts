@@ -1,6 +1,21 @@
 import { prisma } from "../utils/prisma.js";
 import { OrderStatus } from "../generated/prisma/enums.js";
 
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+}
+
+export interface PaginatedResult<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
 export class OrderService {
   async createOrder(userId: string) {
     const cart = await prisma.cart.findUnique({
@@ -81,14 +96,40 @@ export class OrderService {
     });
   }
 
-  async getAllOrders() {
-    return await prisma.order.findMany({
-      include: {
-        user: true,
-        items: true,
+  async getAllOrders(params: PaginationParams = {}) {
+    const page = Math.max(1, params.page || 1);
+    const limit = Math.min(100, Math.max(1, params.limit || 20));
+    const skip = (page - 1) * limit;
+
+    const [orders, total] = await Promise.all([
+      prisma.order.findMany({
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+          items: true,
+        },
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limit,
+      }),
+      prisma.order.count(),
+    ]);
+
+    return {
+      data: orders,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
       },
-      orderBy: { createdAt: "desc" },
-    });
+    };
   }
 
   async updateOrderStatus(id: string, status: OrderStatus) {

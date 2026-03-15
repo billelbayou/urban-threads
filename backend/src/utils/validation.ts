@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { OrderStatus } from "../generated/prisma/enums.js";
 
 export const registerSchema = z.object({
   firstName: z.string().min(2, "First Name must have at least 2 characters"),
@@ -10,6 +11,10 @@ export const registerSchema = z.object({
 export const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
+});
+
+export const orderStatusSchema = z.nativeEnum(OrderStatus, {
+  errorMap: () => ({ message: "Invalid order status" }),
 });
 
 export const orderSchema = z.object({
@@ -41,6 +46,10 @@ export const AddToCartSchema = z.object({
     .min(1, "Quantity must be at least 1")
     .max(99, "Maximum 99 items allowed"),
   size: z.string().min(1, "Please select a size"),
+});
+
+export const AddToWishlistSchema = z.object({
+  productId: z.string().uuid("Invalid product ID format"),
 });
 
 export const updatePersonalInfoSchema = z.object({

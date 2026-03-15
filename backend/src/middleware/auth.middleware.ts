@@ -1,6 +1,7 @@
 import { Request as ExpressRequest, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { Role } from "../generated/prisma/enums.js";
+import config from "../config/config.js";
 
 export interface JwtPayload {
   id: string;
@@ -23,7 +24,7 @@ export const authenticate = (
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    const decoded = jwt.verify(token, config.JWT_SECRET) as JwtPayload;
     req.user = decoded;
     next();
   } catch {

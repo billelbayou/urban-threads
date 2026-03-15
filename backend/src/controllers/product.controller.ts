@@ -6,9 +6,12 @@ import { asyncHandler } from "../middleware/error.middleware.js";
 
 /** Get all products (public) */
 export const getAllProducts = asyncHandler(
-  async (_req: Request, res: Response) => {
-    const products = await productService.getAllProducts();
-    res.status(200).json(products);
+  async (req: Request, res: Response) => {
+    const page = req.query.page ? parseInt(req.query.page as string, 10) : undefined;
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
+    
+    const result = await productService.getAllProducts({ page, limit });
+    res.status(200).json(result);
   },
 );
 

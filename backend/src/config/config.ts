@@ -9,6 +9,7 @@ const envSchema = z.object({
   NODE_ENV: z.string().default("development"),
   JWT_SECRET: z.string().min(1),
   COOKIE_EXPIRES_IN: z.coerce.number().default(86400),
+  BCRYPT_ROUNDS: z.coerce.number().default(10),
   SUPABASE_URL: z.string().url(),
   SUPABASE_SERVICE_KEY: z.string().min(1),
   SUPABASE_BUCKET_NAME: z.string().default("products"),
@@ -25,6 +26,7 @@ interface Config {
   NODE_ENV: string;
   JWT_SECRET: string;
   COOKIE_EXPIRES_IN: number;
+  BCRYPT_ROUNDS: number;
   FRONTEND_URL: string;
 }
 
@@ -34,6 +36,7 @@ const config: Config = {
   NODE_ENV: env.NODE_ENV,
   JWT_SECRET: env.JWT_SECRET,
   COOKIE_EXPIRES_IN: env.COOKIE_EXPIRES_IN,
+  BCRYPT_ROUNDS: env.BCRYPT_ROUNDS,
 };
 
 // Supabase S3-compatible Storage Configuration
