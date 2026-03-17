@@ -1,13 +1,13 @@
 "use client";
 
-import { UploadedImage } from "@/types/product";
+import { ProductImage } from "@/types/product";
 import { Upload, X, CheckCircle } from "lucide-react";
 import Image from "next/image";
 import React, { useRef } from "react";
 
 interface ImageUploadProps {
-  images: UploadedImage[];
-  setImages: React.Dispatch<React.SetStateAction<UploadedImage[]>>;
+  images: ProductImage[];
+  setImages: React.Dispatch<React.SetStateAction<ProductImage[]>>;
   newImageFiles: File[];
   setNewImageFiles: React.Dispatch<React.SetStateAction<File[]>>;
 }

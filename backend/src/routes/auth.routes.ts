@@ -33,8 +33,18 @@ router.post("/register", authRateLimiter, validate(registerSchema), register);
 router.post("/login", authRateLimiter, validate(loginSchema), login);
 router.post("/logout", logout);
 router.get("/me", authenticate, getUserInfos);
-router.put("/me/personal-info", authenticate, validate(updatePersonalInfoSchema), updatePersonalInfo);
-router.put("/me/shipping-address", authenticate, validate(updateShippingAddressSchema), updateShippingAddress);
+router.put(
+  "/me/personal-info",
+  authenticate,
+  validate(updatePersonalInfoSchema),
+  updatePersonalInfo,
+);
+router.put(
+  "/me/shipping-address",
+  authenticate,
+  validate(updateShippingAddressSchema),
+  updateShippingAddress,
+);
 router.delete("/account", authenticate, deleteAccount);
 router.get("/users", authenticate, getAllUsers);
 

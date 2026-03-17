@@ -27,7 +27,6 @@ export default function CartDrawer() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
-
   return (
     <>
       {/* Background Overlay */}

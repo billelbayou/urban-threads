@@ -1,11 +1,19 @@
 "use client";
 import { Bell, Search } from "lucide-react";
+import { usePathname } from "next/navigation";
 
-interface HeaderProps {
-  title?: string;
-}
+export default function Header() {
+  const pathname = usePathname();
 
-export default function Header({ title = "Dashboard" }: HeaderProps) {
+  const getTitle = () => {
+    if (pathname === "/admin") return "Dashboard";
+    if (pathname.startsWith("/admin/products")) return "Products";
+    if (pathname.startsWith("/admin/categories")) return "Categories";
+    if (pathname.startsWith("/admin/orders")) return "Orders";
+    if (pathname.startsWith("/admin/customers")) return "Customers";
+    return "Dashboard";
+  };
+  const title = getTitle();
   return (
     <header className="flex items-center justify-between mb-6">
       <h1 className="text-2xl font-bold text-gray-900">{title}</h1>

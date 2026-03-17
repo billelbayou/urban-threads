@@ -4,7 +4,7 @@ import { useActionState, useEffect, useMemo, useState } from "react";
 import { CheckCircle, AlertCircle } from "lucide-react";
 import ImageUpload from "@/components/admin/product-admin/ImageUpload";
 import ProductForm from "@/components/admin/product-admin/ProductForm";
-import { UploadedImage, InfoSection, Tag } from "@/types/product";
+import {  InfoSection, ProductImage } from "@/types/product";
 import { createProductAction } from "@/services/productActions";
 import { CategoryWithChildren } from "@/types/category";
 
@@ -13,7 +13,7 @@ export default function AddProductMain({
 }: {
   categoryTree: CategoryWithChildren[];
 }) {
-  const [images, setImages] = useState<UploadedImage[]>([]);
+  const [images, setImages] = useState<ProductImage[]>([]);
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
   const [productName, setProductName] = useState<string>("");
 
@@ -24,7 +24,7 @@ export default function AddProductMain({
   const [infoSections, setInfoSections] = useState<InfoSection[]>([
     { title: "", content: "" },
   ]);
-  const [tags, setTags] = useState<Tag[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
 
   const [state, formAction, isPending] = useActionState(
     createProductAction,

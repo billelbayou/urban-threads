@@ -6,13 +6,13 @@ export interface ImageVariant {
 }
 
 export interface ProductImage {
-  thumbnail?: ImageVariant;
-  mobile?: ImageVariant;
-  desktop?: ImageVariant;
-  original?: ImageVariant;
+  thumbnail: ImageVariant;
+  mobile: ImageVariant;
+  desktop: ImageVariant;
+  original: ImageVariant;
   // Fallback for old data
-  url?: string;
-  path?: string;
+  url: string;
+  path: string;
 }
 
 export interface Product {
@@ -44,12 +44,6 @@ export interface ProductStats {
   productId: string;
   views: number;
   soldQuantity: number;
-}
-export interface UploadedImage extends ProductImage {}
-
-export interface Tag {
-  id: string;
-  label: string;
 }
 
 export interface InfoSection {

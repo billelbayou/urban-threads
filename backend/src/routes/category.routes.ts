@@ -15,7 +15,13 @@ const router = Router();
 router.get("/", getAllCategories);
 router.get("/:id", getCategoryById);
 
-router.post("/", authenticate, authorize([Role.ADMIN]), validate(categorySchema), createCategory);
+router.post(
+  "/",
+  authenticate,
+  authorize([Role.ADMIN]),
+  validate(categorySchema),
+  createCategory,
+);
 router.delete("/:id", authenticate, authorize([Role.ADMIN]), deleteCategory);
 
 export default router;

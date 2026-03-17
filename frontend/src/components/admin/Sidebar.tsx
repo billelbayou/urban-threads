@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import LogoutButton from "./LogoutButton";
 
 const navMain = [
   { icon: LayoutDashboard, label: "Dashboard", url: "/admin" },
@@ -83,10 +84,7 @@ export default function Sidebar() {
         </div>
 
         {/* Logout */}
-        <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
-          <LogOut size={16} />
-          <span>Logout</span>
-        </button>
+        <LogoutButton />
       </div>
     </aside>
   );

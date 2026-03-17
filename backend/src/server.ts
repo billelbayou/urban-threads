@@ -13,6 +13,7 @@ import config from "./config/config.js";
 import morgan from "morgan";
 
 import { errorHandler } from "./middleware/error.middleware.js";
+import { getHealth } from "./services/health.service.js";
 
 dotenv.config();
 
@@ -41,10 +42,7 @@ app.use("/api/category", categoryRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/upload", uploadRoutes);
-
-app.get("/health", (req, res) => {
-  res.status(200).send("OK");
-});
+app.get("/health", getHealth);
 
 // Global error handler
 app.use(errorHandler);

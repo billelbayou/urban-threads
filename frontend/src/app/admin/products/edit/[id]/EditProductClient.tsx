@@ -5,22 +5,12 @@ import { CheckCircle, AlertCircle, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ImageUpload from "@/components/admin/product-admin/ImageUpload";
 import ProductForm from "@/components/admin/product-admin/ProductForm";
-import { UploadedImage, InfoSection, Tag } from "@/types/product";
+import { InfoSection, Product, ProductImage } from "@/types/product";
 import { updateProductAction } from "@/services/productActions";
 import { CategoryWithChildren } from "@/types/category";
 
 interface EditProductClientProps {
-  product: {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    stock: number;
-    categoryId: string;
-    images: { url: string; path: string }[];
-    infoSections: InfoSection[];
-    tags: Tag[];
-  };
+  product: Product;
   categoryTree: CategoryWithChildren[];
 }
 
@@ -31,10 +21,14 @@ export default function EditProductClient({
   const router = useRouter();
 
   // Initialize state from existing product data
-  const [images, setImages] = useState<UploadedImage[]>(
+  const [images, setImages] = useState<ProductImage[]>(
     product.images?.map((img) => ({
+      mobile: { url: img.mobile.url, path: img.mobile.path },
+      desktop: { url: img.desktop.url, path: img.desktop.path },
+      thumbnail: { url: img.thumbnail.url, path: img.thumbnail.path },
       url: img.url,
       path: img.path,
+      original: img.original,
     })) || [],
   );
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
@@ -48,7 +42,7 @@ export default function EditProductClient({
       ? product.infoSections
       : [{ title: "", content: "" }],
   );
-  const [tags, setTags] = useState<Tag[]>(product.tags || []);
+  const [tags, setTags] = useState<string[]>(product.tags || []);
 
   const [state, formAction, isPending] = useActionState(
     updateProductAction,
@@ -79,7 +73,7 @@ export default function EditProductClient({
   );
 
   const handleSubmit = (formData: FormData) => {
-    formData.set("productId", product.id);
+    formData.set("productId", product.id as string);
     formData.set("product", JSON.stringify(productData));
     newImageFiles.forEach((file) => {
       formData.append("images", file);

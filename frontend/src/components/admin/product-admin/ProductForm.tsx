@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { AlertCircle, Plus } from "lucide-react";
-import { InfoSection, Tag } from "@/types/product";
+import { InfoSection } from "@/types/product";
 import { ValidationErrors } from "@/services/productActions";
 import { CategoryWithChildren } from "@/types/category";
 import InfoSectionInput from "./InfoSectionInput";
@@ -22,8 +22,8 @@ interface ProductFormProps {
   setStock: React.Dispatch<React.SetStateAction<number | "">>;
   description: string;
   setDescription: React.Dispatch<React.SetStateAction<string>>;
-  tags: Tag[];
-  setTags: React.Dispatch<React.SetStateAction<Tag[]>>;
+  tags: string[];
+  setTags: React.Dispatch<React.SetStateAction<string[]>>;
   infoSections: InfoSection[];
   setInfoSections: React.Dispatch<React.SetStateAction<InfoSection[]>>;
   categoryTree: CategoryWithChildren[];

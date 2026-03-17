@@ -25,6 +25,12 @@ router.post("/", authenticate, orderRateLimiter, createOrder);
 router.get("/mine", authenticate, getMyOrders);
 
 router.get("/", authenticate, authorize([Role.ADMIN]), getAllOrders);
-router.patch("/:id", authenticate, authorize([Role.ADMIN]), validate(updateOrderStatusSchema), updateOrderStatus);
+router.patch(
+  "/:id",
+  authenticate,
+  authorize([Role.ADMIN]),
+  validate(updateOrderStatusSchema),
+  updateOrderStatus,
+);
 
 export default router;

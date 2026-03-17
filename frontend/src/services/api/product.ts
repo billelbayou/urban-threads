@@ -18,7 +18,9 @@ export const fetchProducts = async (cookie?: string): Promise<Product[]> => {
   });
 
   if (!res.ok) throw new Error("Failed to fetch products");
-  return res.json();
+  const data = await res.json();
+  const products: Product[] = data.data;
+  return products;
 };
 
 /**

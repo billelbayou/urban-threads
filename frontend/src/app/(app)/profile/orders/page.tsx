@@ -27,6 +27,7 @@ export default async function OrdersPage() {
   const cookie = await getCookies();
   const user = await getCurrentUser(cookie);
   const orders: Order[] = await fetchMyOrders(cookie);
+  console.log(orders);
 
   if (!user) {
     redirect("/login");

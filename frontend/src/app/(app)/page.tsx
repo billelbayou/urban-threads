@@ -24,6 +24,7 @@ export default async function HomePage() {
   const cookies = await getCookies();
   const user = await getCurrentUser(cookies);
   const products = await fetchProducts();
+  console.log(products[0].images);
   if (user?.role == "ADMIN") {
     redirect("/admin");
   }

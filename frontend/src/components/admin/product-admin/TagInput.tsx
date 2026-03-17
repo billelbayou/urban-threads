@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { X, AlertCircle } from "lucide-react";
-import { Tag } from "@/types/product";
 
 interface TagInputProps {
-  tags: Tag[];
-  setTags: React.Dispatch<React.SetStateAction<Tag[]>>;
+  tags: string[];
+  setTags: React.Dispatch<React.SetStateAction<string[]>>;
   error?: string[];
 }
 
@@ -14,9 +13,9 @@ export default function TagInput({ tags, setTags, error }: TagInputProps) {
   const addTag = (label: string) => {
     if (
       label.trim() &&
-      !tags.find((tag) => tag.label.toLowerCase() === label.toLowerCase())
+      !tags.find((tag) => tag.toLowerCase() === label.toLowerCase())
     ) {
-      setTags([...tags, { id: crypto.randomUUID(), label: label.trim() }]);
+      setTags([...tags, label.trim()]);
       setTagInput("");
     }
   };
@@ -27,14 +26,14 @@ export default function TagInput({ tags, setTags, error }: TagInputProps) {
         Tags <span className="text-red-500">*</span>
       </label>
       <div className="flex flex-wrap gap-2 mb-3">
-        {tags.map((tag) => (
+        {tags.map((tag, index) => (
           <span
-            key={tag.id}
+            key={index}
             className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500 text-white rounded-full text-sm font-medium"
           >
-            {tag.label}
+            {tag}
             <button
-              onClick={() => setTags(tags.filter((t) => t.id !== tag.id))}
+              onClick={() => setTags(tags.filter((t) => t !== tag))}
               type="button"
             >
               <X className="w-3.5 h-3.5" />

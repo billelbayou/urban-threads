@@ -100,7 +100,7 @@ export async function createProductAction(
 export async function deleteProductAction(
   _previousState: unknown,
   formData: FormData,
-): Promise<ActionResponse<Product>> {
+): Promise<ActionResponse<{ message: string }>> {
   const productId = formData.get("productId") as string;
   const cookie = await getCookies();
   try {
