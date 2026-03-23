@@ -1,5 +1,8 @@
+"use server";
+
 import { User } from "@/types/user";
 import { api, fetchWithTimeout } from "./client";
+import { cookies } from "next/headers";
 
 /* -------------------- AUTH -------------------- */
 
@@ -13,12 +16,28 @@ export const login = async (email: string, password: string) => {
   const res = await fetchWithTimeout(`${api}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    credentials: "include",
     body: JSON.stringify({ email, password }),
   });
   const data = await res.json();
   if (!res.ok) {
     throw new Error(data.error || "Login failed");
+  }
+  // 2. THE PRODUCTION FIX: Manually forward the cookie
+  const setCookieHeader = res.headers.get("set-cookie");
+
+  if (setCookieHeader) {
+    // Parse the Express session ID (e.g., "sessionId=s%3Aabc...; Path=/")
+    const cookiePair = setCookieHeader.split(";")[0];
+    const cookieValue = cookiePair.split("=")[1];
+
+    const cookieStore = await cookies();
+    cookieStore.set("token", decodeURIComponent(cookieValue), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60, // 7 days to match your Express config
+    });
   }
   return data;
 };
