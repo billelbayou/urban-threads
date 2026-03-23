@@ -1,18 +1,14 @@
 import "dotenv/config";
 import bcrypt from "bcrypt";
 import { prisma } from "../src/utils/prisma";
-// Admin configuration from environment variables with defaults
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@gmail.com";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "abc123";
-const ADMIN_FIRST_NAME = process.env.ADMIN_FIRST_NAME || "Admin";
-const ADMIN_LAST_NAME = process.env.ADMIN_LAST_NAME || "User";
+import config from "../src/config/config";
 
 async function main() {
   console.log("Seeding database...");
 
   // Check if admin already exists
   const existingAdmin = await prisma.user.findUnique({
-    where: { email: ADMIN_EMAIL },
+    where: { email: config.ADMIN_EMAIL },
   });
 
   if (existingAdmin) {
@@ -21,14 +17,14 @@ async function main() {
   }
 
   // Hash the password
-  const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 10);
+  const hashedPassword = await bcrypt.hash(config.ADMIN_PASSWORD, 10);
 
   // Create admin user
   const admin = await prisma.user.create({
     data: {
-      firstName: ADMIN_FIRST_NAME,
-      lastName: ADMIN_LAST_NAME,
-      email: ADMIN_EMAIL,
+      firstName: config.ADMIN_FIRST_NAME,
+      lastName: config.ADMIN_LAST_NAME,
+      email: config.ADMIN_EMAIL,
       password: hashedPassword,
       role: "ADMIN",
     },
