@@ -21,7 +21,6 @@ export default function PasswordSection() {
       return;
     }
     // TODO: Call API to update password
-    console.log("Updating password...");
     setPasswordData({ current: "", new: "", confirm: "" });
     setEditing(false);
   };

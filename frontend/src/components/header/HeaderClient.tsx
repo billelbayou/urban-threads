@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { logoutAction } from "@/services/authActions";
 import { toast } from "sonner";
 import { Cart } from "@/types/cart";
+import { NAV_LINKS } from "@/constants/navigation";
 
 interface HeaderClientProps {
   initialCart: Cart | null;
@@ -39,7 +40,7 @@ export default function HeaderClient({ initialCart }: HeaderClientProps) {
   // 🔹 Logout handling
   useEffect(() => {
     if (state?.success) {
-      toast.success(state.data.message);
+      toast.success(state.data?.message ?? "Logged out");
       logoutStore();
       setCart(null);
       router.push("/");
@@ -147,21 +148,13 @@ export default function HeaderClient({ initialCart }: HeaderClientProps) {
       {/* Mobile Menu */}
       {menuOpen && (
         <ul className="absolute top-full left-0 w-full bg-white flex flex-col p-4 md:hidden">
-          <Link href="/" onClick={() => setMenuOpen(false)}>
-            Home
-          </Link>
-          <Link href="/products" onClick={() => setMenuOpen(false)}>
-            Products
-          </Link>
-          <Link href="/new" onClick={() => setMenuOpen(false)}>
-            New Arrivals
-          </Link>
-          <Link href="/about" onClick={() => setMenuOpen(false)}>
-            About
-          </Link>
-          <Link href="/contact" onClick={() => setMenuOpen(false)}>
-            Contact
-          </Link>
+          {NAV_LINKS.map(({ href, label }) => (
+            <li key={href}>
+              <Link href={href} onClick={() => setMenuOpen(false)}>
+                {label}
+              </Link>
+            </li>
+          ))}
         </ul>
       )}
     </>

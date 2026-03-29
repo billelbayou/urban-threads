@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
 import { getCurrentUser } from "@/services/api/auth";
 import { fetchMyOrders } from "@/services/api/order";
 import getCookies from "@/utils/cookies";
@@ -26,11 +26,15 @@ const statusLabels: Record<string, string> = {
 export default async function OrdersPage() {
   const cookie = await getCookies();
   const user = await getCurrentUser(cookie);
-  const orders: Order[] = await fetchMyOrders(cookie);
-  console.log(orders);
 
   if (!user) {
     redirect("/login");
+  }
+
+  const orders = await fetchMyOrders(cookie);
+
+  if (!orders) {
+    notFound();
   }
 
   return (
@@ -52,7 +56,7 @@ export default async function OrdersPage() {
               {orders.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-gray-500 mb-4">
-                    You haven't placed any orders yet.
+                    You haven&apos;t placed any orders yet.
                   </p>
                   <Link
                     href="/"
@@ -121,7 +125,7 @@ export default async function OrdersPage() {
                           {order.items.map((item) => (
                             <div key={item.id} className="flex gap-3">
                               <div className="relative w-20 h-20 bg-gray-100 rounded-md overflow-hidden shrink-0">
-                                {item.product ? (
+                                {item.product?.images?.[0] ? (
                                   <Image
                                     src={item.product.images[0].url}
                                     alt={item.product.name}
@@ -136,7 +140,7 @@ export default async function OrdersPage() {
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-gray-900 truncate">
-                                  {item.product.name}
+                                  {item.product?.name ?? "Deleted Product"}
                                 </p>
                                 <p className="text-xs text-gray-500 mt-1">
                                   Size: {item.size} | Qty: {item.quantity}

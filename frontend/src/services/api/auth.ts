@@ -1,7 +1,7 @@
 "use server";
 
 import { User } from "@/types/user";
-import { api, fetchWithTimeout } from "./client";
+import { api, fetchWithTimeout, buildHeaders } from "./client";
 import { cookies } from "next/headers";
 
 /* -------------------- AUTH -------------------- */
@@ -12,21 +12,22 @@ import { cookies } from "next/headers";
  * @returns { message: string; user: User }
  * Response: { message: string; user: User }
  */
-export const login = async (email: string, password: string) => {
+export const login = async (
+  email: string,
+  password: string,
+): Promise<{ message: string; user: User }> => {
   const res = await fetchWithTimeout(`${api}/auth/login`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: buildHeaders({ contentType: "application/json" }),
     body: JSON.stringify({ email, password }),
   });
   const data = await res.json();
   if (!res.ok) {
     throw new Error(data.error || "Login failed");
   }
-  // 2. THE PRODUCTION FIX: Manually forward the cookie
   const setCookieHeader = res.headers.get("set-cookie");
 
   if (setCookieHeader) {
-    // Parse the Express session ID (e.g., "sessionId=s%3Aabc...; Path=/")
     const cookiePair = setCookieHeader.split(";")[0];
     const cookieValue = cookiePair.split("=")[1];
 
@@ -36,7 +37,7 @@ export const login = async (email: string, password: string) => {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 7 * 24 * 60 * 60, // 7 days to match your Express config
+      maxAge: 7 * 24 * 60 * 60,
     });
   }
   return data;
@@ -55,10 +56,10 @@ export const register = async (
   lastName: string,
   email: string,
   password: string,
-) => {
+): Promise<{ message: string; userId: string }> => {
   const res = await fetchWithTimeout(`${api}/auth/register`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: buildHeaders({ contentType: "application/json" }),
     credentials: "include",
     body: JSON.stringify({ firstName, lastName, email, password }),
   });
@@ -79,14 +80,10 @@ export const register = async (
 export const updatePersonalInfo = async (
   data: { phone?: string; dateOfBirth?: string; gender?: string },
   cookie?: string,
-) => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (cookie) headers["cookie"] = cookie;
+): Promise<{ message: string; user: User }> => {
   const res = await fetchWithTimeout(`${api}/auth/me/personal-info`, {
     method: "PUT",
-    headers,
+    headers: buildHeaders({ cookie, contentType: "application/json" }),
     credentials: cookie ? undefined : "include",
     body: JSON.stringify(data),
   });
@@ -112,14 +109,10 @@ export const updateShippingAddress = async (
     apartment?: string;
   },
   cookie?: string,
-) => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (cookie) headers["cookie"] = cookie;
+): Promise<{ message: string; user: User }> => {
   const res = await fetchWithTimeout(`${api}/auth/me/shipping-address`, {
     method: "PUT",
-    headers,
+    headers: buildHeaders({ cookie, contentType: "application/json" }),
     credentials: cookie ? undefined : "include",
     body: JSON.stringify(data),
   });
@@ -134,7 +127,7 @@ export const updateShippingAddress = async (
  * @returns { message: string }
  * Response: { message: string }
  */
-export const logout = async () => {
+export const logout = async (): Promise<{ message: string }> => {
   const res = await fetchWithTimeout(`${api}/auth/logout`, {
     method: "POST",
     credentials: "include",
@@ -144,6 +137,8 @@ export const logout = async () => {
     const data = await res.json();
     throw new Error(data.error || "Logout failed");
   }
+  const cookieStore = await cookies();
+  cookieStore.delete("token");
   return res.json();
 };
 
@@ -152,12 +147,8 @@ export const logout = async () => {
  * Response: User
  */
 export const getCurrentUser = async (cookie?: string): Promise<User | null> => {
-  const headers: Record<string, string> = {};
-
-  if (cookie) headers["cookie"] = cookie;
-
   const res = await fetchWithTimeout(`${api}/auth/me`, {
-    headers,
+    headers: buildHeaders({ cookie }),
     credentials: cookie ? undefined : "include",
     cache: "no-store",
   });
@@ -172,12 +163,12 @@ export const getCurrentUser = async (cookie?: string): Promise<User | null> => {
  * @returns { message: string }
  * Response: { message: string }
  */
-export const deleteAccount = async (cookie?: string) => {
-  const headers: Record<string, string> = {};
-  if (cookie) headers["cookie"] = cookie;
+export const deleteAccount = async (
+  cookie?: string,
+): Promise<{ message: string }> => {
   const res = await fetchWithTimeout(`${api}/auth/account`, {
     method: "DELETE",
-    headers,
+    headers: buildHeaders({ cookie }),
     credentials: cookie ? undefined : "include",
   });
   const data = await res.json();

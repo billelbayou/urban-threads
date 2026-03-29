@@ -1,6 +1,6 @@
 "use client";
 
-import { DeleteCategoryAction } from "@/services/categoriesAction";
+import { deleteCategoryAction } from "@/services/categoriesAction";
 import { Category } from "@/types/category";
 import { Trash2 } from "lucide-react";
 import { useActionState, useState } from "react";
@@ -13,7 +13,7 @@ export default function CategoryDeleteButton({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [, formAction, isPending] = useActionState(
-    DeleteCategoryAction,
+    deleteCategoryAction,
     null,
   );
   return (

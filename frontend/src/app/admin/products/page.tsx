@@ -56,7 +56,7 @@ export default function Products() {
             Products Management
           </h1>
           <p className="text-slate-500 mt-1">
-            Manage your store's inventory and details
+            Manage your store&apos;s inventory and details
           </p>
         </div>
         <div className="flex items-center gap-3">

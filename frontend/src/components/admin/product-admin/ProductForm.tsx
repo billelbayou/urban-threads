@@ -203,7 +203,7 @@ export default function ProductForm({
             disabled={infoSections.length >= MAX_SECTIONS}
             type="button"
             onClick={addInfoSection}
-            className={`text-xs font-bold flex items-center gap-1${
+            className={`text-xs font-bold flex items-center gap-1 ${
               infoSections.length >= MAX_SECTIONS
                 ? "text-gray-400 cursor-not-allowed"
                 : "text-blue-600 hover:text-blue-700"

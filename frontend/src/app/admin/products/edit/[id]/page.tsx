@@ -2,7 +2,8 @@ import EditProductClient from "./EditProductClient";
 import { fetchProductById } from "@/services/api/product";
 import { fetchCategories } from "@/services/api/category";
 import { buildTree } from "@/utils/helpers";
-import { Category, CategoryWithChildren } from "@/types/category";
+import { CategoryWithChildren } from "@/types/category";
+import { Product } from "@/types/product";
 import getCookies from "@/utils/cookies";
 
 interface PageProps {
@@ -12,14 +13,14 @@ interface PageProps {
 export default async function EditProductPage({ params }: PageProps) {
   const { id } = await params;
 
-  let product: any = null;
+  let product: Product | null = null;
   let tree: CategoryWithChildren[] = [];
   let error: string | null = null;
 
   try {
     const cookies = await getCookies();
     // Fetch product and categories in parallel
-    const [productData, categories]: [any, Category[]] = await Promise.all([
+    const [productData, categories] = await Promise.all([
       fetchProductById(id, cookies),
       fetchCategories(cookies),
     ]);
@@ -45,7 +46,7 @@ export default async function EditProductPage({ params }: PageProps) {
             <p className="text-red-500">{error}</p>
           </div>
         ) : (
-          <EditProductClient product={product} categoryTree={tree} />
+          <EditProductClient product={product!} categoryTree={tree} />
         )}
       </div>
     </div>

@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { NAV_LINKS } from "@/constants/navigation";
+
 export default function Footer() {
   return (
     <footer className="bg-white text-gray-800 px-6 py-12">
@@ -6,16 +9,16 @@ export default function Footer() {
           <h3 className="font-semibold mb-3">COMPANY</h3>
           <ul className="space-y-2">
             <li>
-              <a href="#">About Urban Threads</a>
+              <Link href="/about">About Urban Threads</Link>
             </li>
             <li>
-              <a href="#">Careers</a>
+              <Link href="/about">Careers</Link>
             </li>
             <li>
-              <a href="#">Tax fees</a>
+              <Link href="/about">Tax fees</Link>
             </li>
             <li>
-              <a href="#">Our Warehouse</a>
+              <Link href="/about">Our Warehouse</Link>
             </li>
           </ul>
         </div>
@@ -23,16 +26,16 @@ export default function Footer() {
           <h3 className="font-semibold mb-3">PAYMENT METHODS</h3>
           <ul className="space-y-2">
             <li>
-              <a href="#">Visa & Mastercard</a>
+              <Link href="/contact">Visa & Mastercard</Link>
             </li>
             <li>
-              <a href="#">Bancontact</a>
+              <Link href="/contact">Bancontact</Link>
             </li>
             <li>
-              <a href="#">Gift Cards</a>
+              <Link href="/contact">Gift Cards</Link>
             </li>
             <li>
-              <a href="#">Shop with Points</a>
+              <Link href="/contact">Shop with Points</Link>
             </li>
           </ul>
         </div>
@@ -40,25 +43,25 @@ export default function Footer() {
           <h3 className="font-semibold mb-3">HELP CENTER</h3>
           <ul className="space-y-2">
             <li>
-              <a href="#">Shipping</a>
+              <Link href="/contact">Shipping</Link>
             </li>
             <li>
-              <a href="#">Delivery Rates</a>
+              <Link href="/contact">Delivery Rates</Link>
             </li>
             <li>
-              <a href="#">Discounts</a>
+              <Link href="/contact">Discounts</Link>
             </li>
             <li>
-              <a href="#">Returns & Replacements</a>
+              <Link href="/contact">Returns & Replacements</Link>
             </li>
             <li>
-              <a href="#">Recycling</a>
+              <Link href="/contact">Recycling</Link>
             </li>
             <li>
-              <a href="#">Customer Support</a>
+              <Link href="/contact">Customer Support</Link>
             </li>
             <li>
-              <a href="#">Accessibility</a>
+              <Link href="/contact">Accessibility</Link>
             </li>
           </ul>
         </div>
@@ -66,16 +69,16 @@ export default function Footer() {
           <h3 className="font-semibold mb-3">ORDERS & SHIPMENT</h3>
           <ul className="space-y-2">
             <li>
-              <a href="#">My Account</a>
+              <Link href="/profile">My Account</Link>
             </li>
             <li>
-              <a href="#">Order Shipment</a>
+              <Link href="/profile/orders">Order Shipment</Link>
             </li>
             <li>
-              <a href="#">Flowbite Marketplace</a>
+              <Link href="/products">Marketplace</Link>
             </li>
             <li>
-              <a href="#">Financing Methods</a>
+              <Link href="/contact">Financing Methods</Link>
             </li>
           </ul>
         </div>
@@ -88,21 +91,21 @@ export default function Footer() {
       </div>
 
       <div className="mt-8 flex flex-col md:flex-row items-center justify-between text-xs text-gray-500 gap-4">
-        <p>©2025. All rights reserved</p>
+        <p>&copy;{new Date().getFullYear()}. All rights reserved</p>
         <div className="flex gap-6">
-          <a href="#">Home</a>
-          <a href="#">Products</a>
-          <a href="#">New Arrivals</a>
-          <a href="#">About</a>
-          <a href="#">Contact</a>
+          {NAV_LINKS.map(({ href, label }) => (
+            <Link key={href} href={href}>
+              {label}
+            </Link>
+          ))}
         </div>
         <div className="flex gap-4">
-          <a href="#" className="underline">
+          <Link href="/about" className="underline">
             Legal Notice
-          </a>
-          <a href="#" className="underline">
+          </Link>
+          <Link href="/about" className="underline">
             Legal Policy
-          </a>
+          </Link>
         </div>
       </div>
     </footer>

@@ -1,5 +1,5 @@
 import { Wishlist } from "@/types/wishlist";
-import { api, fetchWithTimeout } from "./client";
+import { api, fetchWithTimeout, buildHeaders } from "./client";
 
 /* -------------------- WISHLIST -------------------- */
 
@@ -10,10 +10,8 @@ import { api, fetchWithTimeout } from "./client";
 export const fetchWishlist = async (
   cookie?: string,
 ): Promise<Wishlist | null> => {
-  const headers: Record<string, string> = {};
-  if (cookie) headers["cookie"] = cookie;
   const res = await fetchWithTimeout(`${api}/wishlist`, {
-    headers,
+    headers: buildHeaders({ cookie }),
     credentials: cookie ? undefined : "include",
     cache: "no-store",
   });
@@ -30,13 +28,9 @@ export const addToWishlistFetcher = async (
   productId: string,
   cookie?: string,
 ): Promise<Wishlist> => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (cookie) headers["cookie"] = cookie;
   const res = await fetchWithTimeout(`${api}/wishlist/add`, {
     method: "POST",
-    headers,
+    headers: buildHeaders({ cookie, contentType: "application/json" }),
     credentials: cookie ? undefined : "include",
     body: JSON.stringify({ productId }),
   });
@@ -56,13 +50,9 @@ export const removeFromWishlistFetcher = async (
   productId: string,
   cookie?: string,
 ): Promise<Wishlist> => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (cookie) headers["cookie"] = cookie;
   const res = await fetchWithTimeout(`${api}/wishlist/${productId}`, {
     method: "DELETE",
-    headers,
+    headers: buildHeaders({ cookie, contentType: "application/json" }),
     credentials: cookie ? undefined : "include",
   });
   const data = await res.json();

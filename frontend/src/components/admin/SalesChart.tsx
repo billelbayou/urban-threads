@@ -15,7 +15,11 @@ const data = [
   { month: "Aug", oneTime: 70000, recurring: 0 },
 ];
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface TooltipPayload {
+  value: number;
+}
+
+const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: TooltipPayload[]; label?: string }) => {
   if (active && payload && payload.length && label === "Apr") {
     return (
       <div className="bg-white border border-gray-100 rounded-xl shadow-lg p-3 text-sm">

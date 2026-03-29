@@ -1,5 +1,5 @@
 import { Cart } from "@/types/cart";
-import { api, fetchWithTimeout } from "./client";
+import { api, fetchWithTimeout, buildHeaders } from "./client";
 
 /* -------------------- CART -------------------- */
 
@@ -8,10 +8,8 @@ import { api, fetchWithTimeout } from "./client";
  * Response: Cart
  */
 export const fetchCart = async (cookie?: string): Promise<Cart | null> => {
-  const headers: Record<string, string> = {};
-  if (cookie) headers["cookie"] = cookie;
   const res = await fetchWithTimeout(`${api}/cart`, {
-    headers,
+    headers: buildHeaders({ cookie }),
     credentials: cookie ? undefined : "include",
     cache: "no-store",
   });
@@ -32,19 +30,19 @@ export const addToCart = async (
   quantity: number,
   size: string,
   cookie: string,
-) => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (cookie) headers["cookie"] = cookie;
+): Promise<Cart> => {
   const res = await fetchWithTimeout(`${api}/cart/add`, {
     method: "POST",
-    headers,
+    headers: buildHeaders({ cookie, contentType: "application/json" }),
     credentials: cookie ? undefined : "include",
     body: JSON.stringify({ productId, quantity, size }),
   });
 
-  const data = await res.json();
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || err.message || "Failed to add to cart");
+  }
+  const data: Cart = await res.json();
   return data;
 };
 
@@ -53,17 +51,17 @@ export const addToCart = async (
  * @returns Cart - The updated cart
  * Response: Cart
  */
-export const removeFromCart = async (itemId: string, cookie: string) => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (cookie) headers["cookie"] = cookie;
+export const removeFromCart = async (itemId: string, cookie: string): Promise<Cart> => {
   const res = await fetchWithTimeout(`${api}/cart/item/${itemId}`, {
     method: "DELETE",
-    headers,
+    headers: buildHeaders({ cookie, contentType: "application/json" }),
     credentials: cookie ? undefined : "include",
   });
 
-  const data = await res.json();
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || err.message || "Failed to remove from cart");
+  }
+  const data: Cart = await res.json();
   return data;
 };

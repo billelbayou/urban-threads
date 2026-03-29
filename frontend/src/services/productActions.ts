@@ -7,6 +7,8 @@ import {
 } from "@/services/api/product";
 import { CreateProductSchema } from "@/schemas/productSchema";
 import { Product } from "@/types/product";
+import { ActionResponse } from "@/types/action";
+import { handleActionError, getRequiredFormValue } from "@/services/utils";
 import getCookies from "@/utils/cookies";
 import { revalidatePath } from "next/cache";
 
@@ -21,19 +23,10 @@ export type ValidationErrors = {
   tags?: string[];
 };
 
-type ActionResponse<T> = {
-  success: boolean;
-  data: T | null;
-  error: string | null;
-};
-
 export async function createProductAction(
   _initialState: unknown,
   formData: FormData,
-) {
-  // ---------------------------
-  // Decode payload safely
-  // ---------------------------
+): Promise<ActionResponse<Product>> {
   let product: unknown;
 
   try {
@@ -44,6 +37,7 @@ export async function createProductAction(
         data: null,
         fieldErrors: null,
         message: "Invalid form payload",
+        error: null,
       };
     }
 
@@ -54,6 +48,7 @@ export async function createProductAction(
       data: null,
       fieldErrors: null,
       message: "Malformed product data",
+      error: null,
     };
   }
 
@@ -67,12 +62,12 @@ export async function createProductAction(
       data: null,
       fieldErrors,
       message: null,
+      error: null,
     };
   }
 
   try {
     const cookie = await getCookies();
-    // Update formData with validated/transformed data
     formData.set("product", JSON.stringify(validated.data));
     const res = await createProduct(formData, cookie);
 
@@ -83,17 +78,10 @@ export async function createProductAction(
       data: res.product,
       fieldErrors: null,
       message: res.message,
+      error: null,
     };
   } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : "An unexpected error occurred";
-
-    return {
-      success: false,
-      data: null,
-      fieldErrors: null,
-      message,
-    };
+    return handleActionError(error);
   }
 }
 
@@ -101,28 +89,21 @@ export async function deleteProductAction(
   _previousState: unknown,
   formData: FormData,
 ): Promise<ActionResponse<{ message: string }>> {
-  const productId = formData.get("productId") as string;
+  const productId = getRequiredFormValue(formData, "productId");
   const cookie = await getCookies();
   try {
     const message = await deleteProduct(productId, cookie);
     revalidatePath("/admin/products");
-    return { success: true, data: message, error: null };
+    return { success: true, data: message, error: null, message: null, fieldErrors: null };
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "An unexpected error occurred";
-    return {
-      success: false,
-      data: null,
-      error: errorMessage,
-    };
+    return handleActionError(error);
   }
 }
 
 export async function updateProductAction(
   _initialState: unknown,
   formData: FormData,
-) {
-  // Decode payload safely
+): Promise<ActionResponse<Product>> {
   let product: unknown;
 
   try {
@@ -133,6 +114,7 @@ export async function updateProductAction(
         data: null,
         fieldErrors: null,
         message: "Invalid form payload",
+        error: null,
       };
     }
 
@@ -143,18 +125,11 @@ export async function updateProductAction(
       data: null,
       fieldErrors: null,
       message: "Malformed product data",
+      error: null,
     };
   }
 
-  const productId = formData.get("productId") as string;
-  if (!productId) {
-    return {
-      success: false,
-      data: null,
-      fieldErrors: null,
-      message: "Product ID is required",
-    };
-  }
+  const productId = getRequiredFormValue(formData, "productId");
 
   const validated = CreateProductSchema.safeParse(product);
 
@@ -166,12 +141,12 @@ export async function updateProductAction(
       data: null,
       fieldErrors,
       message: null,
+      error: null,
     };
   }
 
   try {
     const cookie = await getCookies();
-    // Update formData with validated/transformed data
     formData.set("product", JSON.stringify(validated.data));
     const res = await updateProduct(productId, formData, cookie);
 
@@ -182,16 +157,9 @@ export async function updateProductAction(
       data: res.product,
       fieldErrors: null,
       message: res.message,
+      error: null,
     };
   } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : "An unexpected error occurred";
-
-    return {
-      success: false,
-      data: null,
-      fieldErrors: null,
-      message,
-    };
+    return handleActionError(error);
   }
 }

@@ -3,13 +3,9 @@
 import { addToCart, removeFromCart } from "./api/cart";
 import { AddToCartSchema } from "@/schemas/cartSchema";
 import { Cart } from "@/types/cart";
-import { cookies } from "next/headers";
-
-type ActionResponse<T> = {
-  success: boolean;
-  data: T | null;
-  error: string | null;
-};
+import { ActionResponse } from "@/types/action";
+import { handleActionError, getRequiredFormValue } from "@/services/utils";
+import getCookies from "@/utils/cookies";
 
 export async function addToCartAction(
   _prevState: unknown,
@@ -23,28 +19,26 @@ export async function addToCartAction(
 
   const validatedFields = AddToCartSchema.safeParse(rawData);
 
-  // 3. Handle validation errors
   if (!validatedFields.success) {
     return {
       success: false,
       data: null,
-      // flatten() makes the errors easy to read (e.g., errors.size)
       error:
         validatedFields.error.flatten().fieldErrors.size?.[0] ||
         validatedFields.error.flatten().fieldErrors.quantity?.[0] ||
         "Invalid input data",
+      message: null,
+      fieldErrors: validatedFields.error.flatten().fieldErrors,
     };
   }
 
   const { productId, quantity, size } = validatedFields.data;
-  const cookie = (await cookies()).toString();
+  const cookie = await getCookies();
   try {
     const cart = await addToCart(productId, quantity, size, cookie);
-    return { success: true, data: cart, error: null };
+    return { success: true, data: cart, error: null, message: null, fieldErrors: null };
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "An unexpected error occurred";
-    return { success: false, data: null, error: errorMessage };
+    return handleActionError(error);
   }
 }
 
@@ -52,18 +46,12 @@ export async function removeFromCartAction(
   _previousState: unknown,
   formData: FormData,
 ): Promise<ActionResponse<Cart>> {
-  const cookie = (await cookies()).toString();
-  const itemId = formData.get("itemId") as string;
+  const cookie = await getCookies();
+  const itemId = getRequiredFormValue(formData, "itemId");
   try {
     const cart = await removeFromCart(itemId, cookie);
-    return { success: true, data: cart, error: null };
+    return { success: true, data: cart, error: null, message: null, fieldErrors: null };
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "An unexpected error occurred";
-    return {
-      success: false,
-      data: null,
-      error: errorMessage,
-    };
+    return handleActionError(error);
   }
 }

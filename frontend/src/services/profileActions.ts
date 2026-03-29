@@ -6,20 +6,15 @@ import {
   shippingAddressSchema,
 } from "@/schemas/profileSchema";
 import { User } from "@/types/user";
-import { cookies } from "next/headers";
+import { ActionResponse } from "@/types/action";
+import { handleActionError } from "@/services/utils";
+import getCookies from "@/utils/cookies";
 import { revalidatePath } from "next/cache";
-
-type ActionResponse = {
-  success: boolean;
-  data: User | null;
-  fieldErrors: Record<string, string[]> | null;
-  message: string | null;
-};
 
 export async function updatePersonalInfoAction(
   _prevState: unknown,
   formData: FormData,
-): Promise<ActionResponse> {
+): Promise<ActionResponse<User>> {
   const rawData = {
     phone: formData.get("phone") as string,
     dateOfBirth: formData.get("dateOfBirth") as string,
@@ -37,12 +32,12 @@ export async function updatePersonalInfoAction(
         string[]
       >,
       message: null,
+      error: null,
     };
   }
 
-  const cookie = (await cookies()).toString();
+  const cookie = await getCookies();
 
-  // Build payload with only non-empty values
   const payload: { phone?: string; dateOfBirth?: string; gender?: string } = {};
   if (validatedFields.data.phone) payload.phone = validatedFields.data.phone;
   if (validatedFields.data.dateOfBirth)
@@ -57,23 +52,17 @@ export async function updatePersonalInfoAction(
       data: result.user,
       fieldErrors: null,
       message: "Personal info updated successfully",
+      error: null,
     };
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Failed to update personal info";
-    return {
-      success: false,
-      data: null,
-      fieldErrors: null,
-      message: errorMessage,
-    };
+    return handleActionError(error);
   }
 }
 
 export async function updateShippingAddressAction(
   _prevState: unknown,
   formData: FormData,
-): Promise<ActionResponse> {
+): Promise<ActionResponse<User>> {
   const rawData = {
     country: formData.get("country") as string,
     city: formData.get("city") as string,
@@ -94,12 +83,12 @@ export async function updateShippingAddressAction(
         string[]
       >,
       message: null,
+      error: null,
     };
   }
 
-  const cookie = (await cookies()).toString();
+  const cookie = await getCookies();
 
-  // Build payload with only non-empty values
   const payload: {
     country?: string;
     city?: string;
@@ -127,17 +116,9 @@ export async function updateShippingAddressAction(
       data: result.user,
       fieldErrors: null,
       message: "Shipping address updated successfully",
+      error: null,
     };
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : "Failed to update shipping address";
-    return {
-      success: false,
-      data: null,
-      fieldErrors: null,
-      message: errorMessage,
-    };
+    return handleActionError(error);
   }
 }

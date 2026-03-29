@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect } from "react";
 import { X, FolderPlus, Subtitles, Layers } from "lucide-react";
-import { CreateCategoryAction } from "@/services/categoriesAction";
+import { createCategoryAction } from "@/services/categoriesAction";
 import { toast } from "sonner";
 
 export default function CategoryModal({
@@ -15,7 +15,7 @@ export default function CategoryModal({
   onClose: () => void;
 }) {
   const [state, formAction, isPending] = useActionState(
-    CreateCategoryAction,
+    createCategoryAction,
     null,
   );
 

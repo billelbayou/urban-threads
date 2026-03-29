@@ -1,8 +1,16 @@
+"use server";
+
 import { loginSchema, registerSchema } from "@/schemas/authSchema";
 import { login, logout, register, deleteAccount } from "./api/auth";
+import { ActionResponse } from "@/types/action";
+import { handleActionError } from "@/services/utils";
+import { User } from "@/types/user";
 import getCookies from "@/utils/cookies";
 
-export async function loginAction(_previousState: unknown, formData: FormData) {
+export async function loginAction(
+  _previousState: unknown,
+  formData: FormData,
+): Promise<ActionResponse<{ message: string; user: User }>> {
   const email = formData.get("email");
   const password = formData.get("password");
 
@@ -14,6 +22,7 @@ export async function loginAction(_previousState: unknown, formData: FormData) {
       data: null,
       fieldErrors: validatedFields.error.flatten().fieldErrors,
       message: null,
+      error: null,
     };
   }
 
@@ -22,23 +31,16 @@ export async function loginAction(_previousState: unknown, formData: FormData) {
       validatedFields.data.email,
       validatedFields.data.password,
     );
-    return { success: true, data };
+    return { success: true, data, fieldErrors: null, message: null, error: null };
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "An unexpected error occurred";
-    return {
-      success: false,
-      data: null,
-      fieldErrors: null,
-      message: errorMessage,
-    };
+    return handleActionError(error);
   }
 }
 
 export async function registerAction(
   _previousState: unknown,
   formData: FormData,
-) {
+): Promise<ActionResponse<{ userId: string }>> {
   const firstName = formData.get("firstName");
   const lastName = formData.get("lastName");
   const email = formData.get("email");
@@ -57,11 +59,12 @@ export async function registerAction(
       data: null,
       fieldErrors: validatedFields.error.flatten().fieldErrors,
       message: null,
+      error: null,
     };
   }
 
   try {
-    const data: { message: string; userId: string } = await register(
+    const data = await register(
       validatedFields.data.firstName,
       validatedFields.data.lastName,
       validatedFields.data.email,
@@ -69,55 +72,37 @@ export async function registerAction(
     );
     return {
       success: true,
-      data: data.userId,
+      data: { userId: data.userId },
       fieldErrors: null,
       message: data.message,
+      error: null,
     };
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "An unexpected error occurred";
-    return {
-      success: false,
-      data: null,
-      fieldErrors: null,
-      message: errorMessage,
-    };
+    return handleActionError(error);
   }
 }
-//
+
 export async function logoutAction(
   _previousState: unknown,
   _formData: FormData,
-) {
+): Promise<ActionResponse<{ message: string }>> {
   try {
     const data = await logout();
-    return { success: true, data };
+    return { success: true, data, fieldErrors: null, message: null, error: null };
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "An unexpected error occurred";
-    return {
-      success: false,
-      data: null,
-      error: errorMessage,
-    };
+    return handleActionError(error);
   }
 }
 
 export async function deleteAccountAction(
   _previousState: unknown,
   _formData: FormData,
-) {
+): Promise<ActionResponse<{ message: string }>> {
   try {
     const cookie = await getCookies();
     const data = await deleteAccount(cookie);
-    return { success: true, data };
+    return { success: true, data, fieldErrors: null, message: null, error: null };
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "An unexpected error occurred";
-    return {
-      success: false,
-      data: null,
-      error: errorMessage,
-    };
+    return handleActionError(error);
   }
 }

@@ -2,14 +2,15 @@
 
 import { createCategory, deleteCategory } from "./api/category";
 import { CreateCategorySchema } from "@/schemas/categorySchema";
+import { ActionResponse } from "@/types/action";
+import { handleActionError, getRequiredFormValue } from "@/services/utils";
 import getCookies from "@/utils/cookies";
 import { revalidatePath } from "next/cache";
 
-export async function CreateCategoryAction(
+export async function createCategoryAction(
   _initialState: unknown,
   formData: FormData,
-) {
-  // 1. Validate
+): Promise<ActionResponse<unknown>> {
   const result = CreateCategorySchema.safeParse({
     name: formData.get("name"),
     parentId: formData.get("parentId"),
@@ -17,12 +18,17 @@ export async function CreateCategoryAction(
 
   if (!result.success) {
     const errorMessage = result.error.issues.map((i) => i.message).join(", ");
-    return { success: false, data: null, error: errorMessage };
+    return {
+      success: false,
+      data: null,
+      error: errorMessage,
+      message: null,
+      fieldErrors: null,
+    };
   }
 
   const { name, parentId } = result.data;
 
-  // Normalize slug
   const slug = name
     .toLowerCase()
     .replace(/\s+/g, "-")
@@ -30,7 +36,6 @@ export async function CreateCategoryAction(
   const cookie = await getCookies();
 
   try {
-    // 2. Execute DB Logic
     const data = await createCategory({
       name,
       slug,
@@ -39,33 +44,23 @@ export async function CreateCategoryAction(
     });
 
     revalidatePath("/admin/categories");
-    return { success: true, data, error: null };
+    return { success: true, data, error: null, message: null, fieldErrors: null };
   } catch (error: unknown) {
-    return {
-      success: false,
-      data: null,
-      error: error instanceof Error ? error.message : "Database failure",
-    };
+    return handleActionError(error);
   }
 }
 
-export async function DeleteCategoryAction(
+export async function deleteCategoryAction(
   _initialState: unknown,
   formData: FormData,
-) {
-  const categoryId = formData.get("categoryId") as string;
+): Promise<ActionResponse<unknown>> {
+  const categoryId = getRequiredFormValue(formData, "categoryId");
   const cookie = await getCookies();
   try {
     const data = await deleteCategory(categoryId, cookie);
     revalidatePath("/admin/categories");
-    return { success: true, data: data, error: null };
+    return { success: true, data, error: null, message: null, fieldErrors: null };
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "An unexpected error occurred";
-    return {
-      success: false,
-      data: null,
-      error: errorMessage,
-    };
+    return handleActionError(error);
   }
 }
