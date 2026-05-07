@@ -1,15 +1,17 @@
 import { Request, Response } from "express";
 import { authService } from "../services/auth.service.js";
 import { asyncHandler } from "../middleware/error.middleware.js";
+import { sendSuccess } from "../utils/response.js";
+import { NotFoundError } from "../errors/index.js";
 
 export const register = asyncHandler(async (req: Request, res: Response) => {
   const result = await authService.register(req.body);
-  res.status(201).json(result);
+  sendSuccess(res, result, undefined, 201);
 });
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
   const result = await authService.login(req.body, res);
-  res.json(result);
+  sendSuccess(res, result);
 });
 
 export const getUserInfos = asyncHandler(
@@ -17,10 +19,9 @@ export const getUserInfos = asyncHandler(
     const userId = req.user?.id as string;
     const user = await authService.getUserById(userId);
     if (!user) {
-      res.status(404).json({ error: "User not found" });
-      return;
+      throw new NotFoundError("User");
     }
-    res.json(user);
+    sendSuccess(res, user);
   },
 );
 
@@ -28,7 +29,7 @@ export const updatePersonalInfo = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?.id as string;
     const user = await authService.updatePersonalInfo(userId, req.body);
-    res.json({ message: "Personal info updated", user });
+    sendSuccess(res, user, "Personal info updated");
   },
 );
 
@@ -36,13 +37,13 @@ export const updateShippingAddress = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?.id as string;
     const user = await authService.updateShippingAddress(userId, req.body);
-    res.json({ message: "Shipping address updated", user });
+    sendSuccess(res, user, "Shipping address updated");
   },
 );
 
 export const logout = asyncHandler(async (req: Request, res: Response) => {
   const result = await authService.logout(res);
-  res.json(result);
+  sendSuccess(res, result);
 });
 
 export const getAllUsers = asyncHandler(
@@ -51,7 +52,7 @@ export const getAllUsers = asyncHandler(
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
     
     const result = await authService.getAllUsers({ page, limit });
-    res.json(result);
+    sendSuccess(res, result.data, undefined, 200, result.pagination);
   },
 );
 
@@ -59,6 +60,6 @@ export const deleteAccount = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?.id as string;
     const result = await authService.deleteAccount(userId, res);
-    res.json(result);
+    sendSuccess(res, result);
   },
 );

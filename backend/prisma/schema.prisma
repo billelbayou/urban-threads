@@ -48,10 +48,10 @@ model Product {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   cartItems    CartItem[]
-  wishlist     Wishlist?   @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
-  wishlistId   String?
+  wishlists    Wishlist[]
   infoSections Json[]
   tags         String[]
+  deletedAt    DateTime?
 
   @@index([categoryId])
 }
@@ -66,6 +66,7 @@ model Category {
   products  Product[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+  deletedAt DateTime?
 
   @@unique([slug, parentId])
 }
@@ -88,6 +89,7 @@ model Order {
   items     OrderItem[]
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+  deletedAt DateTime?
 
   @@index([userId])
 }
@@ -121,7 +123,7 @@ model CartItem {
   quantity  Int     @default(1)
   size      String
 
-  @@unique([cartId, productId, size]) // Prevent duplicate products in same cart
+  @@unique([cartId, productId, size])
 }
 
 enum ProductCategory {

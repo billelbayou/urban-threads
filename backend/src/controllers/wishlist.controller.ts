@@ -2,12 +2,13 @@ import { Response } from "express";
 import { AuthRequest } from "../middleware/auth.middleware.js";
 import { wishlistService } from "../services/wishlist.service.js";
 import { asyncHandler } from "../middleware/error.middleware.js";
+import { sendSuccess } from "../utils/response.js";
 
 export const getWishlist = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const userId = req.user!.id;
     const wishlist = await wishlistService.getOrCreateWishlist(userId);
-    res.json(wishlist);
+    sendSuccess(res, wishlist);
   },
 );
 
@@ -19,7 +20,7 @@ export const addToWishlist = asyncHandler(
       userId,
       productId,
     );
-    res.status(201).json(updatedWishlist);
+    sendSuccess(res, updatedWishlist, undefined, 201);
   },
 );
 
@@ -31,6 +32,6 @@ export const removeFromWishlist = asyncHandler(
       userId,
       productId,
     );
-    res.json(updatedWishlist);
+    sendSuccess(res, updatedWishlist);
   },
 );

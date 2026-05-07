@@ -3,6 +3,7 @@ import { getProductImageUrl, storageService } from "./storage.service.js";
 import { Prisma } from "../generated/prisma/client.js";
 import { ProductInput } from "../schemas/index.js";
 import { imageProcessorService } from "./image_processor.service.js";
+import { AppError, NotFoundError } from "../errors/index.js";
 
 export interface RawImage {
   url?: string;
@@ -49,6 +50,7 @@ export interface ProductWithDetails {
 export interface PaginationParams {
   page?: number;
   limit?: number;
+  sort?: "newest" | "bestSelling";
 }
 
 export interface PaginatedResult<T> {
@@ -99,21 +101,31 @@ export class ProductService {
     const page = Math.max(1, params.page || 1);
     const limit = Math.min(100, Math.max(1, params.limit || 20));
     const skip = (page - 1) * limit;
+    const sort = params.sort || "newest";
+
+    const where = { deletedAt: null as Date | null };
+
+    const orderBy =
+      sort === "bestSelling"
+        ? ({ orderItems: { _count: "desc" } } as any)
+        : ({ createdAt: "desc" } as any);
 
     const [products, total] = await Promise.all([
       prisma.product.findMany({
+        where,
         include: {
           category: {
             select: { name: true, slug: true },
           },
+          _count: {
+            select: { orderItems: true },
+          },
         },
-        orderBy: {
-          createdAt: "desc",
-        },
+        orderBy,
         skip,
         take: limit,
       }),
-      prisma.product.count(),
+      prisma.product.count({ where }),
     ]);
 
     await Promise.all(products.map((p) => ProductService.resolveImageUrls(p)));
@@ -129,9 +141,6 @@ export class ProductService {
     };
   }
 
-  /**
-   * Get single product by ID with resolved image URLs
-   */
   async getProductById(id: string) {
     const product = await prisma.product.findUnique({
       where: { id },
@@ -142,26 +151,22 @@ export class ProductService {
       },
     });
 
-    if (product) {
-      await ProductService.resolveImageUrls(product);
+    if (!product || product.deletedAt) {
+      throw new NotFoundError("Product");
     }
+
+    await ProductService.resolveImageUrls(product);
     return product;
   }
 
-  /**
-   * Create a new product with optional image uploads
-   */
   async createProduct(data: ProductInput, files?: Express.Multer.File[]) {
-    // 1. Process and upload new files if any
     const uploadedImages = [];
     if (files && files.length > 0) {
       for (const file of files) {
-        // Optimize and resize
         const processedSet = await imageProcessorService.processImage(
           file.buffer,
         );
 
-        // Upload all variants
         const variants = Object.entries(processedSet);
         const imageResult: any = {};
 
@@ -171,7 +176,7 @@ export class ProductService {
             const result = await storageService.uploadBuffer(
               variant.buffer,
               fileName,
-              "", // folderPath is in fileName
+              "",
               "image/webp",
               variant.size,
             );
@@ -185,11 +190,10 @@ export class ProductService {
       }
     }
 
-    // 2. Combine with existing images and validate
     const finalImages = [...(data.images || []), ...uploadedImages];
 
     if (finalImages.length === 0) {
-      throw new Error("At least one image is required");
+      throw new AppError("At least one image is required", 400);
     }
 
     const newProduct = await prisma.product.create({
@@ -214,24 +218,35 @@ export class ProductService {
     return newProduct;
   }
 
-  /**
-   * Update an existing product with optional new image uploads
-   */
+  private static collectImagePaths(images: any[]): string[] {
+    const paths: string[] = [];
+    for (const img of images) {
+      if (img.original?.path) paths.push(img.original.path);
+      if (img.thumbnail?.path) paths.push(img.thumbnail.path);
+      if (img.mobile?.path) paths.push(img.mobile.path);
+      if (img.desktop?.path) paths.push(img.desktop.path);
+      if (img.path) paths.push(img.path);
+    }
+    return paths;
+  }
+
   async updateProduct(
     id: string,
     data: ProductInput,
     files?: Express.Multer.File[],
   ) {
-    // 1. Process and upload new files if any
+    const existing = await prisma.product.findUnique({ where: { id } });
+    if (!existing || existing.deletedAt) {
+      throw new NotFoundError("Product");
+    }
+
     const uploadedImages = [];
     if (files && files.length > 0) {
       for (const file of files) {
-        // Optimize and resize
         const processedSet = await imageProcessorService.processImage(
           file.buffer,
         );
 
-        // Upload all variants
         const variants = Object.entries(processedSet);
         const imageResult: any = {};
 
@@ -255,11 +270,21 @@ export class ProductService {
       }
     }
 
-    // 2. Combine with existing images (data.images contains images chosen to be kept)
     const finalImages = [...(data.images || []), ...uploadedImages];
 
     if (finalImages.length === 0) {
-      throw new Error("At least one image is required");
+      throw new AppError("At least one image is required", 400);
+    }
+
+    const oldPaths = ProductService.collectImagePaths(existing.images as any[]);
+    const keptPaths = ProductService.collectImagePaths(finalImages);
+    const orphanedPaths = oldPaths.filter((p) => !keptPaths.includes(p));
+    if (orphanedPaths.length > 0) {
+      Promise.all(
+        orphanedPaths.map((p) =>
+          storageService.deleteFile(p).catch(() => {}),
+        ),
+      );
     }
 
     const updatedProduct = await prisma.product.update({
@@ -285,12 +310,15 @@ export class ProductService {
     return updatedProduct;
   }
 
-  /**
-   * Delete a product
-   */
   async deleteProduct(id: string) {
-    return await prisma.product.delete({
+    const existing = await prisma.product.findUnique({ where: { id } });
+    if (!existing || existing.deletedAt) {
+      throw new NotFoundError("Product");
+    }
+
+    return await prisma.product.update({
       where: { id },
+      data: { deletedAt: new Date() },
     });
   }
 }

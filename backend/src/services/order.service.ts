@@ -1,5 +1,6 @@
 import { prisma } from "../utils/prisma.js";
 import { OrderStatus } from "../generated/prisma/enums.js";
+import { AppError, NotFoundError } from "../errors/index.js";
 
 export interface PaginationParams {
   page?: number;
@@ -28,16 +29,16 @@ export class OrderService {
     });
 
     if (!cart || cart.items.length === 0) {
-      throw new Error("Cart is empty");
+      throw new AppError("Cart is empty", 400);
     }
 
     let total = 0;
 
-    // Validate stock
     for (const item of cart.items) {
       if (item.product.stock < item.quantity) {
-        throw new Error(
+        throw new AppError(
           `Insufficient stock for product "${item.product.name}". Available: ${item.product.stock}, Requested: ${item.quantity}`,
+          400,
         );
       }
       total += item.product.price.toNumber() * item.quantity;
@@ -50,7 +51,6 @@ export class OrderService {
       size: item.size,
     }));
 
-    // Transaction to create order and update stock
     const order = await prisma.$transaction(async (tx) => {
       for (const item of cart.items) {
         await tx.product.update({
@@ -90,7 +90,7 @@ export class OrderService {
 
   async getMyOrders(userId: string) {
     return await prisma.order.findMany({
-      where: { userId },
+      where: { userId, deletedAt: null },
       include: { items: { include: { product: true } } },
       orderBy: { createdAt: "desc" },
     });
@@ -101,8 +101,11 @@ export class OrderService {
     const limit = Math.min(100, Math.max(1, params.limit || 20));
     const skip = (page - 1) * limit;
 
+    const where = { deletedAt: null as Date | null };
+
     const [orders, total] = await Promise.all([
       prisma.order.findMany({
+        where,
         include: {
           user: {
             select: {
@@ -118,7 +121,7 @@ export class OrderService {
         skip,
         take: limit,
       }),
-      prisma.order.count(),
+      prisma.order.count({ where }),
     ]);
 
     return {
@@ -133,6 +136,11 @@ export class OrderService {
   }
 
   async updateOrderStatus(id: string, status: OrderStatus) {
+    const order = await prisma.order.findUnique({ where: { id } });
+    if (!order || order.deletedAt) {
+      throw new NotFoundError("Order");
+    }
+
     return await prisma.order.update({
       where: { id },
       data: { status },

@@ -1,12 +1,14 @@
 import { Product } from "@/types/product";
 import AddToCartForm from "./AddToCartForm";
 import ExpandableSections from "./ExpandableSections";
+import WishlistButton from "./WishlistButton";
 
 type Props = {
   product: Product;
+  isInWishlist?: boolean;
 };
 
-export default function ProductDetails({ product }: Props) {
+export default function ProductDetails({ product, isInWishlist }: Props) {
   return (
     <div className="px-2 sm:px-0 py-4">
       <div className="border-b border-gray-200 pb-4">
@@ -56,6 +58,10 @@ export default function ProductDetails({ product }: Props) {
       </div>
 
       <AddToCartForm product={product} />
+
+      <div className="mt-4">
+        <WishlistButton product={product} isInWishlist={isInWishlist} />
+      </div>
 
       {product.infoSections && product.infoSections.length > 0 && (
         <div className="mt-8 pt-4 border-t border-gray-200">

@@ -1,8 +1,45 @@
 import { prisma } from "../utils/prisma.js";
+import { NotFoundError, ConflictError, AppError } from "../errors/index.js";
+import { getProductImageUrl } from "./storage.service.js";
 
 export class WishlistService {
+  private async resolveProductImages(wishlist: any): Promise<void> {
+    if (!wishlist?.products) return;
+    await Promise.all(
+      wishlist.products.map(async (product: any) => {
+        if (!product?.images) return;
+        product.images = await Promise.all(
+          product.images.map(async (img: any) => {
+            if (img.original) {
+              const variants = ["original", "thumbnail", "mobile", "desktop"];
+              const resolved: any = {};
+              await Promise.all(
+                variants.map(async (v) => {
+                  if (img[v]) {
+                    resolved[v] = {
+                      url: await getProductImageUrl(img[v].path),
+                      path: img[v].path,
+                    };
+                  }
+                }),
+              );
+              return resolved;
+            }
+            if (img.path) {
+              return {
+                url: await getProductImageUrl(img.path),
+                path: img.path,
+              };
+            }
+            return img;
+          }),
+        );
+      }),
+    );
+  }
+
   async getOrCreateWishlist(userId: string) {
-    return prisma.wishlist.upsert({
+    const wishlist = await prisma.wishlist.upsert({
       where: { userId },
       update: {},
       create: { userId },
@@ -10,11 +47,13 @@ export class WishlistService {
         products: true,
       },
     });
+    await this.resolveProductImages(wishlist);
+    return wishlist;
   }
 
   async addToWishlist(userId: string, productId: string) {
     if (!productId) {
-      throw new Error("Product ID is required");
+      throw new AppError("Product ID is required", 400);
     }
 
     const product = await prisma.product.findUnique({
@@ -22,12 +61,11 @@ export class WishlistService {
     });
 
     if (!product) {
-      throw new Error("Product not found");
+      throw new NotFoundError("Product");
     }
 
     const wishlist = await this.getOrCreateWishlist(userId);
 
-    // Check if product is already in wishlist
     const exists = await prisma.wishlist.findFirst({
       where: {
         id: wishlist.id,
@@ -36,7 +74,7 @@ export class WishlistService {
     });
 
     if (exists) {
-      throw new Error("Product already in wishlist");
+      throw new ConflictError("Product already in wishlist");
     }
 
     await prisma.wishlist.update({
@@ -55,7 +93,7 @@ export class WishlistService {
     });
 
     if (!wishlist) {
-      throw new Error("Wishlist not found");
+      throw new NotFoundError("Wishlist");
     }
 
     await prisma.wishlist.update({

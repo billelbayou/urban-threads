@@ -1,23 +1,29 @@
 import { Request, Response, NextFunction } from "express";
+import { AppError } from "../errors/index.js";
+import { sendError } from "../utils/response.js";
 
 export const errorHandler = (
-  err: any,
-  req: Request,
+  err: AppError | Error,
+  _req: Request,
   res: Response,
-  next: NextFunction,
+  _next: NextFunction,
 ) => {
-  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  res.status(statusCode);
+  const statusCode = err instanceof AppError ? err.statusCode : 500;
 
   console.error(`[Error Handler] ${err.message}`);
   if (err.stack) {
     console.error(err.stack);
   }
 
-  res.json({
-    error: err.message,
-    stack: process.env.NODE_ENV === "production" ? null : err.stack,
-  });
+  const errorMessage = err.message || "Internal Server Error";
+  const details =
+    err instanceof AppError && err.details
+      ? err.details
+      : process.env.NODE_ENV === "production"
+        ? undefined
+        : err.stack;
+
+  sendError(res, errorMessage, statusCode, details);
 };
 
 export const asyncHandler =

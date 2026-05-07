@@ -1,9 +1,11 @@
 import { prisma } from "../utils/prisma.js";
 import { CategoryInput } from "../schemas/index.js";
+import { NotFoundError } from "../errors/index.js";
 
 export class CategoryService {
   async getAllCategories() {
     return await prisma.category.findMany({
+      where: { deletedAt: null },
       orderBy: { name: "asc" },
     });
   }
@@ -14,8 +16,8 @@ export class CategoryService {
       include: { children: true },
     });
 
-    if (!category) {
-      throw new Error("Category not found");
+    if (!category || category.deletedAt) {
+      throw new NotFoundError("Category");
     }
 
     return category;
@@ -32,8 +34,14 @@ export class CategoryService {
   }
 
   async deleteCategory(id: string) {
-    return await prisma.category.delete({
+    const existing = await prisma.category.findUnique({ where: { id } });
+    if (!existing || existing.deletedAt) {
+      throw new NotFoundError("Category");
+    }
+
+    return await prisma.category.update({
       where: { id },
+      data: { deletedAt: new Date() },
     });
   }
 }

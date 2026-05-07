@@ -2,11 +2,13 @@ import { Response } from "express";
 import { AuthRequest } from "../middleware/auth.middleware.js";
 import { cartService } from "../services/cart.service.js";
 import { asyncHandler } from "../middleware/error.middleware.js";
+import { sendSuccess } from "../utils/response.js";
+import { AppError } from "../errors/index.js";
 
 export const getCart = asyncHandler(async (req: AuthRequest, res: Response) => {
   const userId = req.user!.id;
   const cart = await cartService.getOrCreateCart(userId);
-  res.json(cart);
+  sendSuccess(res, cart);
 });
 
 export const addToCart = asyncHandler(
@@ -19,7 +21,7 @@ export const addToCart = asyncHandler(
       quantity,
       size,
     );
-    res.status(201).json(updatedCart);
+    sendSuccess(res, updatedCart, undefined, 201);
   },
 );
 
@@ -30,8 +32,7 @@ export const updateCartItem = asyncHandler(
     const userId = req.user!.id;
 
     if (!quantity || quantity <= 0) {
-      res.status(400).json({ error: "Invalid quantity" });
-      return;
+      throw new AppError("Invalid quantity", 400);
     }
 
     const updatedCart = await cartService.updateCartItem(
@@ -39,7 +40,7 @@ export const updateCartItem = asyncHandler(
       itemId,
       quantity,
     );
-    res.json(updatedCart);
+    sendSuccess(res, updatedCart);
   },
 );
 
@@ -48,7 +49,7 @@ export const removeCartItem = asyncHandler(
     const { itemId } = req.params as { itemId: string };
     const userId = req.user!.id;
     const updatedCart = await cartService.removeCartItem(userId, itemId);
-    res.json(updatedCart);
+    sendSuccess(res, updatedCart);
   },
 );
 
@@ -56,6 +57,6 @@ export const clearCart = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const userId = req.user!.id;
     const updatedCart = await cartService.clearCart(userId);
-    res.json(updatedCart);
+    sendSuccess(res, updatedCart);
   },
 );

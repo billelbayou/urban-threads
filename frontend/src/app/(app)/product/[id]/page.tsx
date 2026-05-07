@@ -1,6 +1,7 @@
 import ImageCarousel from "@/components/product-client/productImageCarousel";
 import ProductDetails from "@/components/product-client/productDetails";
 import { fetchProductById } from "@/services/api/product";
+import { fetchWishlist } from "@/services/api/wishlist";
 import { Metadata } from "next";
 
 interface PageProps {
@@ -50,18 +51,19 @@ export default async function ProductPage({ params }: PageProps) {
     );
   }
 
+  const wishlist = await fetchWishlist();
+  const isInWishlist = wishlist?.products?.some((p) => p.id === productId) ?? false;
+
   return (
     <>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="lg:grid lg:grid-cols-2 lg:gap-x-12 lg:items-start">
-          {/* Image Section */}
           <div className="flex flex-col">
             <ImageCarousel product={product} />
           </div>
 
-          {/* Product Details Section */}
           <div className="mt-10 px-2 sm:px-0 lg:mt-0">
-            <ProductDetails product={product} />
+            <ProductDetails product={product} isInWishlist={isInWishlist} />
           </div>
         </div>
       </div>

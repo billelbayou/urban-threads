@@ -1,29 +1,16 @@
 import { Cart } from "@/types/cart";
-import { api, fetchWithTimeout, buildHeaders } from "./client";
+import { api, fetchWithTimeout, buildHeaders, unwrapData } from "./client";
 
-/* -------------------- CART -------------------- */
-
-/**
- * @returns Cart | null - The user's cart or null if not found
- * Response: Cart
- */
 export const fetchCart = async (): Promise<Cart | null> => {
   const res = await fetchWithTimeout(`${api}/cart`, {
     headers: await buildHeaders(),
     cache: "no-store",
   });
   if (!res.ok) return null;
-  const data: Cart = await res.json();
-  return data;
+  const json = await res.json();
+  return unwrapData<Cart>(json);
 };
 
-/**
- * @param productId - The product ID to add
- * @param quantity - The quantity to add
- * @param size - The product size
- * @returns Cart - The updated cart
- * Response: Cart
- */
 export const addToCart = async (
   productId: string,
   quantity: number,
@@ -39,15 +26,10 @@ export const addToCart = async (
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || err.message || "Failed to add to cart");
   }
-  const data: Cart = await res.json();
-  return data;
+  const json = await res.json();
+  return unwrapData<Cart>(json);
 };
 
-/**
- * @param itemId - The cart item ID to remove
- * @returns Cart - The updated cart
- * Response: Cart
- */
 export const removeFromCart = async (itemId: string): Promise<Cart> => {
   const res = await fetchWithTimeout(`${api}/cart/item/${itemId}`, {
     method: "DELETE",
@@ -58,6 +40,6 @@ export const removeFromCart = async (itemId: string): Promise<Cart> => {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || err.message || "Failed to remove from cart");
   }
-  const data: Cart = await res.json();
-  return data;
+  const json = await res.json();
+  return unwrapData<Cart>(json);
 };

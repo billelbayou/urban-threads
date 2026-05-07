@@ -21,6 +21,14 @@ export async function buildHeaders(opts: {
   return headers;
 }
 
+// Unwrap { success, data } envelope from API responses
+export function unwrapData<T>(json: { success: true; data: T } | { success: false; error: string }): T {
+  if (!json.success) {
+    throw new Error((json as { error: string }).error || "Request failed");
+  }
+  return (json as { success: true; data: T }).data as T;
+}
+
 // Helper function to create fetch with timeout
 export const fetchWithTimeout = async (
   url: string,
