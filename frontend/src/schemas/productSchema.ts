@@ -14,10 +14,10 @@ export const CreateProductSchema = z.object({
       z.object({
         url: z.string().url().optional(),
         path: z.string().optional(),
-        thumbnail: z.any().optional(),
-        mobile: z.any().optional(),
-        desktop: z.any().optional(),
-        original: z.any().optional(),
+        thumbnail: z.unknown().optional(),
+        mobile: z.unknown().optional(),
+        desktop: z.unknown().optional(),
+        original: z.unknown().optional(),
       }),
     )
     .default([]),

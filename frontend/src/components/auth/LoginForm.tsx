@@ -13,8 +13,8 @@ export default function LoginForm() {
   const setUser = useAuthStore((s) => s.setUser);
 
   useEffect(() => {
-    if (state?.success) {
-      toast.success(state.data.message);
+    if (state?.success && state.data) {
+      toast.success(state.data.message ?? "Login successful");
       setUser(state.data.user);
       router.refresh();
       if (state.data.user.role === "ADMIN") {

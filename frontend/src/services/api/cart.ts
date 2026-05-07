@@ -1,5 +1,5 @@
 import { Cart } from "@/types/cart";
-import { api, fetchWithTimeout } from "./client";
+import { api, fetchWithTimeout, buildHeaders } from "./client";
 
 /* -------------------- CART -------------------- */
 
@@ -7,12 +7,9 @@ import { api, fetchWithTimeout } from "./client";
  * @returns Cart | null - The user's cart or null if not found
  * Response: Cart
  */
-export const fetchCart = async (cookie?: string): Promise<Cart | null> => {
-  const headers: Record<string, string> = {};
-  if (cookie) headers["cookie"] = cookie;
+export const fetchCart = async (): Promise<Cart | null> => {
   const res = await fetchWithTimeout(`${api}/cart`, {
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
     cache: "no-store",
   });
   if (!res.ok) return null;
@@ -31,20 +28,18 @@ export const addToCart = async (
   productId: string,
   quantity: number,
   size: string,
-  cookie: string,
-) => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (cookie) headers["cookie"] = cookie;
+): Promise<Cart> => {
   const res = await fetchWithTimeout(`${api}/cart/add`, {
     method: "POST",
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders({ contentType: "application/json" }),
     body: JSON.stringify({ productId, quantity, size }),
   });
 
-  const data = await res.json();
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || err.message || "Failed to add to cart");
+  }
+  const data: Cart = await res.json();
   return data;
 };
 
@@ -53,17 +48,16 @@ export const addToCart = async (
  * @returns Cart - The updated cart
  * Response: Cart
  */
-export const removeFromCart = async (itemId: string, cookie: string) => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (cookie) headers["cookie"] = cookie;
+export const removeFromCart = async (itemId: string): Promise<Cart> => {
   const res = await fetchWithTimeout(`${api}/cart/item/${itemId}`, {
     method: "DELETE",
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders({ contentType: "application/json" }),
   });
 
-  const data = await res.json();
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || err.message || "Failed to remove from cart");
+  }
+  const data: Cart = await res.json();
   return data;
 };

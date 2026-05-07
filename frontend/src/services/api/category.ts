@@ -1,5 +1,5 @@
 import { Category } from "@/types/category";
-import { api, fetchWithTimeout } from "./client";
+import { api, fetchWithTimeout, buildHeaders } from "./client";
 
 /* -------------------- CATEGORY -------------------- */
 
@@ -7,17 +7,16 @@ import { api, fetchWithTimeout } from "./client";
  * @returns Category[] - Array of all categories
  * Response: Category[]
  */
-export const fetchCategories = async (cookie?: string): Promise<Category[]> => {
-  const headers: Record<string, string> = {};
-  if (cookie) headers["cookie"] = cookie;
-
+export const fetchCategories = async (): Promise<Category[]> => {
   const res = await fetchWithTimeout(`${api}/category`, {
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
     cache: "no-store",
   });
 
-  if (!res.ok) throw new Error("Failed to fetch categories");
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to fetch categories");
+  }
   return res.json();
 };
 
@@ -32,25 +31,21 @@ export const createCategory = async ({
   name,
   slug,
   parentId,
-  cookie,
 }: {
   name: string;
   slug: string;
   parentId?: string;
-  cookie?: string;
-}) => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (cookie) headers["cookie"] = cookie;
+}): Promise<Category> => {
   const res = await fetchWithTimeout(`${api}/category`, {
     method: "POST",
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders({ contentType: "application/json" }),
     body: JSON.stringify({ name, slug, parentId }),
   });
 
-  if (!res.ok) throw new Error("Failed to create category");
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to create category");
+  }
   return res.json();
 };
 
@@ -59,14 +54,14 @@ export const createCategory = async ({
  * @returns void (204 No Content)
  * Response: 204 No Content
  */
-export const deleteCategory = async (id: string, cookie?: string) => {
-  const headers: Record<string, string> = {};
-  if (cookie) headers["cookie"] = cookie;
+export const deleteCategory = async (id: string): Promise<void> => {
   const res = await fetchWithTimeout(`${api}/category/${id}`, {
     method: "DELETE",
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
   });
 
-  if (!res.ok) throw new Error("Failed to delete category");
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to delete category");
+  }
 };

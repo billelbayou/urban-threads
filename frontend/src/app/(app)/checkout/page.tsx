@@ -1,13 +1,11 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/services/api/auth";
 import { fetchCart } from "@/services/api/cart";
-import getCookies from "@/utils/cookies";
 import CheckoutClient from "@/components/checkout/CheckoutClient";
 
 export default async function CheckoutPage() {
-  const cookie = await getCookies();
-  const user = await getCurrentUser(cookie);
-  const cart = await fetchCart(cookie);
+  const user = await getCurrentUser();
+  const cart = await fetchCart();
 
   if (!user) {
     redirect("/login?redirect=/checkout");

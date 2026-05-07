@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/services/api/auth";
-import getCookies from "@/utils/cookies";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
 import PersonalInfoForm from "@/components/profile/PersonalInfoForm";
 import ShippingAddressForm from "@/components/profile/ShippingAddressForm";
@@ -8,8 +7,7 @@ import PasswordSection from "@/components/profile/PasswordSection";
 import DeleteAccountSection from "@/components/profile/DeleteAccountSection";
 
 export default async function AccountOverview() {
-  const cookie = await getCookies();
-  const user = await getCurrentUser(cookie);
+  const user = await getCurrentUser();
 
   if (!user) {
     redirect("/login");

@@ -2,7 +2,6 @@ import AddProductMain from "@/components/admin/product-admin/AddProductMain";
 import { fetchCategories } from "@/services/api/category";
 import { Category, CategoryWithChildren } from "@/types/category";
 import { buildTree } from "@/utils/helpers";
-import getCookies from "@/utils/cookies";
 import { connection } from "next/server";
 
 
@@ -12,8 +11,7 @@ export default async function AddProductPage() {
   let error: string | null = null;
 
   try {
-    const cookies = await getCookies();
-    const categories: Category[] = await fetchCategories(cookies);
+    const categories: Category[] = await fetchCategories();
     tree = buildTree(categories);
   } catch (err) {
     console.error("Failed to fetch data for Add Product page:", err);

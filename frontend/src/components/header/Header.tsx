@@ -1,10 +1,10 @@
 import Link from "next/link";
 import HeaderClient from "./HeaderClient";
 import { fetchCart } from "@/services/api/cart";
-import getCookies from "@/utils/cookies";
+import { NAV_LINKS } from "@/constants/navigation";
 
 export default async function Header() {
-  const cart = await fetchCart(await getCookies());
+  const cart = await fetchCart();
   return (
     <header className="flex items-center justify-between p-4 relative border-b mb-5">
       <Link
@@ -16,21 +16,11 @@ export default async function Header() {
 
       {/* Desktop Navigation */}
       <ul className="hidden md:flex space-x-6 text-lg">
-        <li>
-          <Link href="/">Home</Link>
-        </li>
-        <li>
-          <Link href="/products">Products</Link>
-        </li>
-        <li>
-          <Link href="/new">New Arrivals</Link>
-        </li>
-        <li>
-          <Link href="/about">About</Link>
-        </li>
-        <li>
-          <Link href="/contact">Contact</Link>
-        </li>
+        {NAV_LINKS.map(({ href, label }) => (
+          <li key={href}>
+            <Link href={href}>{label}</Link>
+          </li>
+        ))}
       </ul>
       <HeaderClient initialCart={cart} />
     </header>

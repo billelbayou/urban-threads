@@ -1,5 +1,5 @@
 import { Wishlist } from "@/types/wishlist";
-import { api, fetchWithTimeout } from "./client";
+import { api, fetchWithTimeout, buildHeaders } from "./client";
 
 /* -------------------- WISHLIST -------------------- */
 
@@ -7,14 +7,9 @@ import { api, fetchWithTimeout } from "./client";
  * @returns Wishlist | null - The user's wishlist or null if not found
  * Response: Wishlist
  */
-export const fetchWishlist = async (
-  cookie?: string,
-): Promise<Wishlist | null> => {
-  const headers: Record<string, string> = {};
-  if (cookie) headers["cookie"] = cookie;
+export const fetchWishlist = async (): Promise<Wishlist | null> => {
   const res = await fetchWithTimeout(`${api}/wishlist`, {
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
     cache: "no-store",
   });
   if (!res.ok) return null;
@@ -28,16 +23,10 @@ export const fetchWishlist = async (
  */
 export const addToWishlistFetcher = async (
   productId: string,
-  cookie?: string,
 ): Promise<Wishlist> => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (cookie) headers["cookie"] = cookie;
   const res = await fetchWithTimeout(`${api}/wishlist/add`, {
     method: "POST",
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders({ contentType: "application/json" }),
     body: JSON.stringify({ productId }),
   });
   const data = await res.json();
@@ -54,16 +43,10 @@ export const addToWishlistFetcher = async (
  */
 export const removeFromWishlistFetcher = async (
   productId: string,
-  cookie?: string,
 ): Promise<Wishlist> => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (cookie) headers["cookie"] = cookie;
   const res = await fetchWithTimeout(`${api}/wishlist/${productId}`, {
     method: "DELETE",
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders({ contentType: "application/json" }),
   });
   const data = await res.json();
   if (!res.ok) {

@@ -6,7 +6,6 @@ import AuthHydrator from "@/components/auth/AuthHydrator";
 import { getCurrentUser } from "@/services/api/auth";
 import { fetchCart } from "@/services/api/cart";
 import CartHydrator from "@/components/cart/CartHydrator";
-import getCookies from "@/utils/cookies";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -24,9 +23,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookies = await getCookies();
-  const user = await getCurrentUser(cookies);
-  const cart = await fetchCart(cookies);
+  const user = await getCurrentUser();
+  const cart = await fetchCart();
   return (
     <html lang="en">
       <body className={`${montserrat.className}`} suppressHydrationWarning>

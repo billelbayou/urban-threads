@@ -1,5 +1,5 @@
 import { Product } from "@/types/product";
-import { api, fetchWithTimeout } from "./client";
+import { api, fetchWithTimeout, buildHeaders } from "./client";
 
 /* -------------------- PRODUCTS -------------------- */
 
@@ -7,19 +7,18 @@ import { api, fetchWithTimeout } from "./client";
  * @returns Product[] - Array of all products
  * Response: Product[]
  */
-export const fetchProducts = async (cookie?: string): Promise<Product[]> => {
-  const headers: Record<string, string> = {};
-  if (cookie) headers["cookie"] = cookie;
-
+export const fetchProducts = async (): Promise<Product[]> => {
   const res = await fetchWithTimeout(`${api}/products`, {
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
     cache: "no-store",
   });
 
-  if (!res.ok) throw new Error("Failed to fetch products");
-  const data = await res.json();
-  const products: Product[] = data.data;
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || "Failed to fetch products");
+  }
+  const result = await res.json();
+  const products: Product[] = result.data;
   return products;
 };
 
@@ -30,18 +29,16 @@ export const fetchProducts = async (cookie?: string): Promise<Product[]> => {
  */
 export const fetchProductById = async (
   productId: string,
-  cookie?: string,
 ): Promise<Product> => {
-  const headers: Record<string, string> = {};
-  if (cookie) headers["cookie"] = cookie;
-
   const res = await fetchWithTimeout(`${api}/products/${productId}`, {
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
     cache: "no-store",
   });
 
-  if (!res.ok) throw new Error("Failed to fetch product");
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || "Failed to fetch product");
+  }
   return res.json();
 };
 
@@ -52,18 +49,14 @@ export const fetchProductById = async (
  */
 export const createProduct = async (
   formData: FormData,
-  cookie?: string,
 ): Promise<{ message: string; product: Product }> => {
-  const headers: Record<string, string> = {};
-  if (cookie) headers["cookie"] = cookie;
   const res = await fetchWithTimeout(`${api}/products`, {
     method: "POST",
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
     body: formData,
   });
   if (!res.ok) {
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     throw new Error(data.error || "Failed to create product");
   }
   const data: { message: string; product: Product } = await res.json();
@@ -77,20 +70,14 @@ export const createProduct = async (
  */
 export const deleteProduct = async (
   productId: string,
-  cookie?: string,
 ): Promise<{ message: string }> => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (cookie) headers["cookie"] = cookie;
   const res = await fetchWithTimeout(`${api}/products/${productId}`, {
     method: "DELETE",
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders({ contentType: "application/json" }),
   });
 
   if (!res.ok) {
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     throw new Error(data.error || "Failed to delete product");
   }
   const data: { message: string } = await res.json();
@@ -106,18 +93,14 @@ export const deleteProduct = async (
 export const updateProduct = async (
   productId: string,
   formData: FormData,
-  cookie?: string,
 ): Promise<{ message: string; product: Product }> => {
-  const headers: Record<string, string> = {};
-  if (cookie) headers["cookie"] = cookie;
   const res = await fetchWithTimeout(`${api}/products/${productId}`, {
     method: "PATCH",
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
     body: formData,
   });
   if (!res.ok) {
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     throw new Error(data.error || "Failed to update product");
   }
   const data: { message: string; product: Product } = await res.json();
@@ -145,7 +128,7 @@ export const uploadImage = async (
     body: formData,
   });
   if (!res.ok) {
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     throw new Error(data.error || "Failed to upload image");
   }
   const data: { url: string; path: string } = await res.json();

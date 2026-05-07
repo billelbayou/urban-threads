@@ -1,7 +1,25 @@
-export const api = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const rawApiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+export const api = rawApiBase.replace(/\/+$/, "");
 
 // Default timeout for fetch requests (in milliseconds)
 const DEFAULT_TIMEOUT = 10000;
+
+/**
+ * Builds standard headers for API requests.
+ * Automatically retrieves cookies from the request context.
+ */
+export async function buildHeaders(opts: {
+  contentType?: string;
+} = {}): Promise<Record<string, string>> {
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  const cookie = cookieStore.toString();
+
+  const headers: Record<string, string> = {};
+  if (opts.contentType) headers["Content-Type"] = opts.contentType;
+  if (cookie) headers["cookie"] = cookie;
+  return headers;
+}
 
 // Helper function to create fetch with timeout
 export const fetchWithTimeout = async (

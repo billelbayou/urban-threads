@@ -1,5 +1,5 @@
 import { Order } from "@/types/order";
-import { api, fetchWithTimeout } from "./client";
+import { api, fetchWithTimeout, buildHeaders } from "./client";
 
 /* -------------------- ORDERS -------------------- */
 
@@ -8,13 +8,10 @@ import { api, fetchWithTimeout } from "./client";
  * @returns Order - The created order
  * Response: Order
  */
-export const createOrder = async (cookie?: string): Promise<Order> => {
-  const headers: Record<string, string> = {};
-  if (cookie) headers["cookie"] = cookie;
+export const createOrder = async (): Promise<Order> => {
   const res = await fetchWithTimeout(`${api}/orders`, {
     method: "POST",
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
   });
   const data = await res.json();
   if (!res.ok) {
@@ -27,15 +24,15 @@ export const createOrder = async (cookie?: string): Promise<Order> => {
  * @returns Order[] - Array of the current user's orders
  * Response: Order[]
  */
-export const fetchMyOrders = async (cookie?: string): Promise<Order[]> => {
-  const headers: Record<string, string> = {};
-  if (cookie) headers["cookie"] = cookie;
+export const fetchMyOrders = async (): Promise<Order[]> => {
   const res = await fetchWithTimeout(`${api}/orders/mine`, {
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
     cache: "no-store",
   });
-  if (!res.ok) return [];
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to fetch orders");
+  }
   return res.json();
 };
 
@@ -44,16 +41,17 @@ export const fetchMyOrders = async (cookie?: string): Promise<Order[]> => {
  * @returns Order[] - Array of all orders
  * Response: Order[]
  */
-export const fetchAdminOrders = async (cookie?: string): Promise<Order[]> => {
-  const headers: Record<string, string> = {};
-  if (cookie) headers["cookie"] = cookie;
+export const fetchAdminOrders = async (): Promise<Order[] | null> => {
   const res = await fetchWithTimeout(`${api}/orders`, {
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
     cache: "no-store",
   });
-  if (!res.ok) return [];
-  return res.json();
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to fetch orders");
+  }
+  const data = await res.json();
+  return data.data;
 };
 
 /**
@@ -66,16 +64,10 @@ export const fetchAdminOrders = async (cookie?: string): Promise<Order[]> => {
 export const updateOrderStatus = async (
   orderId: string,
   status: string,
-  cookie?: string,
-) => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (cookie) headers["cookie"] = cookie;
+): Promise<Order> => {
   const res = await fetchWithTimeout(`${api}/orders/${orderId}`, {
     method: "PATCH",
-    headers,
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders({ contentType: "application/json" }),
     body: JSON.stringify({ status }),
   });
   const data = await res.json();
@@ -90,25 +82,27 @@ export const updateOrderStatus = async (
  * @returns { totalSales: number; orderCount: number; customerCount: number; productCount: number; orders: Order[]; products: Product[] }
  * Response: { totalSales: number; orderCount: number; customerCount: number; productCount: number; orders: Order[]; products: Product[] }
  */
-export const fetchAdminStats = async (cookie?: string) => {
-  const headers: Record<string, string> = {};
-  if (cookie) headers["cookie"] = cookie;
+export const fetchAdminStats = async (): Promise<{
+  totalSales: number;
+  orderCount: number;
+  customerCount: number;
+  productCount: number;
+  orders: Order[];
+  products: unknown[];
+}> => {
+  const headers = await buildHeaders();
 
-  // Fetch all required data in parallel
   const [ordersRes, productsRes, usersRes] = await Promise.all([
     fetchWithTimeout(`${api}/orders`, {
       headers,
-      credentials: cookie ? undefined : "include",
       cache: "no-store",
     }),
     fetchWithTimeout(`${api}/products`, {
       headers,
-      credentials: cookie ? undefined : "include",
       cache: "no-store",
     }),
     fetchWithTimeout(`${api}/auth/users`, {
       headers,
-      credentials: cookie ? undefined : "include",
       cache: "no-store",
     }),
   ]);

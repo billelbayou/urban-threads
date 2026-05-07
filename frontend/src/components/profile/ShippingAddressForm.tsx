@@ -2,39 +2,16 @@
 
 import { updateShippingAddressAction } from "@/services/profileActions";
 import { User } from "@/types/user";
-import { AlertCircle } from "lucide-react";
-import { useActionState, useEffect, useState } from "react";
-import { toast } from "sonner";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useEditableForm } from "@/hooks/useEditableForm";
+import { FieldError } from "@/components/ui/FieldError";
 
 export default function ShippingAddressForm({ user }: { user: User }) {
-  const [editing, setEditing] = useState(false);
-  const [state, formAction, isPending] = useActionState(
-    updateShippingAddressAction,
-    null,
-  );
   const setUser = useAuthStore((s) => s.setUser);
-
-  useEffect(() => {
-    if (state?.success) {
-      toast.success(state.message);
-      if (state.data) setUser(state.data);
-      setEditing(false);
-    } else if (state && !state.success && state.message) {
-      toast.error(state.message);
-    }
-  }, [state, setUser]);
-
-  const renderError = (fieldName: string) => {
-    const errors = state?.fieldErrors?.[fieldName];
-    if (!errors || errors.length === 0) return null;
-    return (
-      <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-        <AlertCircle className="w-4 h-4 shrink-0" />
-        <span>{errors[0]}</span>
-      </p>
-    );
-  };
+  const { editing, setEditing, state, formAction, isPending, getFieldErrors } =
+    useEditableForm(updateShippingAddressAction, (data) => {
+      if (data) setUser(data);
+    });
 
   if (!editing) {
     return (
@@ -98,10 +75,12 @@ export default function ShippingAddressForm({ user }: { user: User }) {
             name="country"
             defaultValue={user.country ?? ""}
             className={`border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-gray-900 ${
-              state?.fieldErrors?.country ? "border-red-500" : "border-gray-300"
+              getFieldErrors("country") ? "border-red-500" : "border-gray-300"
             }`}
           />
-          {renderError("country")}
+          {getFieldErrors("country") && (
+            <FieldError message={getFieldErrors("country")![0]} />
+          )}
         </div>
 
         {/* City */}
@@ -112,10 +91,12 @@ export default function ShippingAddressForm({ user }: { user: User }) {
             name="city"
             defaultValue={user.city ?? ""}
             className={`border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-gray-900 ${
-              state?.fieldErrors?.city ? "border-red-500" : "border-gray-300"
+              getFieldErrors("city") ? "border-red-500" : "border-gray-300"
             }`}
           />
-          {renderError("city")}
+          {getFieldErrors("city") && (
+            <FieldError message={getFieldErrors("city")![0]} />
+          )}
         </div>
 
         {/* State/Province */}
@@ -128,10 +109,12 @@ export default function ShippingAddressForm({ user }: { user: User }) {
             name="state"
             defaultValue={user.state ?? ""}
             className={`border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-gray-900 ${
-              state?.fieldErrors?.state ? "border-red-500" : "border-gray-300"
+              getFieldErrors("state") ? "border-red-500" : "border-gray-300"
             }`}
           />
-          {renderError("state")}
+          {getFieldErrors("state") && (
+            <FieldError message={getFieldErrors("state")![0]} />
+          )}
         </div>
 
         {/* Postal/ZIP Code */}
@@ -144,12 +127,12 @@ export default function ShippingAddressForm({ user }: { user: User }) {
             name="postalCode"
             defaultValue={user.postalCode ?? ""}
             className={`border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-gray-900 ${
-              state?.fieldErrors?.postalCode
-                ? "border-red-500"
-                : "border-gray-300"
+              getFieldErrors("postalCode") ? "border-red-500" : "border-gray-300"
             }`}
           />
-          {renderError("postalCode")}
+          {getFieldErrors("postalCode") && (
+            <FieldError message={getFieldErrors("postalCode")![0]} />
+          )}
         </div>
 
         {/* Street Address */}
@@ -162,12 +145,12 @@ export default function ShippingAddressForm({ user }: { user: User }) {
             name="streetAddress"
             defaultValue={user.streetAddress ?? ""}
             className={`border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-gray-900 ${
-              state?.fieldErrors?.streetAddress
-                ? "border-red-500"
-                : "border-gray-300"
+              getFieldErrors("streetAddress") ? "border-red-500" : "border-gray-300"
             }`}
           />
-          {renderError("streetAddress")}
+          {getFieldErrors("streetAddress") && (
+            <FieldError message={getFieldErrors("streetAddress")![0]} />
+          )}
         </div>
 
         {/* Apartment/Unit */}

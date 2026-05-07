@@ -3,7 +3,7 @@
 import { ProductImage } from "@/types/product";
 import { Upload, X, CheckCircle } from "lucide-react";
 import Image from "next/image";
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 
 interface ImageUploadProps {
   images: ProductImage[];
@@ -19,6 +19,14 @@ export default function ImageUpload({
   setNewImageFiles,
 }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [objectUrls, setObjectUrls] = useState<string[]>([]);
+
+  useEffect(() => {
+    const urls = newImageFiles.map((f) => URL.createObjectURL(f));
+    setObjectUrls(urls);
+    return () => urls.forEach((u) => URL.revokeObjectURL(u));
+  }, [newImageFiles]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -134,7 +142,7 @@ export default function ImageUpload({
               >
                 <div className="aspect-square relative">
                   <Image
-                    src={URL.createObjectURL(file)}
+                    src={objectUrls[index] || ""}
                     alt="New product image"
                     fill
                     className="object-cover"

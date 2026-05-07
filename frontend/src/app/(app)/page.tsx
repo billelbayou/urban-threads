@@ -1,16 +1,12 @@
-import Header from "@/components/header/Header";
 import heroImage from "../../../public/hero.png";
 import Image from "next/image";
 import { AiOutlineDoubleLeft, AiOutlineDoubleRight } from "react-icons/ai";
 import { FaAsterisk } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
 import Topic from "@/components/Topic";
-import Footer from "@/components/Footer";
 import CategoriesSection from "@/components/CategoriesSection";
-import CartDrawer from "@/components/cart/CartDrawer";
 import { fetchProducts } from "@/services/api/product";
 import { getCurrentUser } from "@/services/api/auth";
-import getCookies from "@/utils/cookies";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 
@@ -21,10 +17,8 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const cookies = await getCookies();
-  const user = await getCurrentUser(cookies);
+  const user = await getCurrentUser();
   const products = await fetchProducts();
-  console.log(products[0].images);
   if (user?.role == "ADMIN") {
     redirect("/admin");
   }

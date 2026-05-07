@@ -2,43 +2,20 @@
 
 import { updatePersonalInfoAction } from "@/services/profileActions";
 import { User } from "@/types/user";
-import { AlertCircle } from "lucide-react";
-import { useActionState, useEffect, useState } from "react";
-import { toast } from "sonner";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useEditableForm } from "@/hooks/useEditableForm";
+import { FieldError } from "@/components/ui/FieldError";
 
 export default function PersonalInfoForm({ user }: { user: User }) {
-  const [editing, setEditing] = useState(false);
-  const [state, formAction, isPending] = useActionState(
-    updatePersonalInfoAction,
-    null,
-  );
   const setUser = useAuthStore((s) => s.setUser);
-
-  useEffect(() => {
-    if (state?.success) {
-      toast.success(state.message);
-      if (state.data) setUser(state.data);
-      setEditing(false);
-    } else if (state && !state.success && state.message) {
-      toast.error(state.message);
-    }
-  }, [state, setUser]);
+  const { editing, setEditing, state, formAction, isPending, getFieldErrors } =
+    useEditableForm(updatePersonalInfoAction, (data) => {
+      if (data) setUser(data);
+    });
 
   const dateOfBirth = user.dateOfBirth
     ? new Date(user.dateOfBirth).toISOString().split("T")[0]
     : "";
-
-  const renderError = (fieldName: string) => {
-    const errors = state?.fieldErrors?.[fieldName];
-    if (!errors || errors.length === 0) return null;
-    return (
-      <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-        <AlertCircle className="w-4 h-4 shrink-0" />
-        <span>{errors[0]}</span>
-      </p>
-    );
-  };
 
   if (!editing) {
     return (
@@ -135,10 +112,12 @@ export default function PersonalInfoForm({ user }: { user: User }) {
             name="phone"
             defaultValue={user.phone ?? ""}
             className={`border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-gray-900 ${
-              state?.fieldErrors?.phone ? "border-red-500" : "border-gray-300"
+              getFieldErrors("phone") ? "border-red-500" : "border-gray-300"
             }`}
           />
-          {renderError("phone")}
+          {getFieldErrors("phone") && (
+            <FieldError message={getFieldErrors("phone")![0]} />
+          )}
         </div>
 
         {/* Date of Birth */}
@@ -151,12 +130,12 @@ export default function PersonalInfoForm({ user }: { user: User }) {
             name="dateOfBirth"
             defaultValue={dateOfBirth}
             className={`border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-gray-900 ${
-              state?.fieldErrors?.dateOfBirth
-                ? "border-red-500"
-                : "border-gray-300"
+              getFieldErrors("dateOfBirth") ? "border-red-500" : "border-gray-300"
             }`}
           />
-          {renderError("dateOfBirth")}
+          {getFieldErrors("dateOfBirth") && (
+            <FieldError message={getFieldErrors("dateOfBirth")![0]} />
+          )}
         </div>
 
         {/* Gender */}
@@ -166,7 +145,7 @@ export default function PersonalInfoForm({ user }: { user: User }) {
             name="gender"
             defaultValue={user.gender ?? ""}
             className={`border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-gray-900 ${
-              state?.fieldErrors?.gender ? "border-red-500" : "border-gray-300"
+              getFieldErrors("gender") ? "border-red-500" : "border-gray-300"
             }`}
           >
             <option value="">Select gender</option>
@@ -175,7 +154,9 @@ export default function PersonalInfoForm({ user }: { user: User }) {
             <option value="Other">Other</option>
             <option value="Prefer not to say">Prefer not to say</option>
           </select>
-          {renderError("gender")}
+          {getFieldErrors("gender") && (
+            <FieldError message={getFieldErrors("gender")![0]} />
+          )}
         </div>
 
         {/* Server error message */}

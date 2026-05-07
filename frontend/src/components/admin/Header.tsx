@@ -7,7 +7,7 @@ export default function Header() {
 
   const getTitle = () => {
     if (pathname === "/admin") return "Dashboard";
-    if (pathname.startsWith("/admin/products")) return "Products";
+    if (pathname.startsWith("/admin/products")) return "Products Management";
     if (pathname.startsWith("/admin/categories")) return "Categories";
     if (pathname.startsWith("/admin/orders")) return "Orders";
     if (pathname.startsWith("/admin/customers")) return "Customers";
