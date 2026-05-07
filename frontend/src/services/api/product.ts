@@ -1,14 +1,9 @@
 import { Product } from "@/types/product";
-import { api, fetchWithTimeout, buildHeaders } from "./client";
+import { api, fetchWithTimeout, buildHeaders, unwrapData } from "./client";
 
-/* -------------------- PRODUCTS -------------------- */
-
-/**
- * @returns Product[] - Array of all products
- * Response: Product[]
- */
-export const fetchProducts = async (): Promise<Product[]> => {
-  const res = await fetchWithTimeout(`${api}/products`, {
+export const fetchProducts = async (sort?: "newest" | "bestSelling"): Promise<Product[]> => {
+  const url = sort ? `${api}/products?sort=${sort}` : `${api}/products`;
+  const res = await fetchWithTimeout(url, {
     headers: await buildHeaders(),
     cache: "no-store",
   });
@@ -22,31 +17,19 @@ export const fetchProducts = async (): Promise<Product[]> => {
   return products;
 };
 
-/**
- * @param productId - The product ID
- * @returns Product - The product object
- * Response: Product
- */
 export const fetchProductById = async (
   productId: string,
-): Promise<Product> => {
+): Promise<Product | null> => {
   const res = await fetchWithTimeout(`${api}/products/${productId}`, {
     headers: await buildHeaders(),
     cache: "no-store",
   });
 
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    throw new Error(data.error || "Failed to fetch product");
-  }
-  return res.json();
+  if (!res.ok) return null;
+  const json = await res.json();
+  return unwrapData<Product>(json);
 };
 
-/**
- * @param formData - FormData containing product data and images
- * @returns { message: string; product: Product }
- * Response: { message: string; product: Product }
- */
 export const createProduct = async (
   formData: FormData,
 ): Promise<{ message: string; product: Product }> => {
@@ -59,15 +42,11 @@ export const createProduct = async (
     const data = await res.json().catch(() => ({}));
     throw new Error(data.error || "Failed to create product");
   }
-  const data: { message: string; product: Product } = await res.json();
-  return data;
+  const json = await res.json();
+  const product = unwrapData<Product>(json);
+  return { message: json.message || "", product };
 };
 
-/**
- * @param productId - The product ID to delete
- * @returns { message: string }
- * Response: { message: string }
- */
 export const deleteProduct = async (
   productId: string,
 ): Promise<{ message: string }> => {
@@ -80,16 +59,10 @@ export const deleteProduct = async (
     const data = await res.json().catch(() => ({}));
     throw new Error(data.error || "Failed to delete product");
   }
-  const data: { message: string } = await res.json();
-  return data;
+  const json = await res.json();
+  return { message: json.message || "" };
 };
 
-/**
- * @param productId - The product ID to update
- * @param formData - FormData containing product data and optional new images
- * @returns { message: string; product: Product }
- * Response: { message: string; product: Product }
- */
 export const updateProduct = async (
   productId: string,
   formData: FormData,
@@ -103,17 +76,11 @@ export const updateProduct = async (
     const data = await res.json().catch(() => ({}));
     throw new Error(data.error || "Failed to update product");
   }
-  const data: { message: string; product: Product } = await res.json();
-  return data;
+  const json = await res.json();
+  const product = unwrapData<Product>(json);
+  return { message: json.message || "", product };
 };
 
-/**
- * Upload image to Supabase Storage via backend API using FormData
- * @param file - The image file to upload
- * @param folder - The folder name in storage (default: "products")
- * @returns { url: string; path: string }
- * Response: { url: string; path: string }
- */
 export const uploadImage = async (
   file: File,
   folder: string = "products",

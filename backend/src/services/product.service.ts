@@ -50,6 +50,7 @@ export interface ProductWithDetails {
 export interface PaginationParams {
   page?: number;
   limit?: number;
+  sort?: "newest" | "bestSelling";
 }
 
 export interface PaginatedResult<T> {
@@ -100,8 +101,14 @@ export class ProductService {
     const page = Math.max(1, params.page || 1);
     const limit = Math.min(100, Math.max(1, params.limit || 20));
     const skip = (page - 1) * limit;
+    const sort = params.sort || "newest";
 
     const where = { deletedAt: null as Date | null };
+
+    const orderBy =
+      sort === "bestSelling"
+        ? ({ orderItems: { _count: "desc" } } as any)
+        : ({ createdAt: "desc" } as any);
 
     const [products, total] = await Promise.all([
       prisma.product.findMany({
@@ -110,10 +117,11 @@ export class ProductService {
           category: {
             select: { name: true, slug: true },
           },
+          _count: {
+            select: { orderItems: true },
+          },
         },
-        orderBy: {
-          createdAt: "desc",
-        },
+        orderBy,
         skip,
         take: limit,
       }),
@@ -210,6 +218,18 @@ export class ProductService {
     return newProduct;
   }
 
+  private static collectImagePaths(images: any[]): string[] {
+    const paths: string[] = [];
+    for (const img of images) {
+      if (img.original?.path) paths.push(img.original.path);
+      if (img.thumbnail?.path) paths.push(img.thumbnail.path);
+      if (img.mobile?.path) paths.push(img.mobile.path);
+      if (img.desktop?.path) paths.push(img.desktop.path);
+      if (img.path) paths.push(img.path);
+    }
+    return paths;
+  }
+
   async updateProduct(
     id: string,
     data: ProductInput,
@@ -254,6 +274,17 @@ export class ProductService {
 
     if (finalImages.length === 0) {
       throw new AppError("At least one image is required", 400);
+    }
+
+    const oldPaths = ProductService.collectImagePaths(existing.images as any[]);
+    const keptPaths = ProductService.collectImagePaths(finalImages);
+    const orphanedPaths = oldPaths.filter((p) => !keptPaths.includes(p));
+    if (orphanedPaths.length > 0) {
+      Promise.all(
+        orphanedPaths.map((p) =>
+          storageService.deleteFile(p).catch(() => {}),
+        ),
+      );
     }
 
     const updatedProduct = await prisma.product.update({

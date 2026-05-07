@@ -18,7 +18,10 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   const user = await getCurrentUser();
-  const products = await fetchProducts();
+  const [bestSellers, newArrivals] = await Promise.all([
+    fetchProducts("bestSelling"),
+    fetchProducts("newest"),
+  ]);
   if (user?.role == "ADMIN") {
     redirect("/admin");
   }
@@ -73,11 +76,11 @@ export default async function HomePage() {
         </div>
 
         <div className="container mx-auto">
-          <Topic title="Best Sellers" products={products} />
+          <Topic title="Best Sellers" products={bestSellers} />
 
           <CategoriesSection />
 
-          <Topic title="New Arrivals" products={products} />
+          <Topic title="New Arrivals" products={newArrivals} />
 
           {/* ABOUT SECTION */}
           <div className="flex flex-col md:flex-row items-center gap-8 p-6 mx-auto justify-between">

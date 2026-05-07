@@ -1,12 +1,6 @@
 import { Category } from "@/types/category";
-import { api, fetchWithTimeout, buildHeaders } from "./client";
+import { api, fetchWithTimeout, buildHeaders, unwrapData } from "./client";
 
-/* -------------------- CATEGORY -------------------- */
-
-/**
- * @returns Category[] - Array of all categories
- * Response: Category[]
- */
 export const fetchCategories = async (): Promise<Category[]> => {
   const res = await fetchWithTimeout(`${api}/category`, {
     headers: await buildHeaders(),
@@ -17,16 +11,10 @@ export const fetchCategories = async (): Promise<Category[]> => {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || "Failed to fetch categories");
   }
-  return res.json();
+  const json = await res.json();
+  return json.data as Category[];
 };
 
-/**
- * @param name - Category name
- * @param slug - Category slug
- * @param parentId - Optional parent category ID
- * @returns Category - The created category
- * Response: Category
- */
 export const createCategory = async ({
   name,
   slug,
@@ -46,14 +34,10 @@ export const createCategory = async ({
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || "Failed to create category");
   }
-  return res.json();
+  const json = await res.json();
+  return unwrapData<Category>(json);
 };
 
-/**
- * @param id - The category ID to delete
- * @returns void (204 No Content)
- * Response: 204 No Content
- */
 export const deleteCategory = async (id: string): Promise<void> => {
   const res = await fetchWithTimeout(`${api}/category/${id}`, {
     method: "DELETE",

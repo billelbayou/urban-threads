@@ -1,29 +1,18 @@
 import { Order } from "@/types/order";
-import { api, fetchWithTimeout, buildHeaders } from "./client";
+import { api, fetchWithTimeout, buildHeaders, unwrapData } from "./client";
 
-/* -------------------- ORDERS -------------------- */
-
-/**
- * Creates a new order from the user's cart
- * @returns Order - The created order
- * Response: Order
- */
 export const createOrder = async (): Promise<Order> => {
   const res = await fetchWithTimeout(`${api}/orders`, {
     method: "POST",
     headers: await buildHeaders(),
   });
-  const data = await res.json();
+  const json = await res.json();
   if (!res.ok) {
-    throw new Error(data.error || "Failed to create order");
+    throw new Error(json.error || "Failed to create order");
   }
-  return data;
+  return unwrapData<Order>(json);
 };
 
-/**
- * @returns Order[] - Array of the current user's orders
- * Response: Order[]
- */
 export const fetchMyOrders = async (): Promise<Order[]> => {
   const res = await fetchWithTimeout(`${api}/orders/mine`, {
     headers: await buildHeaders(),
@@ -33,14 +22,10 @@ export const fetchMyOrders = async (): Promise<Order[]> => {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || "Failed to fetch orders");
   }
-  return res.json();
+  const json = await res.json();
+  return json.data as Order[];
 };
 
-/**
- * Admin only - fetches all orders
- * @returns Order[] - Array of all orders
- * Response: Order[]
- */
 export const fetchAdminOrders = async (): Promise<Order[] | null> => {
   const res = await fetchWithTimeout(`${api}/orders`, {
     headers: await buildHeaders(),
@@ -50,17 +35,10 @@ export const fetchAdminOrders = async (): Promise<Order[] | null> => {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || "Failed to fetch orders");
   }
-  const data = await res.json();
-  return data.data;
+  const json = await res.json();
+  return json.data as Order[];
 };
 
-/**
- * Admin only - updates the status of an order
- * @param orderId - The order ID to update
- * @param status - The new status
- * @returns Order - The updated order
- * Response: Order
- */
 export const updateOrderStatus = async (
   orderId: string,
   status: string,
@@ -70,18 +48,13 @@ export const updateOrderStatus = async (
     headers: await buildHeaders({ contentType: "application/json" }),
     body: JSON.stringify({ status }),
   });
-  const data = await res.json();
+  const json = await res.json();
   if (!res.ok) {
-    throw new Error(data.error || "Failed to update order status");
+    throw new Error(json.error || "Failed to update order status");
   }
-  return data;
+  return unwrapData<Order>(json);
 };
 
-/**
- * Admin only - fetches admin dashboard statistics
- * @returns { totalSales: number; orderCount: number; customerCount: number; productCount: number; orders: Order[]; products: Product[] }
- * Response: { totalSales: number; orderCount: number; customerCount: number; productCount: number; orders: Order[]; products: Product[] }
- */
 export const fetchAdminStats = async (): Promise<{
   totalSales: number;
   orderCount: number;
@@ -107,9 +80,13 @@ export const fetchAdminStats = async (): Promise<{
     }),
   ]);
 
-  const orders = ordersRes.ok ? await ordersRes.json() : [];
-  const products = productsRes.ok ? await productsRes.json() : [];
-  const users = usersRes.ok ? await usersRes.json() : [];
+  const ordersJson = ordersRes.ok ? await ordersRes.json() : { data: [] };
+  const productsJson = productsRes.ok ? await productsRes.json() : { data: [] };
+  const usersJson = usersRes.ok ? await usersRes.json() : { data: [] };
+
+  const orders = ordersJson.data || [];
+  const products = productsJson.data || [];
+  const users = usersJson.data || [];
 
   const totalSales = orders.reduce(
     (sum: number, order: { total: number }) => sum + order.total,

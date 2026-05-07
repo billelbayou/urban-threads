@@ -11,10 +11,8 @@ import {
 } from "@/services/wishlistActions";
 import { Product } from "@/types/product";
 
-export default function WishlistButton({ product }: { product: Product }) {
-  const [isInWishlist, setIsInWishlist] = useState(
-    product.wishlistId ? true : false,
-  );
+export default function WishlistButton({ product, isInWishlist: initialInWishlist }: { product: Product; isInWishlist?: boolean }) {
+  const [isInWishlist, setIsInWishlist] = useState(initialInWishlist ?? false);
   const user = useAuthStore((state) => state.user);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();

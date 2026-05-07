@@ -48,8 +48,7 @@ model Product {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   cartItems    CartItem[]
-  wishlist     Wishlist?   @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
-  wishlistId   String?
+  wishlists    Wishlist[]
   infoSections Json[]
   tags         String[]
   deletedAt    DateTime?

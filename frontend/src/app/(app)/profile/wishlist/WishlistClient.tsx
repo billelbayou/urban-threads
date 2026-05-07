@@ -85,7 +85,7 @@ export default function WishlistClient({
               </h3>
             </Link>
             <p className="mt-1 text-lg font-semibold text-gray-900">
-              ${product.price.toFixed(2)}
+              ${Number(product.price).toFixed(2)}
             </p>
 
             {/* Remove Button */}

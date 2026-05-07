@@ -1,9 +1,45 @@
 import { prisma } from "../utils/prisma.js";
 import { NotFoundError, ConflictError, AppError } from "../errors/index.js";
+import { getProductImageUrl } from "./storage.service.js";
 
 export class WishlistService {
+  private async resolveProductImages(wishlist: any): Promise<void> {
+    if (!wishlist?.products) return;
+    await Promise.all(
+      wishlist.products.map(async (product: any) => {
+        if (!product?.images) return;
+        product.images = await Promise.all(
+          product.images.map(async (img: any) => {
+            if (img.original) {
+              const variants = ["original", "thumbnail", "mobile", "desktop"];
+              const resolved: any = {};
+              await Promise.all(
+                variants.map(async (v) => {
+                  if (img[v]) {
+                    resolved[v] = {
+                      url: await getProductImageUrl(img[v].path),
+                      path: img[v].path,
+                    };
+                  }
+                }),
+              );
+              return resolved;
+            }
+            if (img.path) {
+              return {
+                url: await getProductImageUrl(img.path),
+                path: img.path,
+              };
+            }
+            return img;
+          }),
+        );
+      }),
+    );
+  }
+
   async getOrCreateWishlist(userId: string) {
-    return prisma.wishlist.upsert({
+    const wishlist = await prisma.wishlist.upsert({
       where: { userId },
       update: {},
       create: { userId },
@@ -11,6 +47,8 @@ export class WishlistService {
         products: true,
       },
     });
+    await this.resolveProductImages(wishlist);
+    return wishlist;
   }
 
   async addToWishlist(userId: string, productId: string) {

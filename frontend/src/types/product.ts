@@ -30,8 +30,6 @@ export interface Product {
   infoSections: InfoSection[];
   tags: string[];
 
-  wishlistId?: string; // nullable in schema
-
   createdAt?: string;
   updatedAt?: string;
 

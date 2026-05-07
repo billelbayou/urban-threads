@@ -10,8 +10,9 @@ export const getAllProducts = asyncHandler(
   async (req: Request, res: Response) => {
     const page = req.query.page ? parseInt(req.query.page as string, 10) : undefined;
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
+    const sort = (req.query.sort as "newest" | "bestSelling") || undefined;
     
-    const result = await productService.getAllProducts({ page, limit });
+    const result = await productService.getAllProducts({ page, limit, sort });
     sendSuccess(res, result.data, undefined, 200, result.pagination);
   },
 );
