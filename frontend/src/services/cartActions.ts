@@ -5,7 +5,6 @@ import { AddToCartSchema } from "@/schemas/cartSchema";
 import { Cart } from "@/types/cart";
 import { ActionResponse } from "@/types/action";
 import { handleActionError, getRequiredFormValue } from "@/services/utils";
-import getCookies from "@/utils/cookies";
 
 export async function addToCartAction(
   _prevState: unknown,
@@ -33,9 +32,8 @@ export async function addToCartAction(
   }
 
   const { productId, quantity, size } = validatedFields.data;
-  const cookie = await getCookies();
   try {
-    const cart = await addToCart(productId, quantity, size, cookie);
+    const cart = await addToCart(productId, quantity, size);
     return { success: true, data: cart, error: null, message: null, fieldErrors: null };
   } catch (error: unknown) {
     return handleActionError(error);
@@ -46,10 +44,9 @@ export async function removeFromCartAction(
   _previousState: unknown,
   formData: FormData,
 ): Promise<ActionResponse<Cart>> {
-  const cookie = await getCookies();
   const itemId = getRequiredFormValue(formData, "itemId");
   try {
-    const cart = await removeFromCart(itemId, cookie);
+    const cart = await removeFromCart(itemId);
     return { success: true, data: cart, error: null, message: null, fieldErrors: null };
   } catch (error: unknown) {
     return handleActionError(error);

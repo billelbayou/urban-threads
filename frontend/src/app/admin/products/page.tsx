@@ -3,7 +3,6 @@ import ProductTable from "@/components/admin/product-admin/ProductTable";
 import Link from "next/link";
 import { fetchProducts } from "@/services/api/product";
 import { Product } from "@/types/product";
-import getCookies from "@/utils/cookies";
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { connection } from "next/server";
@@ -13,13 +12,9 @@ export const metadata: Metadata = {
 };
 
 async function ProductList() {
-  await connection()
-  let products: Product[] = [];
-  try {
-    const cookies = await getCookies();
-    products = await fetchProducts(cookies);
-  } catch (err) {
-    console.error("Failed to fetch products:", err);
+  await connection();
+  const products = await fetchProducts();
+  if (!products) {
     return (
       <div className="text-rose-500 py-20 text-center admin-card">
         <p className="font-medium text-lg">Failed to load products</p>
@@ -50,19 +45,16 @@ function ProductTableSkeleton() {
 export default function Products() {
   return (
     <>
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 ">
-            Products Management
-          </h1>
-          <p className="text-slate-500 mt-1">
+          <p className="text-xl">
             Manage your store&apos;s inventory and details
           </p>
         </div>
         <div className="flex items-center gap-3">
           <Link
             href={"/admin/products/add"}
-            className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-medium shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition-all active:scale-95"
+            className="flex items-center gap-2 px-5 py-2.5 bg-black text-white rounded-xl font-medium shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition-all active:scale-95"
           >
             <FiPlus /> Add New Product
           </Link>

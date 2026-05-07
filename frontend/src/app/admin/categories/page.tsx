@@ -4,7 +4,6 @@ import AddRootButton from "@/components/admin/categories/AddRootButton";
 import CategoryTreeBox from "@/components/admin/categories/CategoryTreeBox";
 import { ListTree } from "lucide-react";
 import { CategoryWithChildren } from "@/types/category";
-import getCookies from "@/utils/cookies";
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { connection } from "next/server";
@@ -17,8 +16,7 @@ async function CategoryList() {
   await connection();
   let tree: CategoryWithChildren[] = [];
   try {
-    const cookies = await getCookies();
-    const categories = await fetchCategories(cookies);
+    const categories = await fetchCategories();
     tree = buildTree(categories);
   } catch (err) {
     console.error("Failed to fetch categories for admin page:", err);

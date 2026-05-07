@@ -7,10 +7,9 @@ import { api, fetchWithTimeout, buildHeaders } from "./client";
  * @returns Category[] - Array of all categories
  * Response: Category[]
  */
-export const fetchCategories = async (cookie?: string): Promise<Category[]> => {
+export const fetchCategories = async (): Promise<Category[]> => {
   const res = await fetchWithTimeout(`${api}/category`, {
-    headers: buildHeaders({ cookie }),
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
     cache: "no-store",
   });
 
@@ -32,17 +31,14 @@ export const createCategory = async ({
   name,
   slug,
   parentId,
-  cookie,
 }: {
   name: string;
   slug: string;
   parentId?: string;
-  cookie?: string;
 }): Promise<Category> => {
   const res = await fetchWithTimeout(`${api}/category`, {
     method: "POST",
-    headers: buildHeaders({ cookie, contentType: "application/json" }),
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders({ contentType: "application/json" }),
     body: JSON.stringify({ name, slug, parentId }),
   });
 
@@ -58,11 +54,10 @@ export const createCategory = async ({
  * @returns void (204 No Content)
  * Response: 204 No Content
  */
-export const deleteCategory = async (id: string, cookie?: string): Promise<void> => {
+export const deleteCategory = async (id: string): Promise<void> => {
   const res = await fetchWithTimeout(`${api}/category/${id}`, {
     method: "DELETE",
-    headers: buildHeaders({ cookie }),
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
   });
 
   if (!res.ok) {

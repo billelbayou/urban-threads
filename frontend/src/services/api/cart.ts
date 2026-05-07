@@ -7,10 +7,9 @@ import { api, fetchWithTimeout, buildHeaders } from "./client";
  * @returns Cart | null - The user's cart or null if not found
  * Response: Cart
  */
-export const fetchCart = async (cookie?: string): Promise<Cart | null> => {
+export const fetchCart = async (): Promise<Cart | null> => {
   const res = await fetchWithTimeout(`${api}/cart`, {
-    headers: buildHeaders({ cookie }),
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
     cache: "no-store",
   });
   if (!res.ok) return null;
@@ -29,12 +28,10 @@ export const addToCart = async (
   productId: string,
   quantity: number,
   size: string,
-  cookie: string,
 ): Promise<Cart> => {
   const res = await fetchWithTimeout(`${api}/cart/add`, {
     method: "POST",
-    headers: buildHeaders({ cookie, contentType: "application/json" }),
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders({ contentType: "application/json" }),
     body: JSON.stringify({ productId, quantity, size }),
   });
 
@@ -51,11 +48,10 @@ export const addToCart = async (
  * @returns Cart - The updated cart
  * Response: Cart
  */
-export const removeFromCart = async (itemId: string, cookie: string): Promise<Cart> => {
+export const removeFromCart = async (itemId: string): Promise<Cart> => {
   const res = await fetchWithTimeout(`${api}/cart/item/${itemId}`, {
     method: "DELETE",
-    headers: buildHeaders({ cookie, contentType: "application/json" }),
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders({ contentType: "application/json" }),
   });
 
   if (!res.ok) {

@@ -5,7 +5,6 @@ import { login, logout, register, deleteAccount } from "./api/auth";
 import { ActionResponse } from "@/types/action";
 import { handleActionError } from "@/services/utils";
 import { User } from "@/types/user";
-import getCookies from "@/utils/cookies";
 
 export async function loginAction(
   _previousState: unknown,
@@ -99,8 +98,7 @@ export async function deleteAccountAction(
   _formData: FormData,
 ): Promise<ActionResponse<{ message: string }>> {
   try {
-    const cookie = await getCookies();
-    const data = await deleteAccount(cookie);
+    const data = await deleteAccount();
     return { success: true, data, fieldErrors: null, message: null, error: null };
   } catch (error: unknown) {
     return handleActionError(error);

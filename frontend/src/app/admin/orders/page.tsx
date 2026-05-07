@@ -1,25 +1,17 @@
-import { getAdminOrdersAction } from "@/services/orderActions";
 import OrdersTable from "@/components/admin/orders/OrdersTable";
 import { Suspense } from "react";
 import { Metadata } from "next";
+
+import { notFound } from "next/navigation";
+import { fetchAdminOrders } from "@/services/api/order";
 
 export const metadata: Metadata = {
   title: "Order Management | Urban Threads Admin",
 };
 
 async function OrdersList() {
-  const result = await getAdminOrdersAction();
-  const error = result.error;
-  const orders = result.data || [];
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-red-500">{error}</div>
-      </div>
-    );
-  }
-
+  const orders = await fetchAdminOrders();
+  if (!orders) notFound();
   return <OrdersTable initialOrders={orders} />;
 }
 
@@ -36,11 +28,8 @@ function OrdersTableSkeleton() {
 
 export default function OrdersPage() {
   return (
-    <>
-      <h1 className="text-2xl font-semibold text-gray-800 mb-6">Orders</h1>
-      <Suspense fallback={<OrdersTableSkeleton />}>
-        <OrdersList />
-      </Suspense>
-    </>
+    <Suspense fallback={<OrdersTableSkeleton />}>
+      <OrdersList />
+    </Suspense>
   );
 }

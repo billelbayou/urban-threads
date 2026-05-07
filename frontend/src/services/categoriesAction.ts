@@ -4,7 +4,6 @@ import { createCategory, deleteCategory } from "./api/category";
 import { CreateCategorySchema } from "@/schemas/categorySchema";
 import { ActionResponse } from "@/types/action";
 import { handleActionError, getRequiredFormValue } from "@/services/utils";
-import getCookies from "@/utils/cookies";
 import { revalidatePath } from "next/cache";
 
 export async function createCategoryAction(
@@ -33,14 +32,12 @@ export async function createCategoryAction(
     .toLowerCase()
     .replace(/\s+/g, "-")
     .replace(/[^\w-]+/g, "");
-  const cookie = await getCookies();
 
   try {
     const data = await createCategory({
       name,
       slug,
       parentId: parentId,
-      cookie,
     });
 
     revalidatePath("/admin/categories");
@@ -55,9 +52,8 @@ export async function deleteCategoryAction(
   formData: FormData,
 ): Promise<ActionResponse<unknown>> {
   const categoryId = getRequiredFormValue(formData, "categoryId");
-  const cookie = await getCookies();
   try {
-    const data = await deleteCategory(categoryId, cookie);
+    const data = await deleteCategory(categoryId);
     revalidatePath("/admin/categories");
     return { success: true, data, error: null, message: null, fieldErrors: null };
   } catch (error: unknown) {

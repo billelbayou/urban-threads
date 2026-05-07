@@ -9,7 +9,6 @@ import { CreateProductSchema } from "@/schemas/productSchema";
 import { Product } from "@/types/product";
 import { ActionResponse } from "@/types/action";
 import { handleActionError, getRequiredFormValue } from "@/services/utils";
-import getCookies from "@/utils/cookies";
 import { revalidatePath } from "next/cache";
 
 export type ValidationErrors = {
@@ -67,9 +66,8 @@ export async function createProductAction(
   }
 
   try {
-    const cookie = await getCookies();
     formData.set("product", JSON.stringify(validated.data));
-    const res = await createProduct(formData, cookie);
+    const res = await createProduct(formData);
 
     revalidatePath("/admin/products");
 
@@ -90,9 +88,8 @@ export async function deleteProductAction(
   formData: FormData,
 ): Promise<ActionResponse<{ message: string }>> {
   const productId = getRequiredFormValue(formData, "productId");
-  const cookie = await getCookies();
   try {
-    const message = await deleteProduct(productId, cookie);
+    const message = await deleteProduct(productId);
     revalidatePath("/admin/products");
     return { success: true, data: message, error: null, message: null, fieldErrors: null };
   } catch (error: unknown) {
@@ -146,9 +143,8 @@ export async function updateProductAction(
   }
 
   try {
-    const cookie = await getCookies();
     formData.set("product", JSON.stringify(validated.data));
-    const res = await updateProduct(productId, formData, cookie);
+    const res = await updateProduct(productId, formData);
 
     revalidatePath("/admin/products");
 

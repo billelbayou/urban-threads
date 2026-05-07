@@ -18,7 +18,7 @@ export const login = async (
 ): Promise<{ message: string; user: User }> => {
   const res = await fetchWithTimeout(`${api}/auth/login`, {
     method: "POST",
-    headers: buildHeaders({ contentType: "application/json" }),
+    headers: await buildHeaders({ contentType: "application/json" }),
     body: JSON.stringify({ email, password }),
   });
   const data = await res.json();
@@ -59,8 +59,7 @@ export const register = async (
 ): Promise<{ message: string; userId: string }> => {
   const res = await fetchWithTimeout(`${api}/auth/register`, {
     method: "POST",
-    headers: buildHeaders({ contentType: "application/json" }),
-    credentials: "include",
+    headers: await buildHeaders({ contentType: "application/json" }),
     body: JSON.stringify({ firstName, lastName, email, password }),
   });
 
@@ -79,12 +78,10 @@ export const register = async (
  */
 export const updatePersonalInfo = async (
   data: { phone?: string; dateOfBirth?: string; gender?: string },
-  cookie?: string,
 ): Promise<{ message: string; user: User }> => {
   const res = await fetchWithTimeout(`${api}/auth/me/personal-info`, {
     method: "PUT",
-    headers: buildHeaders({ cookie, contentType: "application/json" }),
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders({ contentType: "application/json" }),
     body: JSON.stringify(data),
   });
   const result = await res.json();
@@ -108,12 +105,10 @@ export const updateShippingAddress = async (
     streetAddress?: string;
     apartment?: string;
   },
-  cookie?: string,
 ): Promise<{ message: string; user: User }> => {
   const res = await fetchWithTimeout(`${api}/auth/me/shipping-address`, {
     method: "PUT",
-    headers: buildHeaders({ cookie, contentType: "application/json" }),
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders({ contentType: "application/json" }),
     body: JSON.stringify(data),
   });
   const result = await res.json();
@@ -130,7 +125,6 @@ export const updateShippingAddress = async (
 export const logout = async (): Promise<{ message: string }> => {
   const res = await fetchWithTimeout(`${api}/auth/logout`, {
     method: "POST",
-    credentials: "include",
   });
 
   if (!res.ok) {
@@ -146,10 +140,9 @@ export const logout = async (): Promise<{ message: string }> => {
  * @returns User | null - The current user or null if not authenticated
  * Response: User
  */
-export const getCurrentUser = async (cookie?: string): Promise<User | null> => {
+export const getCurrentUser = async (): Promise<User | null> => {
   const res = await fetchWithTimeout(`${api}/auth/me`, {
-    headers: buildHeaders({ cookie }),
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
     cache: "no-store",
   });
 
@@ -163,13 +156,10 @@ export const getCurrentUser = async (cookie?: string): Promise<User | null> => {
  * @returns { message: string }
  * Response: { message: string }
  */
-export const deleteAccount = async (
-  cookie?: string,
-): Promise<{ message: string }> => {
+export const deleteAccount = async (): Promise<{ message: string }> => {
   const res = await fetchWithTimeout(`${api}/auth/account`, {
     method: "DELETE",
-    headers: buildHeaders({ cookie }),
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
   });
   const data = await res.json();
   if (!res.ok) {

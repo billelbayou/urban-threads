@@ -1,11 +1,10 @@
 import Link from "next/link";
 import HeaderClient from "./HeaderClient";
 import { fetchCart } from "@/services/api/cart";
-import getCookies from "@/utils/cookies";
 import { NAV_LINKS } from "@/constants/navigation";
 
 export default async function Header() {
-  const cart = await fetchCart(await getCookies());
+  const cart = await fetchCart();
   return (
     <header className="flex items-center justify-between p-4 relative border-b mb-5">
       <Link

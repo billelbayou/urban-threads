@@ -1,7 +1,6 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
 import LoginForm from "@/components/auth/LoginForm";
-import getCookies from "@/utils/cookies";
 import { getCurrentUser } from "@/services/api/auth";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
@@ -13,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function LoginPage() {
-  const user = await getCurrentUser(await getCookies());
+  const user = await getCurrentUser();
   if (user) {
     redirect("/");
   }

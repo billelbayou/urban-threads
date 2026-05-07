@@ -4,7 +4,6 @@ import { fetchCategories } from "@/services/api/category";
 import { buildTree } from "@/utils/helpers";
 import { CategoryWithChildren } from "@/types/category";
 import { Product } from "@/types/product";
-import getCookies from "@/utils/cookies";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -18,11 +17,10 @@ export default async function EditProductPage({ params }: PageProps) {
   let error: string | null = null;
 
   try {
-    const cookies = await getCookies();
     // Fetch product and categories in parallel
     const [productData, categories] = await Promise.all([
-      fetchProductById(id, cookies),
-      fetchCategories(cookies),
+      fetchProductById(id),
+      fetchCategories(),
     ]);
     product = productData;
     tree = buildTree(categories);

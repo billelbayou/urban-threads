@@ -7,10 +7,9 @@ import { api, fetchWithTimeout, buildHeaders } from "./client";
  * @returns Product[] - Array of all products
  * Response: Product[]
  */
-export const fetchProducts = async (cookie?: string): Promise<Product[]> => {
+export const fetchProducts = async (): Promise<Product[]> => {
   const res = await fetchWithTimeout(`${api}/products`, {
-    headers: buildHeaders({ cookie }),
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
     cache: "no-store",
   });
 
@@ -30,11 +29,9 @@ export const fetchProducts = async (cookie?: string): Promise<Product[]> => {
  */
 export const fetchProductById = async (
   productId: string,
-  cookie?: string,
 ): Promise<Product> => {
   const res = await fetchWithTimeout(`${api}/products/${productId}`, {
-    headers: buildHeaders({ cookie }),
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
     cache: "no-store",
   });
 
@@ -52,12 +49,10 @@ export const fetchProductById = async (
  */
 export const createProduct = async (
   formData: FormData,
-  cookie?: string,
 ): Promise<{ message: string; product: Product }> => {
   const res = await fetchWithTimeout(`${api}/products`, {
     method: "POST",
-    headers: buildHeaders({ cookie }),
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
     body: formData,
   });
   if (!res.ok) {
@@ -75,12 +70,10 @@ export const createProduct = async (
  */
 export const deleteProduct = async (
   productId: string,
-  cookie?: string,
 ): Promise<{ message: string }> => {
   const res = await fetchWithTimeout(`${api}/products/${productId}`, {
     method: "DELETE",
-    headers: buildHeaders({ cookie, contentType: "application/json" }),
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders({ contentType: "application/json" }),
   });
 
   if (!res.ok) {
@@ -100,12 +93,10 @@ export const deleteProduct = async (
 export const updateProduct = async (
   productId: string,
   formData: FormData,
-  cookie?: string,
 ): Promise<{ message: string; product: Product }> => {
   const res = await fetchWithTimeout(`${api}/products/${productId}`, {
     method: "PATCH",
-    headers: buildHeaders({ cookie }),
-    credentials: cookie ? undefined : "include",
+    headers: await buildHeaders(),
     body: formData,
   });
   if (!res.ok) {

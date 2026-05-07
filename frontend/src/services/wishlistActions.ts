@@ -8,7 +8,6 @@ import {
 import { Wishlist } from "@/types/wishlist";
 import { ActionResponse } from "@/types/action";
 import { handleActionError, getRequiredFormValue } from "@/services/utils";
-import getCookies from "@/utils/cookies";
 
 export async function addToWishlistAction(
   _prevState: unknown,
@@ -17,8 +16,7 @@ export async function addToWishlistAction(
   const productId = getRequiredFormValue(formData, "productId");
 
   try {
-    const cookie = await getCookies();
-    const wishlist = await addToWishlistFetcher(productId, cookie);
+    const wishlist = await addToWishlistFetcher(productId);
     return { success: true, data: wishlist, error: null, message: null, fieldErrors: null };
   } catch (error: unknown) {
     return handleActionError(error);
@@ -32,8 +30,7 @@ export async function removeFromWishlistAction(
   const productId = getRequiredFormValue(formData, "productId");
 
   try {
-    const cookie = await getCookies();
-    const wishlist = await removeFromWishlistFetcher(productId, cookie);
+    const wishlist = await removeFromWishlistFetcher(productId);
     return { success: true, data: wishlist, error: null, message: null, fieldErrors: null };
   } catch (error: unknown) {
     return handleActionError(error);
@@ -42,8 +39,7 @@ export async function removeFromWishlistAction(
 
 export async function getWishlistServer(): Promise<Wishlist | null> {
   try {
-    const cookie = await getCookies();
-    return await fetchWishlist(cookie);
+    return await fetchWishlist();
   } catch {
     return null;
   }

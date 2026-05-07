@@ -3,7 +3,6 @@ import Sidebar from "@/components/admin/Sidebar";
 import Header from "@/components/admin/Header";
 import { User } from "@/types/user";
 import { getCurrentUser } from "@/services/api/auth";
-import getCookies from "@/utils/cookies";
 import { redirect } from "next/navigation";
 
 interface LayoutProps {
@@ -11,8 +10,7 @@ interface LayoutProps {
 }
 
 export default async function Layout({ children }: LayoutProps) {
-  const cookies = await getCookies();
-  const user: User | null = await getCurrentUser(cookies);
+  const user: User | null = await getCurrentUser();
   if (!user || user.role !== "ADMIN") {
     redirect("/login");
   }

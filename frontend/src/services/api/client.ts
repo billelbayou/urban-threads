@@ -6,15 +6,18 @@ const DEFAULT_TIMEOUT = 10000;
 
 /**
  * Builds standard headers for API requests.
- * Handles cookie forwarding and content-type.
+ * Automatically retrieves cookies from the request context.
  */
-export function buildHeaders(opts: {
-  cookie?: string;
+export async function buildHeaders(opts: {
   contentType?: string;
-} = {}): Record<string, string> {
+} = {}): Promise<Record<string, string>> {
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  const cookie = cookieStore.toString();
+
   const headers: Record<string, string> = {};
   if (opts.contentType) headers["Content-Type"] = opts.contentType;
-  if (opts.cookie) headers["cookie"] = opts.cookie;
+  if (cookie) headers["cookie"] = cookie;
   return headers;
 }
 

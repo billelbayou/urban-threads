@@ -1,7 +1,6 @@
 import { redirect, notFound } from "next/navigation";
 import { getCurrentUser } from "@/services/api/auth";
 import { fetchMyOrders } from "@/services/api/order";
-import getCookies from "@/utils/cookies";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,14 +23,13 @@ const statusLabels: Record<string, string> = {
 };
 
 export default async function OrdersPage() {
-  const cookie = await getCookies();
-  const user = await getCurrentUser(cookie);
+  const user = await getCurrentUser();
 
   if (!user) {
     redirect("/login");
   }
 
-  const orders = await fetchMyOrders(cookie);
+  const orders = await fetchMyOrders();
 
   if (!orders) {
     notFound();

@@ -8,7 +8,6 @@ import {
 import { User } from "@/types/user";
 import { ActionResponse } from "@/types/action";
 import { handleActionError } from "@/services/utils";
-import getCookies from "@/utils/cookies";
 import { revalidatePath } from "next/cache";
 
 export async function updatePersonalInfoAction(
@@ -36,8 +35,6 @@ export async function updatePersonalInfoAction(
     };
   }
 
-  const cookie = await getCookies();
-
   const payload: { phone?: string; dateOfBirth?: string; gender?: string } = {};
   if (validatedFields.data.phone) payload.phone = validatedFields.data.phone;
   if (validatedFields.data.dateOfBirth)
@@ -45,7 +42,7 @@ export async function updatePersonalInfoAction(
   if (validatedFields.data.gender) payload.gender = validatedFields.data.gender;
 
   try {
-    const result = await updatePersonalInfo(payload, cookie);
+    const result = await updatePersonalInfo(payload);
     revalidatePath("/profile");
     return {
       success: true,
@@ -87,8 +84,6 @@ export async function updateShippingAddressAction(
     };
   }
 
-  const cookie = await getCookies();
-
   const payload: {
     country?: string;
     city?: string;
@@ -109,7 +104,7 @@ export async function updateShippingAddressAction(
     payload.apartment = validatedFields.data.apartment;
 
   try {
-    const result = await updateShippingAddress(payload, cookie);
+    const result = await updateShippingAddress(payload);
     revalidatePath("/profile");
     return {
       success: true,

@@ -7,7 +7,6 @@ import Topic from "@/components/Topic";
 import CategoriesSection from "@/components/CategoriesSection";
 import { fetchProducts } from "@/services/api/product";
 import { getCurrentUser } from "@/services/api/auth";
-import getCookies from "@/utils/cookies";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 
@@ -18,8 +17,7 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const cookies = await getCookies();
-  const user = await getCurrentUser(cookies);
+  const user = await getCurrentUser();
   const products = await fetchProducts();
   if (user?.role == "ADMIN") {
     redirect("/admin");
