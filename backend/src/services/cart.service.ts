@@ -1,4 +1,5 @@
 import { prisma } from "../utils/prisma.js";
+import { NotFoundError, ForbiddenError } from "../errors/index.js";
 
 export class CartService {
   async getOrCreateCart(userId: string) {
@@ -53,11 +54,11 @@ export class CartService {
     });
 
     if (!cartItem) {
-      throw new Error("Cart item not found");
+      throw new NotFoundError("Cart item");
     }
 
     if (cartItem.cart.userId !== userId) {
-      throw new Error("Forbidden");
+      throw new ForbiddenError();
     }
 
     await prisma.cartItem.update({
@@ -75,11 +76,11 @@ export class CartService {
     });
 
     if (!cartItem) {
-      throw new Error("Cart item not found");
+      throw new NotFoundError("Cart item");
     }
 
     if (cartItem.cart.userId !== userId) {
-      throw new Error("Forbidden");
+      throw new ForbiddenError();
     }
 
     await prisma.cartItem.delete({

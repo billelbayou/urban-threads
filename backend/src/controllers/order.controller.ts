@@ -1,17 +1,18 @@
 import { Request, Response } from "express";
 import { orderService } from "../services/order.service.js";
 import { asyncHandler } from "../middleware/error.middleware.js";
+import { sendSuccess } from "../utils/response.js";
 
 export const createOrder = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.id as string;
   const order = await orderService.createOrder(userId);
-  res.status(201).json(order);
+  sendSuccess(res, order, undefined, 201);
 });
 
 export const getMyOrders = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.id as string;
   const orders = await orderService.getMyOrders(userId);
-  res.json(orders);
+  sendSuccess(res, orders);
 });
 
 export const getAllOrders = asyncHandler(
@@ -20,7 +21,7 @@ export const getAllOrders = asyncHandler(
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
     
     const result = await orderService.getAllOrders({ page, limit });
-    res.json(result);
+    sendSuccess(res, result.data, undefined, 200, result.pagination);
   },
 );
 
@@ -30,6 +31,6 @@ export const updateOrderStatus = asyncHandler(
     const { status } = req.body;
     
     const order = await orderService.updateOrderStatus(id, status);
-    res.json(order);
+    sendSuccess(res, order);
   },
 );

@@ -3,6 +3,7 @@ import { getProductImageUrl, storageService } from "./storage.service.js";
 import { Prisma } from "../generated/prisma/client.js";
 import { ProductInput } from "../schemas/index.js";
 import { imageProcessorService } from "./image_processor.service.js";
+import { AppError, NotFoundError } from "../errors/index.js";
 
 export interface RawImage {
   url?: string;
@@ -100,8 +101,11 @@ export class ProductService {
     const limit = Math.min(100, Math.max(1, params.limit || 20));
     const skip = (page - 1) * limit;
 
+    const where = { deletedAt: null as Date | null };
+
     const [products, total] = await Promise.all([
       prisma.product.findMany({
+        where,
         include: {
           category: {
             select: { name: true, slug: true },
@@ -113,7 +117,7 @@ export class ProductService {
         skip,
         take: limit,
       }),
-      prisma.product.count(),
+      prisma.product.count({ where }),
     ]);
 
     await Promise.all(products.map((p) => ProductService.resolveImageUrls(p)));
@@ -129,9 +133,6 @@ export class ProductService {
     };
   }
 
-  /**
-   * Get single product by ID with resolved image URLs
-   */
   async getProductById(id: string) {
     const product = await prisma.product.findUnique({
       where: { id },
@@ -142,26 +143,22 @@ export class ProductService {
       },
     });
 
-    if (product) {
-      await ProductService.resolveImageUrls(product);
+    if (!product || product.deletedAt) {
+      throw new NotFoundError("Product");
     }
+
+    await ProductService.resolveImageUrls(product);
     return product;
   }
 
-  /**
-   * Create a new product with optional image uploads
-   */
   async createProduct(data: ProductInput, files?: Express.Multer.File[]) {
-    // 1. Process and upload new files if any
     const uploadedImages = [];
     if (files && files.length > 0) {
       for (const file of files) {
-        // Optimize and resize
         const processedSet = await imageProcessorService.processImage(
           file.buffer,
         );
 
-        // Upload all variants
         const variants = Object.entries(processedSet);
         const imageResult: any = {};
 
@@ -171,7 +168,7 @@ export class ProductService {
             const result = await storageService.uploadBuffer(
               variant.buffer,
               fileName,
-              "", // folderPath is in fileName
+              "",
               "image/webp",
               variant.size,
             );
@@ -185,11 +182,10 @@ export class ProductService {
       }
     }
 
-    // 2. Combine with existing images and validate
     const finalImages = [...(data.images || []), ...uploadedImages];
 
     if (finalImages.length === 0) {
-      throw new Error("At least one image is required");
+      throw new AppError("At least one image is required", 400);
     }
 
     const newProduct = await prisma.product.create({
@@ -214,24 +210,23 @@ export class ProductService {
     return newProduct;
   }
 
-  /**
-   * Update an existing product with optional new image uploads
-   */
   async updateProduct(
     id: string,
     data: ProductInput,
     files?: Express.Multer.File[],
   ) {
-    // 1. Process and upload new files if any
+    const existing = await prisma.product.findUnique({ where: { id } });
+    if (!existing || existing.deletedAt) {
+      throw new NotFoundError("Product");
+    }
+
     const uploadedImages = [];
     if (files && files.length > 0) {
       for (const file of files) {
-        // Optimize and resize
         const processedSet = await imageProcessorService.processImage(
           file.buffer,
         );
 
-        // Upload all variants
         const variants = Object.entries(processedSet);
         const imageResult: any = {};
 
@@ -255,11 +250,10 @@ export class ProductService {
       }
     }
 
-    // 2. Combine with existing images (data.images contains images chosen to be kept)
     const finalImages = [...(data.images || []), ...uploadedImages];
 
     if (finalImages.length === 0) {
-      throw new Error("At least one image is required");
+      throw new AppError("At least one image is required", 400);
     }
 
     const updatedProduct = await prisma.product.update({
@@ -285,12 +279,15 @@ export class ProductService {
     return updatedProduct;
   }
 
-  /**
-   * Delete a product
-   */
   async deleteProduct(id: string) {
-    return await prisma.product.delete({
+    const existing = await prisma.product.findUnique({ where: { id } });
+    if (!existing || existing.deletedAt) {
+      throw new NotFoundError("Product");
+    }
+
+    return await prisma.product.update({
       where: { id },
+      data: { deletedAt: new Date() },
     });
   }
 }

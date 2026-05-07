@@ -11,6 +11,7 @@ import {
   UpdatePersonalInfoInput,
   UpdateShippingAddressInput,
 } from "../schemas/index.js";
+import { ConflictError, UnauthorizedError } from "../errors/index.js";
 
 export class AuthService {
   async register(data: RegisterInput) {
@@ -19,7 +20,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw new Error("Email is already in use");
+      throw new ConflictError("Email is already in use");
     }
 
     const hashedPassword = await bcrypt.hash(data.password, config.BCRYPT_ROUNDS);
@@ -55,12 +56,12 @@ export class AuthService {
       }
     });
     if (!user) {
-      throw new Error("Invalid credentials");
+      throw new UnauthorizedError("Invalid credentials");
     }
 
     const isValid = await bcrypt.compare(data.password, user.password);
     if (!isValid) {
-      throw new Error("Invalid credentials");
+      throw new UnauthorizedError("Invalid credentials");
     }
 
     const token = generateToken(user.id, user.role as Role);
@@ -158,13 +159,10 @@ export class AuthService {
   }
 
   async deleteAccount(userId: string, res: Response) {
-    // Orders have onDelete: Cascade or we manual delete?
-    // In order.controller it was manual deleteMany for orders.
     await prisma.order.deleteMany({
       where: { userId },
     });
 
-    // Cart and wishlist will be cascade deleted if set in schema
     await prisma.user.delete({
       where: { id: userId },
     });

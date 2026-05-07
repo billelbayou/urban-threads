@@ -1,4 +1,5 @@
 import { prisma } from "../utils/prisma.js";
+import { NotFoundError, ConflictError, AppError } from "../errors/index.js";
 
 export class WishlistService {
   async getOrCreateWishlist(userId: string) {
@@ -14,7 +15,7 @@ export class WishlistService {
 
   async addToWishlist(userId: string, productId: string) {
     if (!productId) {
-      throw new Error("Product ID is required");
+      throw new AppError("Product ID is required", 400);
     }
 
     const product = await prisma.product.findUnique({
@@ -22,12 +23,11 @@ export class WishlistService {
     });
 
     if (!product) {
-      throw new Error("Product not found");
+      throw new NotFoundError("Product");
     }
 
     const wishlist = await this.getOrCreateWishlist(userId);
 
-    // Check if product is already in wishlist
     const exists = await prisma.wishlist.findFirst({
       where: {
         id: wishlist.id,
@@ -36,7 +36,7 @@ export class WishlistService {
     });
 
     if (exists) {
-      throw new Error("Product already in wishlist");
+      throw new ConflictError("Product already in wishlist");
     }
 
     await prisma.wishlist.update({
@@ -55,7 +55,7 @@ export class WishlistService {
     });
 
     if (!wishlist) {
-      throw new Error("Wishlist not found");
+      throw new NotFoundError("Wishlist");
     }
 
     await prisma.wishlist.update({

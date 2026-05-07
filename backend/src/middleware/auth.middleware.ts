@@ -2,6 +2,7 @@ import { Request as ExpressRequest, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { Role } from "../generated/prisma/enums.js";
 import config from "../config/config.js";
+import { UnauthorizedError, ForbiddenError } from "../errors/index.js";
 
 export interface JwtPayload {
   id: string;
@@ -14,13 +15,12 @@ export interface AuthRequest extends ExpressRequest {
 
 export const authenticate = (
   req: AuthRequest,
-  res: Response,
+  _res: Response,
   next: NextFunction,
 ) => {
   const token = req.cookies.token;
   if (!token) {
-    res.status(401).json({ error: "Not authenticated" });
-    return;
+    throw new UnauthorizedError("Not authenticated");
   }
 
   try {
@@ -28,21 +28,18 @@ export const authenticate = (
     req.user = decoded;
     next();
   } catch {
-    res.status(401).json({ error: "Invalid token" });
+    throw new UnauthorizedError("Invalid token");
   }
 };
 
 export const authorize =
-  (roles: Role[]) => (req: AuthRequest, res: Response, next: NextFunction) => {
+  (roles: Role[]) => (req: AuthRequest, _res: Response, next: NextFunction) => {
     if (!req.user) {
-      res.status(401).json({ error: "Not authenticated" });
-      return;
+      throw new UnauthorizedError("Not authenticated");
     }
 
-    // Strict role check
     if (!roles.includes(req.user.role)) {
-      res.status(403).json({ error: "Forbidden" });
-      return;
+      throw new ForbiddenError();
     }
 
     next();
