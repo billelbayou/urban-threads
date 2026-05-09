@@ -1,8 +1,7 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { app } from "./setup.js";
+import { app, getAuthCookie } from "./helpers.js";
 import { prisma } from "../utils/prisma.js";
-import { getAuthCookie } from "./helpers.js";
 
 describe("Cart API", () => {
   it("GET /api/cart returns cart", async () => {
@@ -35,11 +34,11 @@ describe("Cart API", () => {
       },
     });
     const category = await prisma.category.create({
-      data: { id: "test-cat", name: "Test Cat", slug: "test-cat" },
+      data: { id: "11111111-1111-1111-1111-111111111111", name: "Test Cat", slug: "test-cat" },
     });
     await prisma.product.create({
       data: {
-        id: "product-1",
+        id: "22222222-2222-2222-2222-222222222222",
         name: "Test Product",
         description: "A test product",
         price: 49.99,
@@ -54,7 +53,7 @@ describe("Cart API", () => {
     const res = await request(app)
       .post("/api/cart/add")
       .set("Cookie", getAuthCookie())
-      .send({ productId: "product-1", quantity: 1, size: "M" });
+      .send({ productId: "22222222-2222-2222-2222-222222222222", quantity: 1, size: "M" });
 
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);

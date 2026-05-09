@@ -1,17 +1,15 @@
 import { execSync } from "child_process";
-import dotenv from "dotenv";
-import path from "path";
+import { readFileSync } from "fs";
+import { parse } from "dotenv";
 
 export async function setup() {
-  dotenv.config({
-    path: path.resolve(process.cwd(), ".env.test"),
-    override: true,
-  });
+  const envRaw = readFileSync(".env.test", "utf-8");
+  const testEnv = parse(envRaw);
 
   console.log("\nPushing Prisma schema to test database...");
   execSync("npx prisma db push --force-reset --accept-data-loss", {
     stdio: "inherit",
-    env: { ...process.env },
+    env: { ...process.env, ...testEnv },
   });
   console.log("Test database is ready\n");
 }

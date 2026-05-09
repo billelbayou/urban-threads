@@ -1,7 +1,5 @@
 import { vi, beforeEach } from "vitest";
 
-export const jwtVerifyMock = vi.fn().mockReturnValue({ id: "test-user-id", role: "CLIENT" });
-
 vi.mock("bcrypt", () => ({
   default: {
     hash: vi.fn().mockResolvedValue("hashed-password"),
@@ -14,10 +12,10 @@ vi.mock("bcrypt", () => ({
 vi.mock("jsonwebtoken", () => ({
   default: {
     sign: vi.fn().mockReturnValue("test-jwt-token"),
-    verify: jwtVerifyMock,
+    verify: vi.fn().mockReturnValue({ id: "test-user-id", role: "CLIENT" }),
   },
   sign: vi.fn().mockReturnValue("test-jwt-token"),
-  verify: jwtVerifyMock,
+  verify: vi.fn().mockReturnValue({ id: "test-user-id", role: "CLIENT" }),
 }));
 
 vi.mock("../services/storage.service.js", () => ({
@@ -53,14 +51,12 @@ vi.mock("../utils/cookies.js", () => ({
 }));
 
 import { prisma } from "../utils/prisma.js";
-import app from "../app.js";
-
-export { app };
+import jwt from "jsonwebtoken";
 
 beforeEach(async () => {
   await prisma.$executeRawUnsafe(
     'TRUNCATE TABLE "User", "Category" CASCADE',
   );
   vi.clearAllMocks();
-  jwtVerifyMock.mockReturnValue({ id: "test-user-id", role: "CLIENT" });
+  (jwt.verify as any).mockReturnValue({ id: "test-user-id", role: "CLIENT" });
 });

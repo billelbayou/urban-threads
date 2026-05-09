@@ -1,8 +1,7 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { app } from "./setup.js";
+import { app, getAuthCookie } from "./helpers.js";
 import { prisma } from "../utils/prisma.js";
-import { getAuthCookie } from "./helpers.js";
 
 describe("Order API", () => {
   it("POST /api/orders creates order from cart", async () => {

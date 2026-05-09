@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { app, jwtVerifyMock } from "./setup.js";
+import { app, getAuthCookie } from "./helpers.js";
 import { prisma } from "../utils/prisma.js";
-import { getAuthCookie } from "./helpers.js";
+import jwt from "jsonwebtoken";
 
 describe("GET /api/products", () => {
   it("returns paginated products", async () => {
@@ -68,7 +68,7 @@ describe("GET /api/products/:id", () => {
 
 describe("POST /api/products (admin)", () => {
   it("creates a product", async () => {
-    jwtVerifyMock.mockReturnValue({ id: "admin-id", role: "ADMIN" });
+    (jwt.verify as any).mockReturnValue({ id: "admin-id", role: "ADMIN" });
 
     await prisma.user.create({
       data: {
@@ -81,7 +81,7 @@ describe("POST /api/products (admin)", () => {
       },
     });
     await prisma.category.create({
-      data: { id: "test-cat", name: "Test Cat", slug: "test-cat" },
+      data: { id: "11111111-1111-1111-1111-111111111111", name: "Test Cat", slug: "test-cat" },
     });
 
     const res = await request(app)
@@ -94,7 +94,7 @@ describe("POST /api/products (admin)", () => {
           description: "Description",
           price: 29.99,
           stock: 5,
-          categoryId: "test-cat",
+          categoryId: "11111111-1111-1111-1111-111111111111",
           tags: ["new"],
           infoSections: [{ title: "Care", content: "Hand wash" }],
         }),
@@ -114,7 +114,7 @@ describe("POST /api/products (admin)", () => {
 
 describe("DELETE /api/products/:id (admin)", () => {
   it("soft-deletes a product", async () => {
-    jwtVerifyMock.mockReturnValue({ id: "admin-id", role: "ADMIN" });
+    (jwt.verify as any).mockReturnValue({ id: "admin-id", role: "ADMIN" });
 
     await prisma.user.create({
       data: {

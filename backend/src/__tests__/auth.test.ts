@@ -1,8 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import request from "supertest";
-import { app } from "./setup.js";
+import { app, getAuthCookie } from "./helpers.js";
 import { prisma } from "../utils/prisma.js";
-import { getAuthCookie } from "./helpers.js";
 import jwt from "jsonwebtoken";
 import { Mock } from "vitest";
 

@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { app, jwtVerifyMock } from "./setup.js";
+import { app, getAuthCookie } from "./helpers.js";
 import { prisma } from "../utils/prisma.js";
-import { getAuthCookie } from "./helpers.js";
+import jwt from "jsonwebtoken";
 
 describe("GET /api/category", () => {
   it("returns all categories", async () => {
@@ -47,7 +47,7 @@ describe("GET /api/category/:id", () => {
 
 describe("POST /api/category (admin)", () => {
   it("creates a category", async () => {
-    jwtVerifyMock.mockReturnValue({ id: "admin-id", role: "ADMIN" });
+    (jwt.verify as any).mockReturnValue({ id: "admin-id", role: "ADMIN" });
 
     await prisma.user.create({
       data: {
@@ -72,7 +72,7 @@ describe("POST /api/category (admin)", () => {
 
 describe("DELETE /api/category/:id (admin)", () => {
   it("soft-deletes a category", async () => {
-    jwtVerifyMock.mockReturnValue({ id: "admin-id", role: "ADMIN" });
+    (jwt.verify as any).mockReturnValue({ id: "admin-id", role: "ADMIN" });
 
     await prisma.user.create({
       data: {
