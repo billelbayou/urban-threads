@@ -16,7 +16,7 @@ const envSchema = z.object({
   SUPABASE_REGION: z.string(),
   SUPABASE_ACCESS_KEY_ID: z.string().min(1),
   SUPABASE_SECRET_ACCESS_KEY: z.string().min(1),
-  DATABASE_URL: z.string().min(1),
+  // DATABASE_URL: z.string().min(1),
   ADMIN_EMAIL: z.string().email(),
   ADMIN_PASSWORD: z.string().min(1),
   ADMIN_FIRST_NAME: z.string().min(1),

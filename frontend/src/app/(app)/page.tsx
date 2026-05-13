@@ -1,7 +1,4 @@
-import heroImage from "../../../public/hero.png";
 import Image from "next/image";
-import { AiOutlineDoubleLeft, AiOutlineDoubleRight } from "react-icons/ai";
-import { FaAsterisk } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
 import Topic from "@/components/Topic";
 import CategoriesSection from "@/components/CategoriesSection";
@@ -29,38 +26,20 @@ export default async function HomePage() {
     <>
       <main>
         {/* HERO SECTION */}
-        <div className="container mx-auto relative w-full h-72 md:h-96 lg:h-125 xl:h-162.5 2xl:h-200 rounded-2xl overflow-hidden">
+        <div className="relative w-full">
           <Image
-            src={heroImage}
+            src={"/hero.jpeg"}
             alt="Hero"
-            fill
-            className="object-cover"
+            width={2932}
+            height={980}
+            className="w-full h-auto"
             priority
           />
 
-          <div className="absolute inset-0">
-            <div className="flex flex-col text-5xl md:text-7xl font-light h-full pt-8 pl-8 bg-linear-to-b from-transparent to-black/70">
-              <div className="text-white w-auto flex items-center pb-5">
-                <p className="pr-4">Fresh Drops</p>
-                <FaAsterisk size={50} />
-              </div>
-              <div className="text-white flex items-center pb-5">
-                <AiOutlineDoubleLeft />
-                <p className="pl-4">Limited Edition</p>
-              </div>
-              <div className="text-white flex items-center">
-                <p className="pr-4">Act Fast</p>
-                <AiOutlineDoubleRight />
-              </div>
-            </div>
-          </div>
-
-          <div className="absolute top-0 right-0 h-full px-4 flex items-center">
+          <div className="absolute top-0 right-0 h-full px-2 md:px-4 flex items-center pointer-events-none">
             <p className="vertical-outline-text text-shadow">NEW COLLECTION</p>
           </div>
         </div>
-
-        {/* MARQUEE */}
         <div className="overflow-hidden bg-black text-white my-8">
           <div className="marquee flex whitespace-nowrap">
             {[...Array(8)].map((_, i) => (
