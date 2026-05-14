@@ -11,7 +11,7 @@ export default function ClientLayout({
     <>
       <Header />
       <CartDrawer />
-      <main>{children}</main>
+      {children}
       <Footer />
     </>
   );

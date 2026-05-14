@@ -2,22 +2,18 @@ import Image from "next/image";
 import { FaArrowRight } from "react-icons/fa";
 import Link from "next/link";
 
-import rightImg from "../../public/streetwear-comfort.jpg";
-import topImg from "../../public/chinese-streetwear-1600x900.png";
-import bottomImg from "../../public/449ab5f64580a17a08e8b4f0e313796b.jpg";
-
 export default function CategoriesSection() {
   const categories = [
-    { label: "Shop Men", img: rightImg, href: "/men" },
-    { label: "Shop Women", img: topImg, href: "/women" },
-    { label: "Shop Accessories", img: bottomImg, href: "/accessories" },
+    { label: "Shop Men", img: "/men-category.jpg", href: "/men" },
+    { label: "Shop Women", img: "/women-category.png", href: "/women" },
+    { label: "Shop Accessories", img: "/accessories-category.jpg", href: "/accessories" },
   ];
 
   return (
     <section className="mb-44">
       <h2 className="text-3xl font-medium mb-6">Categories</h2>
 
-      <div className="grid grid-cols-2 gap-4 h-175">
+      <div className="grid grid-cols-2 gap-4 h-75 sm:h-100 md:h-137.5 lg:h-175">
         {/* Left big category */}
         <Link
           href={categories[0].href}

@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { GoDotFill } from "react-icons/go";
+import Link from "next/link";
+import { Truck } from "lucide-react";
 import Topic from "@/components/Topic";
 import CategoriesSection from "@/components/CategoriesSection";
 import { fetchProducts } from "@/services/api/product";
@@ -36,58 +37,85 @@ export default async function HomePage() {
             priority
           />
 
+          <div className="absolute inset-0 bg-linear-to-l from-black/50 to-transparent" />
+
           <div className="absolute top-0 right-0 h-full px-2 md:px-4 flex items-center pointer-events-none">
             <p className="vertical-outline-text text-shadow">NEW COLLECTION</p>
           </div>
+
         </div>
-        <div className="overflow-hidden bg-black text-white my-8">
-          <div className="marquee flex whitespace-nowrap">
-            {[...Array(8)].map((_, i) => (
-              <span
-                key={i}
-                className="flex items-center text-sm md:text-base font-semibold uppercase my-2 mr-8"
-              >
-                <GoDotFill />
-                <p className="ml-2">free shipping on orders above $60</p>
-              </span>
-            ))}
+        <div className="overflow-hidden bg-linear-to-r from-zinc-900 via-black to-zinc-900 text-white border-y border-zinc-800 my-8">
+          <div className="marquee flex whitespace-nowrap py-2.5">
+            <div className="flex shrink-0 items-center">
+              {[...Array(6)].map((_, i) => (
+                <span
+                  key={i}
+                  className="flex items-center gap-3 text-xs md:text-sm font-semibold uppercase tracking-[0.2em] mx-6"
+                >
+                  <Truck size={14} className="text-zinc-400" />
+                  <span>free shipping on orders above $60</span>
+                  <span className="text-zinc-600">✦</span>
+                </span>
+              ))}
+            </div>
+            <div className="flex shrink-0 items-center">
+              {[...Array(6)].map((_, i) => (
+                <span
+                  key={`dup-${i}`}
+                  className="flex items-center gap-3 text-xs md:text-sm font-semibold uppercase tracking-[0.2em] mx-6"
+                >
+                  <Truck size={14} className="text-zinc-400" />
+                  <span>free shipping on orders above $60</span>
+                  <span className="text-zinc-600">✦</span>
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="container mx-auto">
-          <Topic title="Best Sellers" products={bestSellers} />
+        <div className="container mx-auto px-4 md:px-6">
+          <Topic title="Best Sellers" products={bestSellers} seeAllHref="/products" />
 
           <CategoriesSection />
 
-          <Topic title="New Arrivals" products={newArrivals} />
+          <Topic title="New Arrivals" products={newArrivals} seeAllHref="/products?sort=newest" />
 
           {/* ABOUT SECTION */}
-          <div className="flex flex-col md:flex-row items-center gap-8 p-6 mx-auto justify-between">
+          <div className="flex flex-col md:flex-row items-center gap-8 py-10 md:py-16 mx-auto justify-between">
             <div className="max-w-xl">
-              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-px flex-1 bg-gray-200" />
+                <span className="text-xs font-semibold tracking-[0.2em] text-gray-400 uppercase">Our Story</span>
+                <div className="h-px flex-1 bg-gray-200" />
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold mb-2 text-gray-900">
                 Born in the streets, made for the culture
               </h2>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-sm text-gray-500 mb-6">Est. 2019</p>
+              <p className="text-gray-700 leading-relaxed mb-4">
                 More than just clothes, we&apos;re a movement that started in
                 2019 from the raw energy of city streets. Our designs blend
                 urban attitude with sustainable craftsmanship, creating pieces
                 that tell stories. Every drop is a limited canvas of
                 self-expression, crafted for those who dare to stand out. We
-                don&apos;t just follow trends - we create them alongside our
+                don&apos;t just follow trends — we create them alongside our
                 community of artists, skaters, and dreamers who inspire each
-                collection. From late-night design sessions to ethical
-                production methods, we&apos;re building a brand that respects
-                both style and substance. Join us in redefining what streetwear
-                can be.
+                collection.
+              </p>
+              <p className="text-gray-700 leading-relaxed mb-6">
+                From late-night design sessions to ethical production methods,
+                we&apos;re building a brand that respects both style and substance.
+              </p>
+              <p className="text-lg font-semibold text-gray-900 italic">
+                Join us in redefining what streetwear can be.
               </p>
             </div>
             <Image
-              src="https://images.unsplash.com/photo-1592516195984-44d68247d57e"
+              src="/about-image.jpeg"
               alt="Streetwear Culture"
-              width={400}
-              height={300}
-              style={{ height: "auto" }} // This removes the warning
-              className="object-cover"
+              width={3900}
+              height={5850}
+              className="object-cover h-auto w-100"
             />
           </div>
         </div>

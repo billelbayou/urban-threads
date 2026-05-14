@@ -51,8 +51,8 @@
 .vertical-outline-text {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  font-size: 2.5rem; /* adjust as needed */
-  font-weight: 600;
+  font-size: clamp(0.5rem, 3vw, 2.5rem);
+  font-weight: 700;
   letter-spacing: 0.2em;
   color: transparent;
   -webkit-text-stroke: 1px white;
@@ -65,15 +65,15 @@
 }
 
 .marquee {
-  animation: scroll-right 40s linear infinite;
+  animation: scroll 40s linear infinite;
 }
 
-@keyframes scroll-right {
+@keyframes scroll {
   0% {
-    transform: translateX(-100%);
+    transform: translateX(0);
   }
   100% {
-    transform: translateX(100%);
+    transform: translateX(-50%);
   }
 }
 

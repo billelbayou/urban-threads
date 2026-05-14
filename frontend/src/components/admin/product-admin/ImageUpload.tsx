@@ -106,12 +106,18 @@ export default function ImageUpload({
                   className="relative group bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm"
                 >
                   <div className="aspect-square relative">
-                    <Image
-                      src={currentUrl}
-                      alt="Product image"
-                      fill
-                      className="object-cover"
-                    />
+                    {currentUrl ? (
+                      <Image
+                        src={currentUrl}
+                        alt="Product image"
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+                        <span className="text-slate-400 text-sm">No preview</span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center">
@@ -141,12 +147,18 @@ export default function ImageUpload({
                 className="relative group bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm"
               >
                 <div className="aspect-square relative">
-                  <Image
-                    src={objectUrls[index] || ""}
-                    alt="New product image"
-                    fill
-                    className="object-cover"
-                  />
+                  {objectUrls[index] ? (
+                    <Image
+                      src={objectUrls[index]}
+                      alt="New product image"
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+                      <span className="text-slate-400 text-sm">No preview</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center">

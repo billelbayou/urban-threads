@@ -5,9 +5,10 @@ import Link from "next/link";
 interface TopicProps {
   title: string;
   products: Product[];
+  seeAllHref?: string;
 }
 
-export default function Topic({ title, products }: TopicProps) {
+export default function Topic({ title, products, seeAllHref }: TopicProps) {
   return (
     <section className="my-12">
       {/* Header */}
@@ -15,12 +16,14 @@ export default function Topic({ title, products }: TopicProps) {
         <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
           {title}
         </h2>
-        <Link
-          href={`/${encodeURIComponent(title.toLowerCase())}`}
-          className="text-base md:text-lg font-medium text-black hover:text-blue-800 underline underline-offset-4 transition-colors"
-        >
-          See all
-        </Link>
+        {seeAllHref && (
+          <Link
+            href={seeAllHref}
+            className="text-base md:text-lg font-medium text-black hover:text-blue-800 underline underline-offset-4 transition-colors"
+          >
+            See all
+          </Link>
+        )}
       </div>
 
       {/* Products Grid */}
@@ -33,6 +36,19 @@ export default function Topic({ title, products }: TopicProps) {
           >
             {/* Image */}
             <div className="relative w-full aspect-square bg-neutral-100">
+              {product.stock === 0 && (
+                <div className="absolute top-2 left-2 z-10 bg-black text-white text-xs font-semibold px-2 py-1">
+                  Sold Out
+                </div>
+              )}
+              {product.createdAt &&
+                Date.now() - new Date(product.createdAt).getTime() <
+                  30 * 24 * 60 * 60 * 1000 &&
+                product.stock > 0 && (
+                  <div className="absolute top-2 right-2 z-10 bg-white text-black text-xs font-semibold px-2 py-1 border">
+                    New
+                  </div>
+                )}
               <Image
                 src={
                   product.images[0].mobile?.url || product.images[0].url || ""

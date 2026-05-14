@@ -4,7 +4,6 @@ import Link from "next/link";
 import { CiSearch } from "react-icons/ci";
 import { GoPerson } from "react-icons/go";
 import { PiBasketBold } from "react-icons/pi";
-import { FaBars, FaTimes } from "react-icons/fa";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useCartStore } from "@/store/useCartStore";
@@ -12,14 +11,12 @@ import { useRouter } from "next/navigation";
 import { logoutAction } from "@/services/authActions";
 import { toast } from "sonner";
 import { Cart } from "@/types/cart";
-import { NAV_LINKS } from "@/constants/navigation";
 
 interface HeaderClientProps {
   initialCart: Cart | null;
 }
 
 export default function HeaderClient({ initialCart }: HeaderClientProps) {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const dropdownRef = useRef<HTMLLIElement>(null);
 
@@ -69,17 +66,7 @@ export default function HeaderClient({ initialCart }: HeaderClientProps) {
 
   return (
     <>
-      {/* Mobile Menu Icon */}
-      <button className="md:hidden z-20" onClick={() => setMenuOpen((p) => !p)}>
-        {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-      </button>
-
-      {/* Right Icons */}
-      <ul className="flex space-x-4 items-center ml-auto md:ml-0 relative">
-        <li>
-          <CiSearch size={26} />
-        </li>
-
+      <ul className="flex space-x-4 items-center relative">
         {/* Profile */}
         <li ref={dropdownRef} className="relative">
           <button onClick={() => setProfileOpen((p) => !p)}>
@@ -145,18 +132,6 @@ export default function HeaderClient({ initialCart }: HeaderClientProps) {
         </li>
       </ul>
 
-      {/* Mobile Menu */}
-      {menuOpen && (
-        <ul className="absolute top-full left-0 w-full bg-white flex flex-col p-4 md:hidden">
-          {NAV_LINKS.map(({ href, label }) => (
-            <li key={href}>
-              <Link href={href} onClick={() => setMenuOpen(false)}>
-                {label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
     </>
   );
 }
