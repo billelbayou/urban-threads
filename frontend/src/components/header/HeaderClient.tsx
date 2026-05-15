@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { CiSearch } from "react-icons/ci";
 import { GoPerson } from "react-icons/go";
 import { PiBasketBold } from "react-icons/pi";
 import { useActionState, useEffect, useRef, useState } from "react";
@@ -121,7 +120,10 @@ export default function HeaderClient({ initialCart }: HeaderClientProps) {
 
         {/* Cart */}
         <li>
-          <button onClick={handleToggleCart} className="relative cursor-pointer">
+          <button
+            onClick={handleToggleCart}
+            className="relative cursor-pointer"
+          >
             <PiBasketBold size={26} />
             {user && cart?.items && cart.items.length > 0 && (
               <span className="absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full bg-black text-white text-[10px] flex items-center justify-center">
@@ -131,7 +133,6 @@ export default function HeaderClient({ initialCart }: HeaderClientProps) {
           </button>
         </li>
       </ul>
-
     </>
   );
 }
