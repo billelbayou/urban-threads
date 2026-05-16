@@ -1,44 +1,48 @@
 "use client";
 
 import { useState } from "react";
+import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 
 export default function PasswordSection() {
   const [editing, setEditing] = useState(false);
-  const [passwordData, setPasswordData] = useState({
+  const [passwords, setPasswords] = useState({
     current: "",
     new: "",
     confirm: "",
   });
 
-  const handlePasswordChange = (field: string, value: string) => {
-    setPasswordData({ ...passwordData, [field]: value });
-  };
-
   const handleSave = () => {
-    if (passwordData.new !== passwordData.confirm) {
-      toast.error("New passwords don't match!");
+    if (passwords.new !== passwords.confirm) {
+      toast.error("New passwords don't match");
       return;
     }
-    // TODO: Call API to update password
-    setPasswordData({ current: "", new: "", confirm: "" });
+    if (!passwords.current || !passwords.new) {
+      toast.error("All fields are required");
+      return;
+    }
+    // TODO: call API to update password
+    setPasswords({ current: "", new: "", confirm: "" });
     setEditing(false);
   };
 
   const handleCancel = () => {
-    setPasswordData({ current: "", new: "", confirm: "" });
+    setPasswords({ current: "", new: "", confirm: "" });
     setEditing(false);
   };
 
   return (
-    <div className="mb-10">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold text-gray-900">Login Details</h2>
+    <div className="mb-5 rounded-2xl border border-gray-100 bg-white p-8 shadow-[0_1px_6px_0_rgba(0,0,0,0.04)]">
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-lg font-bold tracking-tight text-gray-900">
+          Password
+        </h2>
         {!editing && (
           <button
             onClick={() => setEditing(true)}
-            className="text-red-500 text-sm font-medium hover:text-red-600"
+            className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-gray-100 px-4 py-1.5 text-sm font-semibold text-gray-700 transition-all duration-150 hover:bg-gray-900 hover:text-white"
           >
+            <Pencil size={13} />
             Edit
           </button>
         )}
@@ -47,64 +51,71 @@ export default function PasswordSection() {
       {editing ? (
         <div className="space-y-4">
           <div>
-            <label className="block text-gray-600 text-sm mb-2">
+            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-gray-400">
               Current Password
             </label>
             <input
               type="password"
-              value={passwordData.current}
-              onChange={(e) => handlePasswordChange("current", e.target.value)}
+              value={passwords.current}
+              onChange={(e) =>
+                setPasswords({ ...passwords, current: e.target.value })
+              }
               placeholder="Enter current password"
-              className="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-gray-900"
+              className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
             />
           </div>
-
           <div>
-            <label className="block text-gray-600 text-sm mb-2">
+            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-gray-400">
               New Password
             </label>
             <input
               type="password"
-              value={passwordData.new}
-              onChange={(e) => handlePasswordChange("new", e.target.value)}
+              value={passwords.new}
+              onChange={(e) =>
+                setPasswords({ ...passwords, new: e.target.value })
+              }
               placeholder="Enter new password"
-              className="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-gray-900"
+              className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
             />
           </div>
-
           <div>
-            <label className="block text-gray-600 text-sm mb-2">
+            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-gray-400">
               Confirm New Password
             </label>
             <input
               type="password"
-              value={passwordData.confirm}
-              onChange={(e) => handlePasswordChange("confirm", e.target.value)}
+              value={passwords.confirm}
+              onChange={(e) =>
+                setPasswords({ ...passwords, confirm: e.target.value })
+              }
               placeholder="Confirm new password"
-              className="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-gray-900"
+              className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
             />
           </div>
-
-          <div className="flex gap-3 pt-4">
-            <button
-              onClick={handleSave}
-              className="px-6 py-2 bg-gray-900 text-white rounded hover:bg-gray-800 font-medium"
-            >
-              Update Password
-            </button>
+          <div className="flex items-center justify-end gap-3 pt-4">
             <button
               onClick={handleCancel}
-              className="px-6 py-2 border border-gray-300 rounded hover:bg-gray-50 font-medium"
+              className="cursor-pointer rounded-xl bg-gray-100 px-5 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200"
             >
               Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="cursor-pointer rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800"
+            >
+              Update Password
             </button>
           </div>
         </div>
       ) : (
-        <div className="space-y-4">
-          <div>
-            <p className="text-gray-600 text-sm mb-1">Password</p>
-            <p className="text-gray-900">••••••••••••</p>
+        <div>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
+              Password
+            </span>
+            <span className="text-base font-medium text-gray-900">
+              &bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;
+            </span>
           </div>
         </div>
       )}

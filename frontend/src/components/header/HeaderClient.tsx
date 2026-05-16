@@ -65,9 +65,9 @@ export default function HeaderClient({ initialCart }: HeaderClientProps) {
 
   return (
     <>
-      <ul className="flex space-x-4 items-center relative">
+      <ul className="flex space-x-4 items-center justify-center relative">
         {/* Profile */}
-        <li ref={dropdownRef} className="relative">
+        <li ref={dropdownRef} className="relative h-6.5">
           <button onClick={() => setProfileOpen((p) => !p)}>
             <GoPerson size={26} />
           </button>
@@ -119,7 +119,7 @@ export default function HeaderClient({ initialCart }: HeaderClientProps) {
         </li>
 
         {/* Cart */}
-        <li>
+        <li className="h-6.5">
           <button
             onClick={handleToggleCart}
             className="relative cursor-pointer"

@@ -11,6 +11,8 @@ import {
 import { SectionCard } from "./section-card";
 import { EditModal, type FieldConfig } from "./edit-modal";
 import { InfoField } from "./info-field";
+import PasswordSection from "./PasswordSection";
+import DeleteAccountSection from "./DeleteAccountSection";
 
 function formatDate(dateStr: string | null | undefined): string {
   if (!dateStr) return "Not provided";
@@ -88,9 +90,9 @@ export function ProfileContent({ user }: { user: User }) {
 
   return (
     <>
-      <div className="flex min-w-0 flex-1 flex-col px-8 py-8">
+      <div className="flex min-w-0 flex-1 flex-col px-4 py-6 sm:px-8 sm:py-8">
         <main className="flex-1 overflow-y-auto">
-          <div className="mb-5 flex items-center gap-5 rounded-2xl border border-gray-100 bg-white px-8 py-6 shadow-[0_1px_6px_0_rgba(0,0,0,0.04)]">
+          <div className="mb-5 flex items-center gap-4 rounded-2xl border border-gray-100 bg-white px-4 py-5 shadow-[0_1px_6px_0_rgba(0,0,0,0.04)] sm:gap-5 sm:px-8 sm:py-6">
             <div className="relative shrink-0">
               <div className="relative size-22 overflow-hidden rounded-full border-[3px] border-gray-900">
                 <div className="flex size-full items-center justify-center bg-linear-to-br from-gray-300 to-gray-400">
@@ -164,6 +166,9 @@ export function ProfileContent({ user }: { user: User }) {
               />
             </div>
           </SectionCard>
+
+          <PasswordSection />
+          <DeleteAccountSection />
         </main>
       </div>
 

@@ -27,7 +27,7 @@ const ProductTable = ({ products }: { products: Product[] }) => {
                         <img
                           src={
                             product.images[0].thumbnail?.url ||
-                            product.images[0].url
+                            product.images[0].mobile?.url || ""
                           }
                           alt={product.name}
                           className="h-full w-full object-cover"

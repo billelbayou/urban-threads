@@ -51,7 +51,7 @@ export default function Topic({ title, products, seeAllHref }: TopicProps) {
                 )}
               <Image
                 src={
-                  product.images[0].mobile?.url || product.images[0].url || ""
+                  product.images[0].mobile?.url || product.images[0].thumbnail?.url || ""
                 }
                 alt={product.name}
                 fill

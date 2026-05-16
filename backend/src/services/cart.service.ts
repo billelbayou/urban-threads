@@ -1,9 +1,43 @@
 import { prisma } from "../utils/prisma.js";
 import { NotFoundError, ForbiddenError } from "../errors/index.js";
+import { getProductImageUrl } from "./storage.service.js";
+
+async function resolveProductImages(product: any): Promise<void> {
+  if (!product || !product.images) return;
+
+  product.images = await Promise.all(
+    product.images.map(async (img: any) => {
+      if (img.original) {
+        const variants = ["original", "thumbnail", "mobile", "desktop"];
+        const resolved: any = {};
+
+        await Promise.all(
+          variants.map(async (v) => {
+            if (img[v]) {
+              resolved[v] = {
+                url: await getProductImageUrl(img[v].path),
+                path: img[v].path,
+              };
+            }
+          }),
+        );
+        return resolved;
+      }
+
+      if (img.path) {
+        return {
+          url: await getProductImageUrl(img.path),
+          path: img.path,
+        };
+      }
+      return img;
+    }),
+  );
+}
 
 export class CartService {
   async getOrCreateCart(userId: string) {
-    return prisma.cart.upsert({
+    const cart = await prisma.cart.upsert({
       where: { userId },
       update: {},
       create: { userId },
@@ -15,6 +49,12 @@ export class CartService {
         },
       },
     });
+
+    await Promise.all(
+      cart.items.map((item) => resolveProductImages(item.product)),
+    );
+
+    return cart;
   }
 
   async addToCart(

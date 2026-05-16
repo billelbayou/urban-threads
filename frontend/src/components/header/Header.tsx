@@ -7,7 +7,7 @@ import { NAV_LINKS } from "@/constants/navigation";
 export default async function Header() {
   const cart = await fetchCart();
   return (
-    <header className="flex items-center p-4 relative z-50 border-b mb-5">
+    <header className="flex items-center p-4 relative z-50 border-b">
       <div className="flex items-center gap-4 md:gap-6">
         <MobileMenu />
         <ul className="hidden md:flex space-x-6 text-lg whitespace-nowrap">

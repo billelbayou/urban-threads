@@ -28,7 +28,7 @@ export async function generateMetadata({
       description: product.description,
       images: [
         {
-          url: product.images?.[0]?.original?.url || product.images?.[0]?.url || "",
+          url: product.images?.[0]?.original?.url || product.images?.[0]?.thumbnail?.url || "",
         },
       ],
     },

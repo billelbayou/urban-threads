@@ -70,9 +70,9 @@ export default function CheckoutClient({ cart, user }: CheckoutClientProps) {
                   <div key={item.id} className="py-4 flex gap-4">
                     {/* Product Image */}
                     <div className="relative w-24 h-24 shrink-0 bg-gray-100 rounded-md overflow-hidden">
-                      {item.product.images?.[0] ? (
+                      {item.product.images[0]?.thumbnail?.url ? (
                         <Image
-                          src={item.product.images[0].url}
+                          src={item.product.images[0].thumbnail.url}
                           alt={item.product.name}
                           fill
                           className="object-cover"

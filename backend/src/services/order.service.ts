@@ -1,6 +1,40 @@
 import { prisma } from "../utils/prisma.js";
 import { OrderStatus } from "../generated/prisma/enums.js";
 import { AppError, NotFoundError } from "../errors/index.js";
+import { getProductImageUrl } from "./storage.service.js";
+
+async function resolveProductImages(product: any): Promise<void> {
+  if (!product || !product.images) return;
+
+  product.images = await Promise.all(
+    product.images.map(async (img: any) => {
+      if (img.original) {
+        const variants = ["original", "thumbnail", "mobile", "desktop"];
+        const resolved: any = {};
+
+        await Promise.all(
+          variants.map(async (v) => {
+            if (img[v]) {
+              resolved[v] = {
+                url: await getProductImageUrl(img[v].path),
+                path: img[v].path,
+              };
+            }
+          }),
+        );
+        return resolved;
+      }
+
+      if (img.path) {
+        return {
+          url: await getProductImageUrl(img.path),
+          path: img.path,
+        };
+      }
+      return img;
+    }),
+  );
+}
 
 export interface PaginationParams {
   page?: number;
@@ -85,15 +119,27 @@ export class OrderService {
       return newOrder;
     });
 
+    await Promise.all(
+      order.items.map((item) => resolveProductImages(item.product)),
+    );
+
     return order;
   }
 
   async getMyOrders(userId: string) {
-    return await prisma.order.findMany({
+    const orders = await prisma.order.findMany({
       where: { userId, deletedAt: null },
       include: { items: { include: { product: true } } },
       orderBy: { createdAt: "desc" },
     });
+
+    await Promise.all(
+      orders.flatMap((order) =>
+        order.items.map((item) => resolveProductImages(item.product)),
+      ),
+    );
+
+    return orders;
   }
 
   async getAllOrders(params: PaginationParams = {}) {
