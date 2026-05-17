@@ -2,11 +2,8 @@ import AddProductMain from "@/components/admin/product-admin/AddProductMain";
 import { fetchCategories } from "@/services/api/category";
 import { Category, CategoryWithChildren } from "@/types/category";
 import { buildTree } from "@/utils/helpers";
-import { connection } from "next/server";
-
 
 export default async function AddProductPage() {
-  await connection()
   let tree: CategoryWithChildren[] = [];
   let error: string | null = null;
 

@@ -1,20 +1,15 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Wishlist } from "@/types/wishlist";
+import { useWishlistStore } from "@/store/useWishlistStore";
 import { removeFromWishlistAction } from "@/services/wishlistActions";
 
-interface WishlistClientProps {
-  initialWishlist: Wishlist | null;
-}
-
-export default function WishlistClient({
-  initialWishlist,
-}: WishlistClientProps) {
-  const [wishlist, setWishlist] = useState<Wishlist | null>(initialWishlist);
+export default function WishlistClient() {
+  const products = useWishlistStore((s) => s.products);
+  const setProducts = useWishlistStore((s) => s.setProducts);
   const [state, formAction, isPending] = useActionState(
     removeFromWishlistAction,
     null,
@@ -23,14 +18,12 @@ export default function WishlistClient({
   useEffect(() => {
     if (state?.success) {
       toast.success("Removed from wishlist");
-      if (state.data) setWishlist(state.data);
+      if (state.data) setProducts(state.data.products);
     }
     if (state?.error) {
       toast.error(state.error);
     }
   }, [state]);
-
-  const products = wishlist?.products || [];
 
   if (products.length === 0) {
     return (

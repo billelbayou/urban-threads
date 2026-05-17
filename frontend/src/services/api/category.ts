@@ -3,8 +3,7 @@ import { api, fetchWithTimeout, buildHeaders, unwrapData } from "./client";
 
 export const fetchCategories = async (): Promise<Category[]> => {
   const res = await fetchWithTimeout(`${api}/category`, {
-    headers: await buildHeaders(),
-    cache: "no-store",
+    next: { revalidate: 30 },
   });
 
   if (!res.ok) {

@@ -6,14 +6,12 @@ import { ListTree } from "lucide-react";
 import { CategoryWithChildren } from "@/types/category";
 import { Suspense } from "react";
 import { Metadata } from "next";
-import { connection } from "next/server";
 
 export const metadata: Metadata = {
   title: "Category Management | Urban Threads Admin",
 };
 
 async function CategoryList() {
-  await connection();
   let tree: CategoryWithChildren[] = [];
   try {
     const categories = await fetchCategories();

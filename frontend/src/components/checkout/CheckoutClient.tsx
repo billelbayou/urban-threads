@@ -4,20 +4,22 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Cart } from "@/types/cart";
-import { User } from "@/types/user";
 import { createOrderAction } from "@/services/orderActions";
 import { useCartStore } from "@/store/useCartStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
 interface CheckoutClientProps {
   cart: Cart;
-  user: User;
 }
 
-export default function CheckoutClient({ cart, user }: CheckoutClientProps) {
+export default function CheckoutClient({ cart }: CheckoutClientProps) {
   const router = useRouter();
   const clearCart = useCartStore((s) => s.clearCart);
+  const user = useAuthStore((s) => s.user);
+
+  if (!user) return null;
 
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);

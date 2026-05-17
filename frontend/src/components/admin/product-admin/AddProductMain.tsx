@@ -1,10 +1,10 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useState } from "react";
+import { useActionState, useEffect } from "react";
 import { CheckCircle, AlertCircle } from "lucide-react";
 import ImageUpload from "@/components/admin/product-admin/ImageUpload";
 import ProductForm from "@/components/admin/product-admin/ProductForm";
-import {  InfoSection, ProductImage } from "@/types/product";
+import { useProductFormStore } from "@/store/useProductFormStore";
 import { createProductAction } from "@/services/productActions";
 import { CategoryWithChildren } from "@/types/category";
 
@@ -13,64 +13,28 @@ export default function AddProductMain({
 }: {
   categoryTree: CategoryWithChildren[];
 }) {
-  const [images, setImages] = useState<ProductImage[]>([]);
-  const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
-  const [productName, setProductName] = useState<string>("");
-
-  const [categoryId, setCategoryId] = useState<string>("");
-  const [price, setPrice] = useState<number | "">("");
-  const [stock, setStock] = useState<number | "">("");
-  const [description, setDescription] = useState<string>("");
-  const [infoSections, setInfoSections] = useState<InfoSection[]>([
-    { title: "", content: "" },
-  ]);
-  const [tags, setTags] = useState<string[]>([]);
+  const reset = useProductFormStore((s) => s.reset);
+  const getFormData = useProductFormStore((s) => s.getFormData);
+  const newImageFiles = useProductFormStore((s) => s.newImageFiles);
+  const images = useProductFormStore((s) => s.images);
 
   const [state, formAction, isPending] = useActionState(
     createProductAction,
     null,
   );
 
-  const product = useMemo(
-    () => ({
-      name: productName,
-      categoryId,
-      price: price === "" ? null : price,
-      stock: stock === "" ? null : stock,
-      description,
-      images,
-      infoSections,
-      tags,
-    }),
-    [
-      productName,
-      categoryId,
-      price,
-      stock,
-      description,
-      images,
-      infoSections,
-      tags,
-    ],
-  );
+  useEffect(() => {
+    reset();
+  }, [reset]);
 
   useEffect(() => {
     if (state?.success) {
-      setImages([]);
-      setNewImageFiles([]);
-      setProductName("");
-      setCategoryId("");
-      setPrice("");
-      setStock("");
-      setDescription("");
-      setInfoSections([{ title: "", content: "" }]);
-      setTags([]);
+      reset();
     }
-  }, [state?.success]);
+  }, [state?.success, reset]);
 
   const handleSubmit = (formData: FormData) => {
-    // Collect all fields into the same FormData
-    formData.set("product", JSON.stringify(product));
+    formData.set("product", JSON.stringify(getFormData()));
     newImageFiles.forEach((file) => {
       formData.append("images", file);
     });
@@ -89,12 +53,7 @@ export default function AddProductMain({
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
         <div className="flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
           <div className="w-full lg:w-1/2 p-6 lg:p-8">
-            <ImageUpload
-              images={images}
-              setImages={setImages}
-              newImageFiles={newImageFiles}
-              setNewImageFiles={setNewImageFiles}
-            />
+            <ImageUpload />
             {state?.fieldErrors?.images && (
               <p className="mt-3 text-sm text-red-600 flex items-center gap-1">
                 <AlertCircle className="w-4 h-4" />
@@ -104,21 +63,7 @@ export default function AddProductMain({
           </div>
           <div className="w-full lg:w-1/2 p-6 lg:p-8">
             <ProductForm
-              productName={productName}
-              setProductName={setProductName}
-              categoryId={categoryId}
-              setCategoryId={setCategoryId}
-              infoSections={infoSections}
-              setInfoSections={setInfoSections}
               categoryTree={categoryTree}
-              price={price}
-              setPrice={setPrice}
-              stock={stock}
-              setStock={setStock}
-              description={description}
-              setDescription={setDescription}
-              tags={tags}
-              setTags={setTags}
               errors={state?.success ? null : (state?.fieldErrors ?? null)}
             />
           </div>

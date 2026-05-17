@@ -15,5 +15,5 @@ export default async function CheckoutPage() {
     redirect("/");
   }
 
-  return <CheckoutClient cart={cart} user={user} />;
+  return <CheckoutClient cart={cart} />;
 }

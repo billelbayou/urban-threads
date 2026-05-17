@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CategoryNode from "@/components/admin/categories/CategoryNode";
 import CategoryModal from "@/components/admin/categories/CategoryModal";
+import { useCategoryStore } from "@/store/useCategoryStore";
 import { CategoryWithChildren } from "@/types/category";
 
 type Props = {
@@ -10,7 +11,12 @@ type Props = {
 };
 
 export default function CategoryTreeBox({ initialTree }: Props) {
-  const tree = initialTree;
+  const tree = useCategoryStore((s) => s.tree);
+  const setTree = useCategoryStore((s) => s.setTree);
+
+  useEffect(() => {
+    setTree(initialTree);
+  }, [initialTree, setTree]);
 
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;

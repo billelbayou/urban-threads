@@ -9,13 +9,8 @@ import { useCartStore } from "@/store/useCartStore";
 import { useRouter } from "next/navigation";
 import { logoutAction } from "@/services/authActions";
 import { toast } from "sonner";
-import { Cart } from "@/types/cart";
 
-interface HeaderClientProps {
-  initialCart: Cart | null;
-}
-
-export default function HeaderClient({ initialCart }: HeaderClientProps) {
+export default function HeaderClient() {
   const [profileOpen, setProfileOpen] = useState(false);
   const dropdownRef = useRef<HTMLLIElement>(null);
 
@@ -25,13 +20,6 @@ export default function HeaderClient({ initialCart }: HeaderClientProps) {
   const { cart, setCart, toggleCart } = useCartStore();
 
   const router = useRouter();
-
-  // 🔹 Hydrate cart store from server (ONCE)
-  useEffect(() => {
-    if (initialCart) {
-      setCart(initialCart);
-    }
-  }, [initialCart, setCart]);
 
   // 🔹 Logout handling
   useEffect(() => {

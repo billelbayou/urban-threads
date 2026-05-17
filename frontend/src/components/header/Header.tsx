@@ -1,11 +1,9 @@
 import Link from "next/link";
 import HeaderClient from "./HeaderClient";
 import MobileMenu from "./MobileMenu";
-import { fetchCart } from "@/services/api/cart";
 import { NAV_LINKS } from "@/constants/navigation";
 
-export default async function Header() {
-  const cart = await fetchCart();
+export default function Header() {
   return (
     <header className="flex items-center p-4 relative z-50 border-b">
       <div className="flex items-center gap-4 md:gap-6">
@@ -26,7 +24,7 @@ export default async function Header() {
       </div>
 
       <div>
-        <HeaderClient initialCart={cart} />
+        <HeaderClient />
       </div>
     </header>
   );

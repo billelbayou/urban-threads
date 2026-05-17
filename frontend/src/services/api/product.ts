@@ -4,8 +4,7 @@ import { api, fetchWithTimeout, buildHeaders, unwrapData } from "./client";
 export const fetchProducts = async (sort?: "newest" | "bestSelling"): Promise<Product[]> => {
   const url = sort ? `${api}/products?sort=${sort}` : `${api}/products`;
   const res = await fetchWithTimeout(url, {
-    headers: await buildHeaders(),
-    cache: "no-store",
+    next: { revalidate: 30 },
   });
 
   if (!res.ok) {
@@ -21,8 +20,7 @@ export const fetchProductById = async (
   productId: string,
 ): Promise<Product | null> => {
   const res = await fetchWithTimeout(`${api}/products/${productId}`, {
-    headers: await buildHeaders(),
-    cache: "no-store",
+    next: { revalidate: 30 },
   });
 
   if (!res.ok) return null;

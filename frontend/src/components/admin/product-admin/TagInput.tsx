@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { X, AlertCircle } from "lucide-react";
+import { useProductFormStore } from "@/store/useProductFormStore";
 
 interface TagInputProps {
-  tags: string[];
-  setTags: React.Dispatch<React.SetStateAction<string[]>>;
   error?: string[];
 }
 
-export default function TagInput({ tags, setTags, error }: TagInputProps) {
+export default function TagInput({ error }: TagInputProps) {
+  const tags = useProductFormStore((s) => s.tags);
+  const setTags = useProductFormStore((s) => s.setTags);
   const [tagInput, setTagInput] = useState<string>("");
 
   const addTag = (label: string) => {

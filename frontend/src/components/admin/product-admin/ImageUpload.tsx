@@ -1,23 +1,15 @@
 "use client";
 
-import { ProductImage } from "@/types/product";
+import { useProductFormStore } from "@/store/useProductFormStore";
 import { Upload, X, CheckCircle } from "lucide-react";
 import Image from "next/image";
 import React, { useRef, useEffect, useState } from "react";
 
-interface ImageUploadProps {
-  images: ProductImage[];
-  setImages: React.Dispatch<React.SetStateAction<ProductImage[]>>;
-  newImageFiles: File[];
-  setNewImageFiles: React.Dispatch<React.SetStateAction<File[]>>;
-}
-
-export default function ImageUpload({
-  images,
-  setImages,
-  newImageFiles,
-  setNewImageFiles,
-}: ImageUploadProps) {
+export default function ImageUpload() {
+  const images = useProductFormStore((s) => s.images);
+  const setImages = useProductFormStore((s) => s.setImages);
+  const newImageFiles = useProductFormStore((s) => s.newImageFiles);
+  const setNewImageFiles = useProductFormStore((s) => s.setNewImageFiles);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [objectUrls, setObjectUrls] = useState<string[]>([]);
@@ -33,22 +25,21 @@ export default function ImageUpload({
     if (!files || files.length === 0) return;
 
     const fileList = Array.from(files);
-    setNewImageFiles((prev) => [...prev, ...fileList]);
+    setNewImageFiles([...newImageFiles, ...fileList]);
 
-    // Reset input
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
 
   const handleRemoveExisting = (path: string) => {
-    setImages((prev) =>
-      prev.filter((img) => (img.thumbnail?.path || img.path) !== path),
+    setImages(
+      images.filter((img) => (img.thumbnail?.path || img.path) !== path),
     );
   };
 
   const handleRemoveNew = (index: number) => {
-    setNewImageFiles((prev) => prev.filter((_, i) => i !== index));
+    setNewImageFiles(newImageFiles.filter((_, i) => i !== index));
   };
 
   const handleClick = () => {

@@ -1,8 +1,9 @@
 "use client";
 
 import { useAuthStore } from "@/store/useAuthStore";
+import { useWishlistStore } from "@/store/useWishlistStore";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState, useTransition } from "react";
+import { useActionState, useEffect, useTransition } from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { toast } from "sonner";
 import {
@@ -11,19 +12,20 @@ import {
 } from "@/services/wishlistActions";
 import { Product } from "@/types/product";
 
-export default function WishlistButton({ product, isInWishlist: initialInWishlist }: { product: Product; isInWishlist?: boolean }) {
-  const [isInWishlist, setIsInWishlist] = useState(initialInWishlist ?? false);
-  const user = useAuthStore((state) => state.user);
+export default function WishlistButton({ product }: { product: Product }) {
+  const user = useAuthStore((s) => s.user);
+  const isInWishlist = useWishlistStore((s) =>
+    s.products.some((p) => p.id === product.id),
+  );
+  const setProducts = useWishlistStore((s) => s.setProducts);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  // Server action state for add
   const [addState, addAction, addIsPending] = useActionState(
     addToWishlistAction,
     null,
   );
 
-  // Server action state for remove
   const [removeState, removeAction, removeIsPending] = useActionState(
     removeFromWishlistAction,
     null,
@@ -33,7 +35,7 @@ export default function WishlistButton({ product, isInWishlist: initialInWishlis
 
   useEffect(() => {
     if (addState?.success) {
-      setIsInWishlist(true);
+      if (addState.data) setProducts(addState.data.products);
       toast.success("Added to wishlist!", { position: "bottom-left" });
     }
     if (addState?.error) toast.error(addState.error);
@@ -42,7 +44,7 @@ export default function WishlistButton({ product, isInWishlist: initialInWishlis
 
   useEffect(() => {
     if (removeState?.success) {
-      setIsInWishlist(false);
+      if (removeState.data) setProducts(removeState.data.products);
       toast.success("Removed from wishlist!", { position: "bottom-left" });
     }
     if (removeState?.error) toast.error(removeState.error);

@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useMemo } from "react";
 import { AlertCircle, Plus } from "lucide-react";
 import { InfoSection } from "@/types/product";
-import { ValidationErrors } from "@/services/productActions";
+import { useProductFormStore } from "@/store/useProductFormStore";
+import type { ValidationErrors } from "@/store/useProductFormStore";
 import { CategoryWithChildren } from "@/types/category";
 import InfoSectionInput from "./InfoSectionInput";
 import TagInput from "./TagInput";
@@ -12,42 +12,27 @@ import CategorySelect from "./CategorySelect";
 const MAX_SECTIONS = 8;
 
 interface ProductFormProps {
-  productName: string;
-  setProductName: React.Dispatch<React.SetStateAction<string>>;
-  categoryId: string;
-  setCategoryId: React.Dispatch<React.SetStateAction<string>>;
-  price: number | "";
-  setPrice: React.Dispatch<React.SetStateAction<number | "">>;
-  stock: number | "";
-  setStock: React.Dispatch<React.SetStateAction<number | "">>;
-  description: string;
-  setDescription: React.Dispatch<React.SetStateAction<string>>;
-  tags: string[];
-  setTags: React.Dispatch<React.SetStateAction<string[]>>;
-  infoSections: InfoSection[];
-  setInfoSections: React.Dispatch<React.SetStateAction<InfoSection[]>>;
   categoryTree: CategoryWithChildren[];
   errors: ValidationErrors | null;
 }
 
 export default function ProductForm({
-  productName,
-  setProductName,
-  categoryId,
-  setCategoryId,
-  price,
-  setPrice,
-  stock,
-  setStock,
-  description,
-  setDescription,
-  tags,
-  setTags,
-  infoSections,
-  setInfoSections,
-  errors,
   categoryTree,
+  errors,
 }: ProductFormProps) {
+  const productName = useProductFormStore((s) => s.productName);
+  const setProductName = useProductFormStore((s) => s.setProductName);
+  const categoryId = useProductFormStore((s) => s.categoryId);
+  const setCategoryId = useProductFormStore((s) => s.setCategoryId);
+  const price = useProductFormStore((s) => s.price);
+  const setPrice = useProductFormStore((s) => s.setPrice);
+  const stock = useProductFormStore((s) => s.stock);
+  const setStock = useProductFormStore((s) => s.setStock);
+  const description = useProductFormStore((s) => s.description);
+  const setDescription = useProductFormStore((s) => s.setDescription);
+  const infoSections = useProductFormStore((s) => s.infoSections);
+  const setInfoSections = useProductFormStore((s) => s.setInfoSections);
+
   const addInfoSection = () => {
     setInfoSections([...infoSections, { title: "", content: "" }]);
   };
@@ -235,7 +220,8 @@ export default function ProductForm({
       </div>
 
       {/* Tags */}
-      <TagInput tags={tags} setTags={setTags} error={errors?.tags} />
+      <TagInput error={errors?.tags} />
     </div>
   );
 }
+

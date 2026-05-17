@@ -3,6 +3,7 @@
 import { useActionState, useEffect } from "react";
 import { X, FolderPlus, Subtitles, Layers } from "lucide-react";
 import { createCategoryAction } from "@/services/categoriesAction";
+import { useCategoryStore } from "@/store/useCategoryStore";
 import { toast } from "sonner";
 
 export default function CategoryModal({
@@ -14,13 +15,21 @@ export default function CategoryModal({
   parentId: string | null;
   onClose: () => void;
 }) {
+  const addNode = useCategoryStore((s) => s.addNode);
   const [state, formAction, isPending] = useActionState(
     createCategoryAction,
     null,
   );
 
   useEffect(() => {
-    if (state?.success) {
+    if (state?.success && state.data) {
+      const cat = state.data as { id: string; name: string };
+      addNode(parentId, {
+        id: cat.id,
+        parentId,
+        name: cat.name,
+        children: [],
+      });
       toast.success("Category created successfully");
       onClose();
     } else if (state?.error) {

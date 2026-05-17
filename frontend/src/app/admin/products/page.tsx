@@ -5,14 +5,12 @@ import { fetchProducts } from "@/services/api/product";
 import { Product } from "@/types/product";
 import { Suspense } from "react";
 import { Metadata } from "next";
-import { connection } from "next/server";
 
 export const metadata: Metadata = {
   title: "Products Management | Urban Threads Admin",
 };
 
 async function ProductList() {
-  await connection();
   const products = await fetchProducts();
   if (!products) {
     return (

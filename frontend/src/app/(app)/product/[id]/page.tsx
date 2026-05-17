@@ -1,5 +1,6 @@
 import ImageCarousel from "@/components/product-client/ProductImageCarousel";
 import ProductDetails from "@/components/product-client/ProductDetails";
+import WishlistHydrator from "@/components/product-client/WishlistHydrator";
 import { fetchProductById } from "@/services/api/product";
 import { fetchWishlist } from "@/services/api/wishlist";
 import { Metadata } from "next";
@@ -52,10 +53,10 @@ export default async function ProductPage({ params }: PageProps) {
   }
 
   const wishlist = await fetchWishlist();
-  const isInWishlist = wishlist?.products?.some((p) => p.id === productId) ?? false;
 
   return (
     <>
+      <WishlistHydrator wishlist={wishlist} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="lg:grid lg:grid-cols-2 lg:gap-x-12 lg:items-start">
           <div className="flex flex-col">
@@ -63,7 +64,7 @@ export default async function ProductPage({ params }: PageProps) {
           </div>
 
           <div className="mt-10 px-2 sm:px-0 lg:mt-0">
-            <ProductDetails product={product} isInWishlist={isInWishlist} />
+            <ProductDetails product={product} />
           </div>
         </div>
       </div>

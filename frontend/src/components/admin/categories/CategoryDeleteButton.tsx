@@ -1,9 +1,10 @@
 "use client";
 
 import { deleteCategoryAction } from "@/services/categoriesAction";
+import { useCategoryStore } from "@/store/useCategoryStore";
 import { Category } from "@/types/category";
 import { Trash2 } from "lucide-react";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { FiLoader } from "react-icons/fi";
 
 export default function CategoryDeleteButton({
@@ -11,11 +12,19 @@ export default function CategoryDeleteButton({
 }: {
   category: Category;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [, formAction, isPending] = useActionState(
+  const removeNode = useCategoryStore((s) => s.removeNode);
+  const [state, formAction, isPending] = useActionState(
     deleteCategoryAction,
     null,
   );
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (state?.success) {
+      removeNode(category.id);
+      setIsOpen(false);
+    }
+  }, [state, category.id, removeNode]);
   return (
     <>
       {/* Trigger Button */}
