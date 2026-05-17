@@ -30,13 +30,5 @@ export const CreateProductSchema = z.object({
     )
     .min(1, "At least one info section is required")
     .default([]),
-  tags: z
-    .array(
-      z.object({
-        id: z.string(),
-        label: z.string(),
-      }),
-    )
-    .transform((tags) => tags.map((t) => t.label))
-    .default([]),
+  tags: z.array(z.string()).default([]),
 });

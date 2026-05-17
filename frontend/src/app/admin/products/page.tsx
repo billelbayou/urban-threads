@@ -31,12 +31,9 @@ async function ProductList() {
 function ProductTableSkeleton() {
   return (
     <div className="animate-pulse space-y-4">
-      <div className="h-12 bg-slate-100 dark:bg-slate-800 rounded-xl"></div>
+      <div className="h-12 bg-slate-100 rounded-xl"></div>
       {[...Array(6)].map((_, i) => (
-        <div
-          key={i}
-          className="h-20 bg-slate-50 dark:bg-slate-800/50 rounded-xl"
-        ></div>
+        <div key={i} className="h-20 bg-slate-50 rounded-xl"></div>
       ))}
     </div>
   );
