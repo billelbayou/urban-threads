@@ -4,7 +4,7 @@ import { NAV_LINKS } from "@/constants/navigation";
 export default function Footer() {
   return (
     <footer className="bg-white text-gray-800 px-6 py-12">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-sm">
+      <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
         <div>
           <h3 className="font-semibold mb-3">COMPANY</h3>
           <ul className="space-y-2">
@@ -85,7 +85,7 @@ export default function Footer() {
       </div>
 
       <div className="mt-16 text-center">
-        <h1 className="text-8xl font-bold tracking-tight uppercase">
+        <h1 className="text-4xl font-bold tracking-tight uppercase sm:text-6xl md:text-8xl">
           urban threads
         </h1>
       </div>

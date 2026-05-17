@@ -20,7 +20,6 @@ export default function EditProductClient({
 }: EditProductClientProps) {
   const router = useRouter();
 
-  // Initialize state from existing product data
   const [images, setImages] = useState<ProductImage[]>(
     product.images?.map((img) => ({
       mobile: { url: img.mobile.url, path: img.mobile.path },
@@ -56,7 +55,7 @@ export default function EditProductClient({
       price: price === "" ? null : price,
       stock: stock === "" ? null : stock,
       description,
-      images, // Existing images to keep
+      images,
       infoSections,
       tags,
     }),
@@ -83,14 +82,12 @@ export default function EditProductClient({
 
   useEffect(() => {
     if (state?.success) {
-      // Optionally redirect or show success message
       router.push("/admin/products");
     }
   }, [state?.success, router]);
 
   return (
     <div>
-      {/* Back Button */}
       <button
         onClick={() => router.back()}
         className="flex items-center gap-2 text-slate-600 hover:text-slate-800 mb-4 transition-colors"

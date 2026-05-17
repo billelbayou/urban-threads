@@ -1,25 +1,10 @@
 "use client";
-import {
-  LayoutDashboard,
-  Package,
-  ShoppingCart,
-  Users,
-  Layers,
-  Moon,
-  LogOut,
-} from "lucide-react";
+import { Moon } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import LogoutButton from "./LogoutButton";
-
-const navMain = [
-  { icon: LayoutDashboard, label: "Dashboard", url: "/admin" },
-  { icon: Package, label: "Products", url: "/admin/products" },
-  { icon: Layers, label: "Categories", url: "/admin/categories" },
-  { icon: ShoppingCart, label: "Orders", url: "/admin/orders" },
-  { icon: Users, label: "Customers", url: "/admin/customers" },
-];
+import { ADMIN_NAV_ITEMS } from "@/constants/admin";
 
 export default function Sidebar() {
   const [dark, setDark] = useState(false);
@@ -40,7 +25,7 @@ export default function Sidebar() {
           MAIN
         </p>
         <ul className="space-y-0.5">
-          {navMain.map((item) => {
+          {ADMIN_NAV_ITEMS.map((item) => {
             const isActive =
               pathname === item.url ||
               (item.url !== "/admin" && pathname.startsWith(item.url));

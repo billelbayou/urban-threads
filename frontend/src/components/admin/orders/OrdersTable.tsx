@@ -3,24 +3,7 @@
 import { useState } from "react";
 import { Order } from "@/types/order";
 import { updateOrderStatusAction } from "@/services/orderActions";
-
-const ORDER_STATUSES = [
-  "PENDING",
-  "PROCESSING",
-  "SHIPPED",
-  "DELIVERED",
-  "CANCELED",
-] as const;
-
-type OrderStatus = (typeof ORDER_STATUSES)[number];
-
-const statusColors: Record<OrderStatus, string> = {
-  PENDING: "bg-yellow-100 text-yellow-800",
-  PROCESSING: "bg-blue-100 text-blue-800",
-  SHIPPED: "bg-purple-100 text-purple-800",
-  DELIVERED: "bg-green-100 text-green-800",
-  CANCELED: "bg-red-100 text-red-800",
-};
+import { ORDER_STATUSES, STATUS_COLORS, type OrderStatus } from "@/constants/orders";
 
 interface OrdersTableProps {
   initialOrders: Order[];
@@ -127,7 +110,7 @@ export default function OrdersTable({ initialOrders }: OrdersTableProps) {
                       }
                       disabled={updatingId === order.id}
                       className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border-0 cursor-pointer focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-                        statusColors[order.status as OrderStatus] ||
+                         STATUS_COLORS[order.status as (typeof ORDER_STATUSES)[number]] ||
                         "bg-gray-100 text-gray-800"
                       } ${updatingId === order.id ? "opacity-50 cursor-not-allowed" : ""}`}
                     >

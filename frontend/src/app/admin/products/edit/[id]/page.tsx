@@ -1,4 +1,4 @@
-import EditProductClient from "./EditProductClient";
+import EditProductClient from "@/components/admin/product-admin/EditProductClient";
 import { fetchProductById } from "@/services/api/product";
 import { fetchCategories } from "@/services/api/category";
 import { buildTree } from "@/utils/helpers";

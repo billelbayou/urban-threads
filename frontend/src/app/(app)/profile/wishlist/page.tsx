@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/services/api/auth";
 import { fetchWishlist } from "@/services/api/wishlist";
-import WishlistClient from "./WishlistClient";
+import WishlistClient from "@/components/profile/WishlistClient";
 import { Wishlist } from "@/types/wishlist";
 
 export default async function WishlistPage() {

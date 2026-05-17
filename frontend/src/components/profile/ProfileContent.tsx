@@ -8,9 +8,9 @@ import {
   updatePersonalInfoAction,
   updateShippingAddressAction,
 } from "@/services/profileActions";
-import { SectionCard } from "./section-card";
-import { EditModal, type FieldConfig } from "./edit-modal";
-import { InfoField } from "./info-field";
+import { SectionCard } from "./SectionCard";
+import { EditModal, type FieldConfig } from "./EditModal";
+import { InfoField } from "./InfoField";
 import PasswordSection from "./PasswordSection";
 import DeleteAccountSection from "./DeleteAccountSection";
 

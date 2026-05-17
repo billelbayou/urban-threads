@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/services/api/auth";
-import { ProfileContent } from "@/components/profile/profile-content";
+import { ProfileContent } from "@/components/profile/ProfileContent";
 import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {

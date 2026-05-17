@@ -4,22 +4,7 @@ import { fetchMyOrders } from "@/services/api/order";
 import Image from "next/image";
 import Link from "next/link";
 import { Order } from "@/types/order";
-
-const statusColors: Record<string, string> = {
-  PENDING: "bg-yellow-100 text-yellow-800",
-  PROCESSING: "bg-blue-100 text-blue-800",
-  SHIPPED: "bg-indigo-100 text-indigo-800",
-  DELIVERED: "bg-green-100 text-green-800",
-  CANCELED: "bg-red-100 text-red-800",
-};
-
-const statusLabels: Record<string, string> = {
-  PENDING: "Pending",
-  PROCESSING: "Processing",
-  SHIPPED: "Shipped",
-  DELIVERED: "Delivered",
-  CANCELED: "Canceled",
-};
+import { STATUS_COLORS, STATUS_LABELS } from "@/constants/orders";
 
 export default async function OrdersPage() {
   const user = await getCurrentUser();
@@ -83,10 +68,10 @@ export default async function OrdersPage() {
                 </div>
                 <span
                   className={`rounded-full px-3 py-1 text-xs font-medium ${
-                    statusColors[order.status] || "bg-gray-100 text-gray-800"
+                    STATUS_COLORS[order.status as keyof typeof STATUS_COLORS] || "bg-gray-100 text-gray-800"
                   }`}
                 >
-                  {statusLabels[order.status] || order.status}
+                  {STATUS_LABELS[order.status as keyof typeof STATUS_LABELS] || order.status}
                 </span>
               </div>
 

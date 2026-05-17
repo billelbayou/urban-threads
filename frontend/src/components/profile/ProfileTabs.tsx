@@ -2,13 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { User, ShoppingBag, Heart } from "lucide-react";
-
-const tabs = [
-  { icon: <User size={16} />, label: "Profile", href: "/profile" },
-  { icon: <ShoppingBag size={16} />, label: "Orders", href: "/profile/orders" },
-  { icon: <Heart size={16} />, label: "Wishlist", href: "/profile/wishlist" },
-];
+import { PROFILE_NAV_ITEMS } from "@/constants/profile";
 
 export default function ProfileTabs() {
   const pathname = usePathname();
@@ -16,8 +10,9 @@ export default function ProfileTabs() {
   return (
     <div className="lg:hidden">
       <nav className="flex gap-2 overflow-x-auto px-4 pt-4 sm:px-8">
-        {tabs.map((tab) => {
+        {PROFILE_NAV_ITEMS.map((tab) => {
           const isActive = pathname === tab.href;
+          const Icon = tab.icon;
           return (
             <Link
               key={tab.href}
@@ -28,7 +23,7 @@ export default function ProfileTabs() {
                   : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
               }`}
             >
-              {tab.icon}
+              <Icon size={16} />
               {tab.label}
             </Link>
           );

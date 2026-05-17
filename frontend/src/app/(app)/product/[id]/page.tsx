@@ -1,5 +1,5 @@
-import ImageCarousel from "@/components/product-client/productImageCarousel";
-import ProductDetails from "@/components/product-client/productDetails";
+import ImageCarousel from "@/components/product-client/ProductImageCarousel";
+import ProductDetails from "@/components/product-client/ProductDetails";
 import { fetchProductById } from "@/services/api/product";
 import { fetchWishlist } from "@/services/api/wishlist";
 import { Metadata } from "next";
