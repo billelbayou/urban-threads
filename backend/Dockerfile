@@ -9,13 +9,12 @@ COPY package*.json ./
 RUN npm ci --ignore-scripts
 
 COPY prisma/ ./prisma/
-RUN ./node_modules/.bin/prisma generate
 
 COPY tsconfig.json ./
+RUN ./node_modules/.bin/prisma generate
 COPY src/ ./src/
 
 RUN npx tsc
-RUN cp -r src/generated/ dist/generated/
 
 # Stage 2: Production
 FROM node:20-alpine AS production
