@@ -18,26 +18,29 @@ TODO.md
 **/.pnpm-debug.log*
 
 # === Frontend ===
-/frontend/.next/
-/frontend/out/
-/frontend/build/
-/frontend/.vercel/
-/frontend/.pnp/
-/frontend/.pnp.* 
-/frontend/.yarn/*
-!/frontend/.yarn/patches
-!/frontend/.yarn/plugins
-!/frontend/.yarn/releases
-!/frontend/.yarn/versions
-/frontend/coverage/
-frontend/next-env.d.ts
+apps/frontend/.next/
+apps/frontend/out/
+apps/frontend/build/
+apps/frontend/.vercel/
+apps/frontend/.pnp/
+apps/frontend/.pnp.* 
+apps/frontend/.yarn/*
+!apps/frontend/.yarn/patches
+!apps/frontend/.yarn/plugins
+!apps/frontend/.yarn/releases
+!apps/frontend/.yarn/versions
+apps/frontend/coverage/
+apps/frontend/next-env.d.ts
 
 # === Backend ===
-/backend/dist/
-/backend/build/
-/backend/coverage/
-/backend/prisma/dev.db
-/backend/prisma/dev.db-journal
+apps/backend/dist/
+apps/backend/build/
+apps/backend/coverage/
+apps/backend/prisma/dev.db
+apps/backend/prisma/dev.db-journal
+
+# === Turborepo ===
+.turbo/
 
 # === Optional ===
 # Ignore local VS Code settings
